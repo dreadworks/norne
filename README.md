@@ -1,10 +1,5 @@
-twee
+norne
 ====
 
-Twitter Visualisation Framework
-The server is developed in Python 3.3.2
+A storytelling engine.
 
-dependencies
-------------
-	* http
-	* requests-oauthlib
