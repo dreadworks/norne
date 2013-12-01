@@ -5,6 +5,7 @@
   	"_": true,
   	"Physics": true,
   	"Attraction": true,
+  	"Collision": true,
   	"Verlet": true,
   	"Particle": true,
   	"Vector": true,

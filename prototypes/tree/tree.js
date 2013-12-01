@@ -5,123 +5,109 @@
  *
  */
 jQuery(function () {
-	"use strict";
-	
-	var phys = new Physics(),
-	    attrc = new Attraction(),
-		canv = new Sketch(document.body);
+	'use strict';
 
-	// physics
-	phys.integrator = new Verlet();
+	var $canvas, canvas, ctx, bounds,
+		world, renderer, behaviours,
+		particles, forcefields;
 
-	// attractions
-	attrc.target.x = this.width/2;
-	attrc.target.y = this.height/2;
-	attrc.strength = 100;
 
-	// canvas
-	canv.fillStyle = '#ff00ff';
+	// init physics
+	world = new Physics();
+	Physics.util.ticker.start();
 
 	// init canvas
-	canv.setup = function () {
-		
-		_.each(_.range(100), function (i) {
-			
-			var particle = new Particle(_.random(100)),
-				position = new Vector(
-					_.random(this.width), 
-					_.random(this.height));
-
-			particle.setRadius(particle.mass * 10);
-			particle.moveTo(position);
-
-			particle.behaviours.push(attrc);
-			phys.particles.push(particle);
-
-		});
-
+	$canvas = jQuery('#viewport');
+	canvas = {
+		width: $canvas.width(),
+		height: $canvas.height()
 	};
 
-	canv.draw = function () {
-		phys.step();
+	// init renderer
+	renderer = Physics.renderer('canvas', {
+		el: 'viewport',
+		width: canvas.width,
+		height: canvas.height,
+		meta: true,
+		styles: {
+			'circle': {
+				lineWidth: 0,
+				strokeStyle: 'rgba(0, 0, 0, 0)',
+				angleIndicator: 'rgba(0, 0, 0, 0)',
+				fillStyle: 'hsl(35, 60%, 70%)'
+			}
+		}
+	});
+	ctx = renderer.ctx;
 
-		_.each(phys.particles, function (p) {
-			canv.beginPath();
-			canv.arc(p.pos.x, p.pos.y, p.radius, 0, 3.14*2);
-			canv.fill();
+	// init behaviours
+	bounds = Physics.aabb(
+		0, 0,
+		canvas.width,
+		canvas.height
+	);
+
+	behaviours = [];
+	behaviours.push(
+		Physics.behaviour('edge-collision-detection', {
+			aabb: bounds,
+			restitution: 1,
+			cof: 1
+		}),
+		Physics.behavior('body-impulse-response'),
+        Physics.behavior('newtonian', { strength: 0.001 }),
+        Physics.behavior('sweep-prune'),
+        Physics.behavior('body-collision-detection', { checkAll: false })
+	);
+
+
+	// init bodies
+	forcefields = [Physics.body('circle', {
+		radius: 0,
+		x: canvas.width/2,
+		y: canvas.height/5,
+		mass: 10,
+		fixed: true
+	}), Physics.body('circle', {
+		radius: 0,
+		x: canvas.width/2-50,
+		y: canvas.height/2,
+		mass: 30,
+		fixed: true
+	})];
+
+	particles = [];
+	_.times(200, function () {
+		particles.push(Physics.body('circle', {
+			x: _.random(canvas.width),
+			y: _.random(canvas.height),
+			mass: _.random(2, 5),
+			radius: _.random(4, 10),
+			restitution: 1
+		}));
+	});
+
+
+	// init world
+	world.add(forcefields);
+	world.add(particles);
+	world.add(renderer);
+
+	_.each(behaviours, function(behaviour) {
+		world.add(behaviour);
+	});
+
+	Physics.util.ticker.subscribe(function (time) {
+		world.step(time);
+		world.render();
+
+		// draw other, static stuff
+		_.each(forcefields, function(f) {
+			ctx.beginPath();
+			ctx.arc(f.options.x, f.options.y, f.mass, 0, 3.14*2);
+			ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+			ctx.fill();
 		});
-	};
-	console.log('done');
-	
+	});
+
 });
-
-/*
-(function () {
-
-	// Create a physics instance which uses the Verlet integration method
-	var physics = new Physics();
-	physics.integrator = new Verlet();
-
-	// Design some behaviours for particles
-	var avoidMouse = new Attraction();
-	var pullToCenter = new Attraction();
-
-	// Allow particle collisions to make things interesting
-	var collision = new Collision();
-
-	// Use Sketch.js to make life much easier
-	var example = Sketch.create({ container: document.body });
-
-	example.setup = function() {
-
-		for ( var i = 0; i < 200; i++ ) {
-
-			// Create a particle
-			var particle = new Particle( Math.random() );
-			var position = new Vector( random( this.width ), random( this.height ) );
-			particle.setRadius( particle.mass * 10 );
-			particle.moveTo( position );
-
-			// Make it collidable
-			collision.pool.push( particle );
-
-			// Apply behaviours
-			particle.behaviours.push( avoidMouse, pullToCenter, collision );
-
-			// Add to the simulation
-			physics.particles.push( particle );
-		}
-
-		pullToCenter.target.x = this.width / 2;
-		pullToCenter.target.y = this.height / 2;
-		pullToCenter.strength = 120;
-
-		avoidMouse.setRadius( 60 );
-		avoidMouse.strength = -1000;
-
-		example.fillStyle = '#ff00ff';
-	}
-
-	example.draw = function() {
-
-		// Step the simulation
-		physics.step();
-
-		// Render particles
-		for ( var i = 0, n = physics.particles.length; i < n; i++ ) {
-
-			var particle = physics.particles[i];
-			example.beginPath();
-			example.arc( particle.pos.x, particle.pos.y, particle.radius, 0, Math.PI * 2 );
-			example.fill();
-		}
-	}
-
-	example.mousemove = function() {
-		avoidMouse.target.x = example.mouse.x;
-		avoidMouse.target.y = example.mouse.y;
-	}
-
-}());
-*/
-

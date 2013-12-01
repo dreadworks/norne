@@ -6,24 +6,49 @@
 
         <script type="text/javascript" src="lib/_-1.5.2.js"></script>
 		<script type="text/javascript" src="lib/jquery-1.10.2.js"></script>
-        <script type="text/javascript" src="lib/sketch-0.0.1.js"></script>
-		<script type="text/javascript" src="lib/physics.js"></script>
+        <script type="text/javascript" src="lib/sketch.js"></script>
+		<script type="text/javascript" src="lib/physicsjs-0.5.3.js"></script>
         <script type="text/javascript" src="tree.js"></script>
 
         <style type="text/css">
 		
-		canvas {
-			display: block;
+        body {
+            background: #eee;
+            font: 14px/1.3em sans-serif;
+        }
+
+        .pjs-meta {
+            padding: 5px;
+            margin: 25px 5px;
+            border: 1px solid #ccc;
+            background: white;
+            text-transform: uppercase;
+            width: 100px;
+            float: right;
+        }
+
+        h1 {
+            font-size: 4em;
+            color: #ccc;
+            text-transform: uppercase;
+            float: left;
+        }
+
+		#viewport {
 			margin: 50px auto 0;
 			border: 1px solid #ccc;
-			height: 500px; width: 500px;
+			height: 800px; width: 500px;
+            background: white;
+            display: block;
+            clear: both;
 		}
 
         </style>
     </head>
     <body>
+        <h1>Norne Tree Prototype</h1>
 
-        <canvas></canvas>
+        <canvas id="viewport"></canvas>
 		
     </body>
 </html>
