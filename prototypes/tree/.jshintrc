@@ -1,0 +1,14 @@
+{
+  "globals": { 
+  	"jQuery": true,
+  	"Sketch": true,
+  	"_": true,
+  	"Physics": true,
+  	"Attraction": true,
+  	"Verlet": true,
+  	"Particle": true,
+  	"Vector": true,
+  	"TWO_PI": true,
+  	"console": true
+  }
+}
