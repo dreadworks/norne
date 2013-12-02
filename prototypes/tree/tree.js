@@ -59,7 +59,7 @@ jQuery(function () {
 			cof: 1
 		}),
 		Physics.behavior('body-impulse-response'),
-        /*Physics.behavior('newtonian', { strength: 0.001 }),*/
+        Physics.behavior('newtonian', { strength: 0.001 }),
         Physics.behavior('sweep-prune'),
         Physics.behavior('body-collision-detection', { checkAll: false })
 	);
@@ -69,7 +69,7 @@ jQuery(function () {
 	forcefields = [Physics.body('circle', {
 		radius: 0,
 		x: canvas.width/2,
-		y: canvas.height/5,
+		y: canvas.height/4,
 		mass: 40,
 		fixed: true
 	}), Physics.body('circle', {
@@ -87,18 +87,18 @@ jQuery(function () {
 	})];
 
 	particles = [];
-	_.times(100, function () {
+	_.times(200, function () {
 		particles.push(Physics.body('circle', {
 			x: _.random(
-				canvas.width/5,
+				canvas.width/4,
 				canvas.width/1.2
 			),
 			y: _.random(
 				canvas.height/5,
 				canvas.height/1.5
 			),
-			mass: 0.5,
-			radius: _.random(2,3),
+			mass: 1,
+			radius: _.random(8,10),
 			restitution: 0.5
 		}));
 	});
