@@ -4,120 +4,124 @@
  *  the norne way
  *
  */
-jQuery(function () {
+
+(function ($) {
 	'use strict';
 
-	var $canvas, canvas, ctx, bounds,
-		world, renderer, behaviours,
-		particles, forcefields,
-		steps, $steps, paused, $cntrl;
+	/**
+	 *	this is essentially a copy of the 'circle' body
+	 */
+	Physics.body('forcefield', function (parent) {
 
-	// dom stuff
-	$steps = jQuery("#stats_steps");
-	$cntrl = jQuery("#cntrl");
+		var defaults = {
+			radius: 0,
+			fixed: true
+		};
 
-	// init physics
+		return {
+
+			/**
+			 * Initialization
+			 * @param {Object} options Configuration options
+			 * @return {void}
+			 */
+			 init: function (options) {
+				parent.init.call(this, options);
+				options = _.extend({}, defaults, options);
+
+				this.geometry = Physics.geometry('circle', {
+					radius: options.radius
+				});
+
+				this.recalc();
+			 },
+
+			 recalc: function () {
+				parent.recalc.call(this);
+				this.moi = this.mass * this.geometry * this.geometry / 2;
+			 }
+
+		};
+
+	});
+
+
+	var world, forcefields;
 	world = new Physics();
-	Physics.util.ticker.start();
-
-	// init canvas
-	$canvas = jQuery('#viewport');
-	canvas = {
-		width: $canvas.width(),
-		height: $canvas.height()
-	};
-
-	// init renderer
-	renderer = Physics.renderer('canvas', {
-		el: 'viewport',
-		width: canvas.width,
-		height: canvas.height,
-		meta: true,
-		styles: {
-			'circle': {
-				lineWidth: 0,
-				strokeStyle: 'rgba(0, 0, 0, 0)',
-				angleIndicator: 'rgba(0, 0, 0, 0)',
-				fillStyle: 'hsl(35, 60%, 70%)'
-			}
-		}
-	});
-	ctx = renderer.ctx;
-
-	// init behaviours
-	bounds = Physics.aabb(
-		0, 0,
-		canvas.width,
-		canvas.height
-	);
-
-	behaviours = [];
-	behaviours.push(
-		Physics.behaviour('edge-collision-detection', {
-			aabb: bounds,
-			restitution: 0.5,
-			cof: 1
-		}),
-		Physics.behavior('body-impulse-response'),
-        Physics.behavior('newtonian', { strength: 0.001 }),
-        Physics.behavior('sweep-prune'),
-        Physics.behavior('body-collision-detection', { checkAll: false })
-	);
 
 
-	// init bodies
-	forcefields = [Physics.body('circle', {
-		radius: 0,
-		x: canvas.width/2,
-		y: canvas.height/4,
-		mass: 40,
-		fixed: true
-	}), Physics.body('circle', {
-		radius: 0,
-		x: canvas.width/2-50,
-		y: canvas.height/2,
-		mass: 40,
-		fixed: true
-	}), Physics.body('circle', {
-		radius: 0,
-		x: canvas.width/2,
-		y: canvas.height/1.5,
-		mass: 40,
-		fixed: true
-	})];
+	/*
+	 *	adds bodies and behaviours
+	 *	to the current world
+	 */
+	function init_bodies(canvas) {
+		var bounds, behaviours, particles;
 
-	particles = [];
-	_.times(200, function () {
-		particles.push(Physics.body('circle', {
-			x: _.random(
-				canvas.width/4,
-				canvas.width/1.2
-			),
-			y: _.random(
-				canvas.height/5,
-				canvas.height/1.5
-			),
-			mass: 1,
-			radius: _.random(8,10),
-			restitution: 0.5
-		}));
-	});
+		// init behaviours
+		bounds = Physics.aabb(
+			0, 0,
+			canvas.width,
+			canvas.height
+		);
+
+		behaviours = [];
+		behaviours.push(
+			Physics.behaviour('edge-collision-detection', {
+				aabb: bounds,
+				restitution: 0.5,
+				cof: 1
+			}),
+			Physics.behavior('body-impulse-response'),
+			Physics.behavior('newtonian', { strength: 0.001 }),
+			Physics.behavior('sweep-prune'),
+			Physics.behavior('body-collision-detection', { checkAll: false })
+		);
+
+		world.add(behaviours);
+
+		
+		// init bodies
+		forcefields = [
+			{ x: canvas.width/2, y: canvas.height/4 },
+			{ x: canvas.width/2-50, y: canvas.height/2 },
+			{ x: canvas.width/2, y: canvas.height/1.5 }
+		];
+
+		forcefields = _.map(forcefields, function (pos) {
+			var opts = _.extend({ mass: 40 }, pos);
+			return Physics.body('forcefield', opts);
+		});
+
+		world.add(forcefields);
 
 
-	// init world
-	world.add(forcefields);
-	world.add(particles);
-	world.add(renderer);
+		particles = [];
+		_.times(200, function () {
+			particles.push(Physics.body('circle', {
+				x: _.random(
+					canvas.width/4,
+					canvas.width/1.2
+				),
+				y: _.random(
+					canvas.height/5,
+					canvas.height/1.5
+				),
+				mass: 1,
+				radius: _.random(8,10),
+				restitution: 0.5
+			}));
+		});
 
-	_.each(behaviours, function(behaviour) {
-		world.add(behaviour);
-	});
+		world.add(particles);
+		console.log('added', particles.length, 'particles');
+	}
 
-	steps = 0;
-	paused = false;
 
-	function render(time) {
-		steps += 1;
+	/*
+	 *	renders bodies and additional
+	 *	elements to the canvas
+	 */
+	function render(time, ctx) {
 
 		world.step(time);
 		world.render();
@@ -129,25 +133,68 @@ jQuery(function () {
 			ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
 			ctx.fill();
 		});
-
-		// stats
-		$steps.text(steps);
 	}
 
-	Physics.util.ticker.subscribe(function (time) {
-		if (paused)
-			return;
-		render(time);
+	
+	/*
+	 *	wrap the render() calls to gather
+	 *	statistical informations
+	 */
+	function init_rendering(canvas) {
+		var renderer, paused, $cntrl, steps, $steps;
+
+		renderer = Physics.renderer('canvas', {
+			el: 'viewport',
+			width: canvas.width,
+			height: canvas.height,
+			meta: true,
+			styles: {
+				'circle': {
+					lineWidth: 0,
+					strokeStyle: 'rgba(0, 0, 0, 0)',
+					angleIndicator: 'rgba(0, 0, 0, 0)',
+					fillStyle: 'hsl(35, 60%, 70%)'
+				}
+			}
+		});
+		world.add(renderer);
+
+		paused = false;
+		$cntrl = $('#cntrl');
+
+		steps = 0;
+		$steps = $('#stats_steps');
+
+		Physics.util.ticker.subscribe(function (time) {
+			steps += 1;
+			render(time, renderer.ctx);
+			$steps.text(steps);
+		});
+
+		$cntrl.on('click', 'button.pause', function () {
+			if (paused) {
+				Physics.util.ticker.start();
+			} else {
+				Physics.util.ticker.stop();
+			}
+
+			paused = !paused;
+		});
+	}
+
+
+	$(function () {
+		var $canvas, canvas;
+
+		$canvas = $('#viewport');
+		canvas = {
+			width: $canvas.width(),
+			height: $canvas.height()
+		};
+
+		init_bodies(canvas);
+		init_rendering(canvas);
+		Physics.util.ticker.start();
 	});
 
-	$cntrl.on('click', 'button.pause', function (ev) {
-		console.log('clickedi');
-		paused = paused? false : true;
-	});
-
-	$cntrl.on('click', 'button.go', function (ev) {
-		var val = $cntrl.find('input').val();
-		render(steps[val]);
-	})
-
-});
+}(jQuery));
