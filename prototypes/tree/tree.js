@@ -4,16 +4,18 @@
  *  the norne way
  *
  */
+ var world;
 jQuery(function () {
 	'use strict';
-
+	
 	var $canvas, canvas, ctx, bounds,
-		world, renderer, behaviours,
+		renderer, behaviours,
 		particles, forcefields;
 
 
 	// init physics
 	world = new Physics();
+	world.options({timestep: 1000/50});
 	Physics.util.ticker.start();
 
 	// init canvas
@@ -62,28 +64,30 @@ jQuery(function () {
 
 
 	// init bodies
-	forcefields = [Physics.body('circle', {
+	forcefields = [
+	Physics.body('circle', {
 		radius: 0,
-		x: canvas.width/2,
-		y: canvas.height/5,
-		mass: 10,
+		x: 500,
+		y: 500,
+		mass: 40,
 		fixed: true
-	}), Physics.body('circle', {
+	}),
+	Physics.body('circle', {
 		radius: 0,
-		x: canvas.width/2-50,
-		y: canvas.height/2,
-		mass: 30,
+		x: 540,
+		y: 280,
+		mass: 20,
 		fixed: true
 	})];
 
 	particles = [];
-	_.times(200, function () {
+	_.times(180, function () {
 		particles.push(Physics.body('circle', {
-			x: _.random(canvas.width),
-			y: _.random(canvas.height),
-			mass: _.random(2, 5),
-			radius: _.random(4, 10),
-			restitution: 1
+			x: _.random(350, 650),
+			y: _.random(250, 600),
+			mass: _.random(0.1,1),
+			radius: _.random(8, 10),
+			restitution: 0.1
 		}));
 	});
 
