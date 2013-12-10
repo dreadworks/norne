@@ -1,0 +1,23 @@
+{
+  "name": "norne",
+  "version": "0.0.1",
+  "author": {
+  	"name": "Felix Hamann, Lukas Hück"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dreadworks/norne.git"
+  },
+  "scripts": {
+  	"build": "npm install && grunt",
+  	"start": "grunt watch"
+  },
+  "licences": [{
+  	"type": "GPL",
+  	"url": "https://github.com/dreadworks/norne/blob/master/LICENSE"
+  }]
+}
