@@ -4911,26 +4911,26 @@ Physics.behavior('newtonian', function( parent ){
                 for ( var i = j + 1; i < l; i++ ) {
                     
                     other = bodies[ i ];
-                    
-                    //if (other.fixed && i != j) {
-                    if (true) {  
+
+
+                    if (!other.fixed) {
+                        continue;
+                    }
                         
-                        // clone the position
-                        pos.clone( other.state.pos );
-                        pos.vsub( body.state.pos );
-                        // get the square distance
-                        normsq = pos.normSq();
+                    // clone the position
+                    pos.clone( other.state.pos );
+                    pos.vsub( body.state.pos );
+                    // get the square distance
+                    normsq = pos.normSq();
 
-                        if (normsq > tolerance){
+                    if (normsq > tolerance){
 
-                            g = strength / normsq;
-                            var t = pos.normalize().mult( g * other.mass );
-                            t.recalc = true;
-                            body.accelerate( t );
-                            
-                            other.accelerate( pos.mult( body.mass/other.mass ).negate() );
-                        }
-
+                        g = strength / normsq;
+                        var t = pos.normalize().mult( g * other.mass );
+                        t.recalc = true;
+                        body.accelerate( t );
+                        
+                        other.accelerate( pos.mult( body.mass/other.mass ).negate() );
                     }
 
                 }
