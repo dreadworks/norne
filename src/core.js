@@ -42,6 +42,8 @@
         debug: true,
         version: 0.1,
 
+        exception: exc,
+
         /**
          * Used to extend norne itself.
          *
@@ -73,16 +75,20 @@
             }
 
             opts = opts || {};
-            fn = fn || function () {};
+            
+            if (fn) {
+                proxy = function () {
+                    var args = Array.prototype.slice.call(arguments);
+                    args.unshift(norne);
+                    return fn.apply(norne[name], args);
+                }
 
-            proxy = function () {
-                var args = Array.prototype.slice.call(arguments);
-                args.unshift(norne);
-                return fn.apply(norne[name], args);
+                _(proxy).extend(opts);
+                norne[name] = proxy;                
+            } else {
+                norne[name] = opts;
             }
 
-            _(proxy).extend(opts);
-            norne[name] = proxy;
         },
 
         toString: function () {
