@@ -1,0 +1,28 @@
+
+body {
+	font: 13px/1.3em sans-serif;
+	background: #efefef;
+}
+
+#controls {
+	border: 1px solid white;
+	background: #333;
+	color: white;
+	padding: 20px;
+	position: absolute;
+	top: 20px; left: 20px;
+	}
+	#controls label {
+		padding: 5px;
+		display: block;
+	}
+	#controls input,
+	#controls button {
+		display: block;
+	}
+
+#norne {
+	background: white;
+	border: 1px dashed #666;
+	height: 600px;
+}
