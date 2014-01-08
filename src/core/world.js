@@ -1,11 +1,73 @@
-norne.register('world', {
+(function (norne) {
 
-	create: function () {
-		console.log('creating world');
-	}
+	var worldWidth = 0;
 
-}, function () {
-	
-	this.create();
+	norne.register('world', {
 
-});
+		canvas: undefined,
+		lanes: {},
+
+		exc: _(norne.exception).extend({
+			name: 'norne.world'
+		}),
+
+
+		/**
+		 *	Adds a lane to the world.
+		 *
+		 *	@param lane The lane to be added
+		 *	@type lane norne.lane.create()
+		 */
+		addLane: function (lane) {
+			var	width;
+
+			if (this.lanes[lane.dist]) {
+				throw _(this.exc).extend({
+					message: 'A lane with that distance already exists'
+				});
+			}
+
+			width = 100 * lane.dist + this.viewportWidth();
+			if (width > worldWidth) {
+				worldWidth = width;
+			}
+
+			this.lanes[lane.dist] = lane;
+		},
+
+
+		/**
+		 *	Returns the worlds canvas width.
+		 */
+		viewportWidth: function () {
+			return this.canvas.clientWidth;
+		},
+
+
+		/**
+		 *	Returns the calculated world width
+		 *	based on the rightmost ground point of
+		 *	all lanes.
+		 */
+		worldWidth: function () {
+			return worldWidth;
+		},
+
+
+		/**
+		 *	Create the world, this starts the renderer.
+		 *
+		 */
+		create: function () {
+			norne.log.trace('core/world.create: creating world');
+		}
+
+	}, function (norne, opts) {
+		
+		norne.log.trace('core/world: callback called', this, opts);
+		this.canvas = opts.canvas || document.body;
+		return this;
+
+	});
+
+}(norne));
