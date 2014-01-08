@@ -1,29 +1,46 @@
 (function () {
-    
-
+    'use strict';
 
     var log = {
-            msg: function (msg) {
+            __out: function (channel, context, args) {
+                channel.apply(context, args);
+            },
+
+            msg: function () {
                 if (console && console.log) {
-                    console.log(msg);
+                    var args = Array.prototype.slice.call(arguments);
+                    this.__out(console.log, console, args);
                 }
             },
 
-            err: function (msg) {
+            err: function () {
                 if (console && console.error) {
-                    console.error(msg);
+                    var args = Array.prototype.slice.call(arguments);
+                    this.__out(console.error, console, args);
+                }
+            },
+
+            trace: function() {
+                if (norne.debug) {
+                    this.msg(arguments);
                 }
             }
         },
 
         norne = function (opts, callback) {
-            callback.apply(norne, norne.world(opts));
-        };
+            log.trace('core: norne called as fn with', { opts: opts, callback: callback });
+            callback.call(norne, norne.world(opts));
+        },
+
+        exc = { toString: function () { return this.name } };
 
     /**
      *  basic functionality
      */
     _(norne).extend({
+
+        debug: true,
+        version: 0.1,
 
         /**
          * Used to extend norne itself.
@@ -35,20 +52,19 @@
          *                      
          */
         register: function (name, opts, fn) {
-
-            if (norne[name]) {
-                log.err('Module with this name already exists (' + name + ')');
-                return
-            }
+            var registerExc = _(exc).extend({ name: 'norne.registerException' }),
+                proxy;
 
             if (!_(name).isString()) {
-                log.err('First parameter must be a string').
-                return
+                throw _(exc).extend({
+                    message: 'First parameter must be a string.'
+                });
             }
 
-            if (norne[name] !== undefined) {
-                log.err('An extension called "'+ name +'" already exists');
-                return;
+            if (norne[name]) {
+                throw _(exc).extend({
+                    message: 'Module with this name already exists (' + name + ')'
+                });
             }
 
             if (_(opts).isFunction()) {
@@ -59,15 +75,18 @@
             opts = opts || {};
             fn = fn || function () {};
 
-            /*
-             *  bind opts context to the function
-             *  and extend the returned proxy
-             */
-            fn = _(fn).bind(opts);
-            _(fn).extend(opts);
+            proxy = function () {
+                var args = Array.prototype.slice.call(arguments);
+                args.unshift(norne);
+                return fn.apply(norne[name], args);
+            }
 
-            norne[name] = fn;
-            return norne[name];
+            _(proxy).extend(opts);
+            norne[name] = proxy;
+        },
+
+        toString: function () {
+            return 'Norne Engine Version ' + this.version;
         }
     });
 
