@@ -7,7 +7,7 @@
 		canvas: undefined,
 		lanes: {},
 
-		exc: _(norne.exception).extend({
+		exc: _({}).extend(norne.exception, {
 			name: 'norne.world'
 		}),
 
@@ -27,11 +27,14 @@
 				});
 			}
 
+			width = lane.
+
+/*
 			width = 100 * lane.dist + this.viewportWidth();
 			if (width > worldWidth) {
 				worldWidth = width;
 			}
-
+*/
 			this.lanes[lane.dist] = lane;
 		},
 
@@ -59,12 +62,11 @@
 		 *
 		 */
 		create: function () {
-			norne.log.trace('core/world.create: creating world');
+			// TODO
 		}
 
 	}, function (norne, opts) {
 		
-		norne.log.trace('core/world: callback called', this, opts);
 		this.canvas = opts.canvas || document.body;
 		return this;
 

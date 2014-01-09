@@ -17,9 +17,17 @@
 
 		// exit conditions
 		// TODO: maybe this can be solved... nicer
-		if (i==0) return 0;
-		if (a[i-1].x < pos && pos < a[i].x) return i-1;
-		if (i == a.length-1) return a.length;
+		if (i === 0) {
+			return 0;
+		}
+
+		if (a[i-1].x < pos && pos < a[i].x) {
+			return i-1;
+		}
+
+		if (i === a.length-1) {
+			return a.length;
+		}
 
 		if (a[i-1].x > pos) {
 			// search in left half
@@ -28,20 +36,15 @@
 			// search in right half
 			return bsearch(a, pos, i+1, y);
 		}
-	};
+	}
 
 
 
-	/**
-	 *
-	 *
-	 *
-	 *
-	 *
-	 */
-	lane = {
+	lane = norne.obj.define('world.lane').use(
+		norne.evt
+	).as({
 
-		exc: _(norne.exception).extend({
+		exc: _({}).extend(norne.exception, {
 			name: 'norne.lane.lane instance'
 		}),
 
@@ -97,18 +100,11 @@
 			 *		width(dist=0) = world.width
 			 *		width(dist=100) = viewport.width
 			 *
-			 *	To make things simple, we can specify two functions and
-			 *	combine them:
-			 *
 			 *	w := width of the world
 			 *	v := width of the viewport
 			 *	d := distance
 			 *
-			 *	∀ d ⋲ ℝ, 0 <= d <= 100:
-			 *	f(d) = -wd/100 + w
-			 *	g(d) = vd/100
-			 *
-			 *	=> width(d) = f(d) + g(d) = d(v-w)/100 + w
+			 *	=> width(d) = d(v-w)/100 + w
 			 * 
 			 */
 			var world = norne.world, v, w, x;
@@ -138,16 +134,16 @@
 				right = pos + norne.world.viewportWidth();
 
 			i = bsearch(points, pos) - 1;
-			
+
 			do {
 				i += 1;
 				cpoints.push(points[i]);
-			} while (points[i+1] && points[i].x < right)
+			} while (points[i+1] && points[i].x < right);
 
 			return cpoints;
 		}
-	};
 
+	});
 
 
 	/**
@@ -163,7 +159,7 @@
 		}),
 
 		create: function (opts) {
-			lane = _({}).extend(lane, opts);
+			lane = _(norne.obj.create('world.lane')).extend(opts);
 			lane.distance(lane.dist);
 			return lane;
 		}

@@ -1,38 +1,15 @@
 (function () {
     'use strict';
 
-    var log = {
-            __out: function (channel, context, args) {
-                channel.apply(context, args);
-            },
+    var norne, exc;
 
-            msg: function () {
-                if (console && console.log) {
-                    var args = Array.prototype.slice.call(arguments);
-                    this.__out(console.log, console, args);
-                }
-            },
 
-            err: function () {
-                if (console && console.error) {
-                    var args = Array.prototype.slice.call(arguments);
-                    this.__out(console.error, console, args);
-                }
-            },
+    norne = function (opts, callback) {
+        callback.call(norne, norne.world(opts));
+    };
 
-            trace: function() {
-                if (norne.debug) {
-                    this.msg(arguments);
-                }
-            }
-        },
+    exc = { toString: function () { return this.name; } };
 
-        norne = function (opts, callback) {
-            log.trace('core: norne called as fn with', { opts: opts, callback: callback });
-            callback.call(norne, norne.world(opts));
-        },
-
-        exc = { toString: function () { return this.name } };
 
     /**
      *  basic functionality
@@ -40,7 +17,7 @@
     _(norne).extend({
 
         debug: true,
-        version: 0.1,
+        version: '0.0.1',
 
         exception: exc,
 
@@ -50,7 +27,7 @@
          * @param {String} name Name of the extension
          * @param {Object} opts Optional object whos properties
          *                      are getting mapped to fn
-         * @param {Function} fn Optional function that gets appended
+         * @param {Function} fn Optional function that can be invoked as norne[name]()
          *                      
          */
         register: function (name, opts, fn) {
@@ -70,8 +47,8 @@
             }
 
             if (_(opts).isFunction()) {
-                fn = opts
-                opts = {}
+                fn = opts;
+                opts = {};
             }
 
             opts = opts || {};
@@ -81,7 +58,7 @@
                     var args = Array.prototype.slice.call(arguments);
                     args.unshift(norne);
                     return fn.apply(norne[name], args);
-                }
+                };
 
                 _(proxy).extend(opts);
                 norne[name] = proxy;                
@@ -96,6 +73,5 @@
         }
     });
 
-    norne.register('log', log, log.msg);
     window.norne = norne;
 }());
