@@ -19,7 +19,9 @@
         debug: true,
         version: '0.0.1',
 
-        exception: exc,
+        exc: _({}).extend(exc, {
+            name: 'norne.exception'
+        }),
 
         /**
          * Used to extend norne itself.
@@ -31,8 +33,9 @@
          *                      
          */
         register: function (name, opts, fn) {
-            var registerExc = _(exc).extend({ name: 'norne.registerException' }),
-                proxy;
+            var exc = _({}).extend(this.exc, { 
+                name: 'norne.registerException' 
+            }), proxy;
 
             if (!_(name).isString()) {
                 throw _(exc).extend({
@@ -66,6 +69,11 @@
                 norne[name] = opts;
             }
 
+        },
+
+
+        unregister: function (name) {
+            delete norne[name];
         },
 
         toString: function () {
