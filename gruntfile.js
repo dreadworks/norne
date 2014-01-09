@@ -48,8 +48,8 @@ module.exports = function (grunt) {
 		},
 
 		watch: {
-			files: 'src/**/*.js',
-			tasks: 'dev'
+			files: ['src/**/*.js', 'test/*.spec.js'],
+			tasks: 'test'
 		},
 
 		jasmine: {
@@ -74,6 +74,7 @@ module.exports = function (grunt) {
 
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-jasmine');
 
