@@ -40,7 +40,7 @@
 
 
 
-	lane = norne.obj.define('world.lane').use(
+	lane = norne.obj.define('world.lane').uses(
 		norne.evt
 	).as({
 
