@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Norne</title>
+
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="../lib/underscore-min.js"></script>
+	<script type="text/javascript" src="../lib/physicsjs.js"></script>
+	<script type="text/javascript" src="../_dev/norne.js"></script>
+
+	<script type="text/javascript" src="core.js"></script>
+
+	<link rel="stylesheet" href="core.css">
+
+</head>
+<body>
+	
+	<div id="controls">
+		<form action="">
+			<label>
+				Front Lane Width
+				<input type="text" value="4000" />
+			</label>
+			<label>
+				Lanes
+				<input type="text" value="3">
+			</label>
+			<label>
+				Perspective
+				<input id="perspective" type="range" min="-45" max="45" value="0" />
+			</label>
+		</form>
+	</div>
+
+	<div id="norne"></div>
+
+</body>
+</html>
