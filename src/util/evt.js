@@ -1,4 +1,4 @@
-norne.register('evt', {
+norne.obj.define('evt').as({
 
 	events: {},
 
@@ -15,3 +15,5 @@ norne.register('evt', {
 	}
 
 });
+
+norne.register('evt', norne.obj.create('evt'));
