@@ -1,19 +1,23 @@
-norne.obj.define('evt').as({
+	norne.obj.define('evt').as({
 
-	events: {},
+		events: {},
 
-	on: function (evtname, callback) {
+		on: function (evtname, callback) {
+			if (!this.events[evtname]) {
+				this.events[evtname] = [];
+			}
 
-	},
 
-	off: function (evtname) {
+		},
 
-	},
+		off: function (evtname) {
 
-	trigger: function (evtname, evt) {
+		},
 
-	}
+		trigger: function (evtname, evt) {
 
-});
+		}
 
-norne.register('evt', norne.obj.create('evt'));
+	});
+
+	norne.register('evt', norne.obj.create('evt'));

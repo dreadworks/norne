@@ -1,14 +1,7 @@
-(function () {
-    'use strict';
 
-    var norne, exc;
-
-
-    norne = function (opts, callback) {
+    var norne = function (opts, callback) {
         callback.call(norne, norne.world(opts));
     };
-
-    exc = { toString: function () { return this.name; } };
 
 
     /**
@@ -18,10 +11,6 @@
 
         debug: true,
         version: '0.0.1',
-
-        exc: _({}).extend(exc, {
-            name: 'norne.exception'
-        }),
 
         /**
          * Used to extend norne itself.
@@ -33,9 +22,7 @@
          *                      
          */
         register: function (name, opts, fn) {
-            var exc = _({}).extend(this.exc, { 
-                name: 'norne.registerException' 
-            }), proxy;
+            var exc = {}, proxy;
 
             if (!_(name).isString()) {
                 throw _(exc).extend({
@@ -76,10 +63,8 @@
             delete norne[name];
         },
 
+
         toString: function () {
             return 'Norne Engine Version ' + this.version;
         }
     });
-
-    window.norne = norne;
-}());
