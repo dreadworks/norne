@@ -119,6 +119,21 @@ describe('norne.obj', function () {
 	});
 
 
+	it('can be extended by other norne.obj definitions', function () {
+		var obj, base;
+
+		base = { x: 1 };
+		norne.obj.define('base').as(base);
+		norne.obj.define('test').uses('base');
+
+		obj = norne.obj.create('test');
+		expect(obj.x).toEqual(base.x);
+
+		norne.obj.erase('base');
+		norne.obj.erase('test');
+	});
+
+
 	it('may define a prototype', function () {
 		var proto1, obj, inst1, inst2;
 

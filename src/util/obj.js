@@ -15,7 +15,15 @@
 		},
 
 		uses: function () {
-			this.extensions = slice.call(arguments);
+			var that = this;
+		
+			_(arguments).each(function (arg) {
+				if (_(arg).isString()) {
+					arg = norne.obj.create(arg);
+				}
+
+				that.extensions.push(arg);
+			});
 			return this;
 		},
 
