@@ -1,6 +1,10 @@
 
+    /**
+     *  Norne base function. Will get exposed to the
+     *  global namespace.
+     */
     var norne = function (opts, callback) {
-        callback.call(norne, norne.world(opts));
+        callback.call(norne, {} /*norne.world(opts)*/);
     };
 
 
@@ -59,11 +63,20 @@
         },
 
 
+        /**
+         *  Remove a registered module from norne.
+         *
+         *  @param name The modules name
+         *  @type name String
+         */
         unregister: function (name) {
             delete norne[name];
         },
 
 
+        /**
+         *  String representation of norne.
+         */
         toString: function () {
             return 'Norne Engine Version ' + this.version;
         }
