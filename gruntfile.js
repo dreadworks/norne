@@ -20,6 +20,7 @@ module.exports = function (grunt) {
 			// utilities
 			'src/util/obj.js',
 			'src/util/evt.js',
+			'src/util/exc.js',
 
 			'src/outro.js'
 		]
