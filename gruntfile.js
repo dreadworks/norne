@@ -22,6 +22,10 @@ module.exports = function (grunt) {
 			'src/util/evt.js',
 			'src/util/exc.js',
 
+			// core library
+			'src/core/world.js',
+			'src/core/lane.js',
+
 			'src/outro.js'
 		]
 

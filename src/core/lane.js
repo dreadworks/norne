@@ -1,169 +1,103 @@
-(function (norne) {
 
-	var lane;
-
-
-
-	/**
-	 *	binary search for the index of a lane
-	 *	in Array "a" where pos is between
-	 *	a[i].x and a[i+1].x.
-	 */
-	function bsearch(a, pos, x, y) {
-		x = x || 0;
-		y = y || a.length;
-
-		var i = x + Math.floor((y - x) / 2);
-
-		// exit conditions
-		// TODO: maybe this can be solved... nicer
-		if (i === 0) {
-			return 0;
-		}
-
-		if (a[i-1].x < pos && pos < a[i].x) {
-			return i-1;
-		}
-
-		if (i === a.length-1) {
-			return a.length;
-		}
-
-		if (a[i-1].x > pos) {
-			// search in left half
-			return bsearch(a, pos, x, i);
-		} else {
-			// search in right half
-			return bsearch(a, pos, i+1, y);
-		}
-	}
-
-
-
-	lane = norne.obj.define('world.lane').uses(
-		norne.evt
-	).as({
-
-		exc: _({}).extend(norne.exception, {
-			name: 'norne.lane.lane instance'
-		}),
-
-
-		points: [],
-
+	(function (world) {
 
 
 		/**
-		 *	Gets or sets a new position as the relative
-		 *	distance of the viewer from that lane.
-		 *
-		 *	@param pos Optional. A value between 0 and 100.
+		 *	binary search for the index of a lane
+		 *	in Array "a" where pos is between
+		 *	a[i].x and a[i+1].x.
 		 */
-		distance: function (dist) {
-			if (!dist) {
-				return this.dist;
+		function bsearch(a, pos, x, y) {
+			x = x || 0;
+			y = y || a.length;
+
+			var i = x + Math.floor((y - x) / 2);
+
+			// exit conditions
+			// TODO: maybe this can be solved... nicer
+			if (i === 0) {
+				return 0;
 			}
 
-			if (0 <= dist && dist <= 100) {
-				this.dist = dist;
+			if (a[i-1].x < pos && pos < a[i].x) {
+				return i-1;
+			}
+
+			if (i === a.length-1) {
+				return a.length;
+			}
+
+			// recursive call to search
+			// either in the right or left half
+			if (a[i-1].x > pos) {
+				return bsearch(a, pos, x, i);
 			} else {
-				throw _(this.exc).extend({
-					message: 'Please provide a float between 0 and 100'
-				});
+				return bsearch(a, pos, i+1, y);
 			}
-		},
+		}
 
 
 		/**
-		 *
-		 *
-		 *
+		 *	Point objects describe the height
+		 *	of the ground (y) at an arbitrary
+		 *	horizontal position (x).
 		 */
-		offset: function (pos) {
-			return (100 - this.distance() / 100) * pos;
-		},
+		var pointfac = norne.obj
+			.define('core.lane.point')
+			.as({}, function (x, y) {
+				this.x = x;
+				this.y = y;
+			}),
 
 
 		/**
-		 *	Returns the width of a lane in px.
+		 *	Data structure to handle a list
+		 *	of points that describe the ground surface.
 		 *
-		 *	The width of a lane must be calculated and can not be
-		 *	set directly. This is due to the fact, that the lanes
-		 *	width is depending on the virtual distance of the viewer
-		 *	and the outermost right point of an arbitrary lane.
-		 *
-		 *	@returns Width of the lane
+		 *	Encapsulates an array, that stays sorted by
+		 *	its property x (the horizontal position).
 		 */
-		width: function () {
-			/*
-			 *	We need a function that behaves as follows:
-			 *		width(dist=0) = world.width
-			 *		width(dist=100) = viewport.width
-			 *
-			 *	w := width of the world
-			 *	v := width of the viewport
-			 *	d := distance
-			 *
-			 *	=> width(d) = d(v-w)/100 + w
-			 * 
-			 */
-			var world = norne.world, v, w, x;
-			v = world.viewportWidth();
-			w = world.worldWidth();
+		groundfac = norne.obj
+			.define('core.lane.ground')
+			.as({
 
-			x = this.distance() * (v - w);
-			return x / 100 + w;
-		},
+				points: [],
 
+				add: function (p) {
+					var i = bsearch(this.points, p.x);
+					this.points.splice(i, 0, p);
+				},
 
-		addPoint: function () {
-			var points = this.points;
-			_(arguments).each(function (p) {
-				
-				var i = bsearch(points, p.x);
-				points.splice(i, 0, p);
+				max: function () {
+					return this.points[this.points.length-1];
+				}
 
 			});
-		},
 
 
-		getPoints: function (pos) {
-			var i,
-				cpoints = [],
-				points = this.points,
-				right = pos + norne.world.viewportWidth();
+		norne.obj
+			.define('core.lane')
+			.uses('evt')
+			.as({
 
-			i = bsearch(points, pos) - 1;
+				width: function () {
+					return this.ground.max().x;
+				},
 
-			do {
-				i += 1;
-				cpoints.push(points[i]);
-			} while (points[i+1] && points[i].x < right);
+				addPoint: function (x, y) {
+					var p = pointfac.create(x, y);
+					this.ground.add(p);
+					this.trigger('addPoint', p);
+				}
 
-			return cpoints;
-		}
+		/**
+		 *	constructor
+		 */
+		}, function (dist) {
 
-	});
+			this.dist = dist;
+			this.ground = groundfac.create();
 
+		});
 
-	/**
-	 *
-	 *
-	 *
-	 *
-	 */
-	norne.register('lane', {
-
-		exc: _(norne.exception).extend({
-			name: 'norne.lane'
-		}),
-
-		create: function (opts) {
-			lane = _(norne.obj.create('world.lane')).extend(opts);
-			lane.distance(lane.dist);
-			return lane;
-		}
-
-	});
-
-}(norne));
+	}(norne.world));
