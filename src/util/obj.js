@@ -64,6 +64,11 @@
 			 *	@type constructor Function
 			 */
 			as: function (object, constructor) {
+				if (_(object).isFunction()) {
+					constructor = object;
+					object = {};
+				}
+
 				this.base = _({}).extend(object);
 				this.constr = constructor;
 				return this;

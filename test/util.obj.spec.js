@@ -107,6 +107,17 @@ describe('norne.obj', function () {
 	});
 
 
+	it('can be invoked only with a constructor', function () {
+		var obj;
+		obj = norne.obj.define('test').as(function () {
+			this.x = 3;
+		});
+
+		expect(obj.create().x).toEqual(3);
+		norne.obj.erase('test');
+	});
+
+
 	it('constructor always returns the objects instance', function () {
 		var obj, base, inst1;
 
