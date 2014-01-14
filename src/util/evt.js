@@ -4,7 +4,7 @@
 	 */
 	norne.obj.define('evt').as({
 
-		events: {},
+		_events: {},
 
 		/**
 		 *	Register a callback to <evtname>. May be called
@@ -16,12 +16,12 @@
 		 *	@type callback Function
 		 */
 		on: function (evtname, callback) {
-			if (!this.events[evtname]) {
-				this.events[evtname] = [];
+			if (!this._events[evtname]) {
+				this._events[evtname] = [];
 			}
 
-			if (this.events[evtname]) {
-				this.events[evtname].push(callback);
+			if (this._events[evtname]) {
+				this._events[evtname].push(callback);
 			}
 		},
 		
@@ -38,9 +38,9 @@
 		 */
 		off: function (evtname, callback) {
 			if (!callback) {
-				delete this.events[evtname];
+				delete this._events[evtname];
 			} else {
-				this.events[evtname] = _(this.events[evtname]).without(callback);
+				this._events[evtname] = _(this._events[evtname]).without(callback);
 			}
 		},
 
@@ -57,7 +57,7 @@
 			var args = Array.prototype.slice.call(arguments);
 			args.shift();
 
-			_(this.events[evtname]).each(function (handler) {
+			_(this._events[evtname]).each(function (handler) {
 				handler.apply(this, args);
 			});
 		}
