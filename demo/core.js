@@ -5,7 +5,6 @@
 	 *  called by norne
 	 */
 	function init(world) {
-		norne.log.trace('init called', world);
 
 		var lane = norne.lane.create({
 			dist: 30
@@ -34,9 +33,10 @@
 
 
 	$(function () {
-		norne({
+	/*	norne({
 			canvas: $('#norne')[0]
 		}, init);
+	*/
 	});
 
 }());
