@@ -107,6 +107,24 @@ describe('norne.obj', function () {
 	});
 
 
+	it('constructor always returns the objects instance', function () {
+		var obj, base, inst1;
+
+		base = { x: 0 };
+		obj = norne.obj.define('test').as(base, function () {
+			return this.x;
+		});
+
+		inst1 = obj.create();
+		expect(inst1.x).toEqual(base.x);
+
+		inst1 = norne.obj.create('test');
+		expect(inst1.x).toEqual(base.x);
+
+		norne.obj.erase('test');
+	});
+
+
 	it('can be invoked globally', function () {
 		var inst1;
 

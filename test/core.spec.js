@@ -15,7 +15,7 @@ describe('norne.register', function () {
 
 
 	it('handles registration', function () {
-		norne.register('test', {});
+		norne.register('test');
 		expect(norne.test).toBeDefined();
 
 		norne.unregister('test');
@@ -58,6 +58,17 @@ describe('norne.register', function () {
 	});
 
 
+	it('may skip a missing opts parameter', function () {
+		norne.register('test', function () {
+			return 0;
+		});
+		expect(norne.test).toBeDefined();
+		expect(norne.test()).toEqual(0);
+
+		norne.unregister('test');
+	});
+
+
 	it('handles the scope correctly', function () {
 		function f() {
 			this.x = 3;
@@ -91,6 +102,20 @@ describe('norne.register', function () {
 	});
 
 
+	it('passes the functions return value through', function () {
+		function f(norne, x) {
+			return x;
+		}
+
+		var ret;
+
+		norne.register('test', f);
+		ret = norne.test(3);
+		expect(ret).toEqual(3);
+		norne.unregister('test');
+	});
+
+
 	it('prevents me from overwriting an existing module', function () {
 		norne.register('test');
 
@@ -101,4 +126,5 @@ describe('norne.register', function () {
 		expect(catcher).toThrow();
 		norne.unregister('test');
 	});
+
 });
