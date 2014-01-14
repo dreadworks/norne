@@ -22,8 +22,6 @@
 
 			if (this.events[evtname]) {
 				this.events[evtname].push(callback);
-			} else {
-				this.events[evtname] = [evtname];
 			}
 		},
 		
