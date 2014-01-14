@@ -23,6 +23,14 @@ describe('norne.register', function () {
 	});
 
 
+	it('returns correct values for deletion', function () {
+		norne.register('test');
+
+		expect(norne.unregister('test')).toBe(true);
+		expect(norne.unregister('test')).toBe(false);
+	});
+
+
 	it('considers the opts parameter', function () {
 		var x = { foo: 'bar' };
 		norne.register('test', x);
@@ -79,6 +87,18 @@ describe('norne.register', function () {
 		norne.register('test', f);
 		norne.test(3);
 		expect(norne.test.x).toEqual(3);
+		norne.unregister('test');
+	});
+
+
+	it('prevents me from overwriting an existing module', function () {
+		norne.register('test');
+
+		function catcher() {
+			return norne.register('test');
+		}
+
+		expect(catcher).toThrow();
 		norne.unregister('test');
 	});
 });

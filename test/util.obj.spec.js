@@ -20,6 +20,26 @@ describe('norne.obj', function () {
 	});
 
 
+	it('prevents overwrite attempts', function () {
+		norne.obj.define('test');
+
+		function catcher() {
+			return norne.obj.define('test');
+		}
+
+		expect(catcher).toThrow();
+		norne.obj.erase('test');
+	});
+
+
+	it('returns correct values when erasing', function () {
+		norne.obj.define('test');
+
+		expect(norne.obj.erase('test')).toBe(true);
+		expect(norne.obj.erase('test')).toBe(false);
+	});		
+
+
 	it('can create', function () {
 		var obj, base, inst1;
 		expect(norne.obj.create).toBeDefined();

@@ -127,9 +127,10 @@
 			define: function (name) {
 
 				if (this.objs[name]) {
-					throw _({}).extend({
-						message: 'object with that name already exists'
-					});
+					norne.exc.raise(
+						'norne.obj',
+						'This definition already exists (' + name + ')'
+					);
 				}
 
 				this.objs[name] = Object.create(obj);
@@ -144,12 +145,10 @@
 			 *	@type name String
 			 */
 			erase: function (name) {
-				if (!this.objs[name]) {
-					throw _({}).extend({
-						message: 'object with that name does not exist'
-					});
+				if (this.objs[name]) {
+					return delete this.objs[name];	
 				}
-				delete this.objs[name];
+				return false;
 			},
 
 
