@@ -95,6 +95,13 @@
 		 */
 		}, function (dist) {
 
+			if (!_(dist).isNumber()) {
+				norne.exc.raise(
+					'core.lane',
+					'You must provide a correct dist argument'
+				);
+			}
+
 			this.dist = dist;
 			this.ground = groundfac.create();
 

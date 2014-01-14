@@ -1,0 +1,61 @@
+describe('core.world', function () {
+
+	afterEach(function () {
+		norne.world.clear();
+	});
+
+
+	it('is accessible', function () {
+		var world = norne.world();
+		expect(world).toBeDefined();
+	});
+
+
+	it('may be constructed with depth', function () {
+		var world, world2;
+
+		world = norne.world();
+		expect(world.depth).toBeDefined();
+		expect(world.depth()).toEqual(100);
+
+		world = norne.world(50);
+		expect(world.depth()).toEqual(50);
+
+		world2 = norne.world();
+		expect(world.depth()).toEqual(50);
+		expect(world2.depth()).toEqual(100);
+	});
+
+
+	it('saves the worlds', function () {
+		var world, world2;
+
+		world = norne.world();
+		world2 = norne.world();
+
+		expect(norne.world.worlds).toBeDefined();
+		expect(norne.world.worlds.length).toEqual(2);
+	});
+
+
+	it('can clear the worlds', function () {
+		var world = norne.world();
+
+		expect(norne.world.clear).toBeDefined();
+		norne.world.clear();
+		expect(norne.world.worlds.length).toEqual(0);
+	});
+
+
+	it('lets me add lanes', function () {
+		var world, l1;
+
+		world = norne.world();
+		expect(world.addLane).toBeDefined();
+
+		l1 = norne.obj.create('core.lane', 0);
+		l1.addPoint(0, 0);
+		world.addLane(l1);
+	});
+
+});

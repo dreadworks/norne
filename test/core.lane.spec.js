@@ -6,6 +6,15 @@ describe('core.lane', function () {
 	});
 
 
+	it('checks the constructors parameters', function () {
+		function catcher () {
+			norne.obj.create('core.lane');
+		}
+
+		expect(catcher).toThrow();
+	});
+
+
 	it('should let me add points', function () {
 		var lane, point, stub;
 
