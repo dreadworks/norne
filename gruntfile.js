@@ -14,16 +14,19 @@ module.exports = function (grunt) {
 		},
 
 		sources: [
+			'src/intro.js',
 			'src/core.js',
 
 			// utilities
 			'src/util/obj.js',
-			'src/util/exc.js',
 			'src/util/evt.js',
+			'src/util/exc.js',
 
-			// core lib
+			// core library
 			'src/core/world.js',
-			'src/core/lane.js'
+			'src/core/lane.js',
+
+			'src/outro.js'
 		]
 
 	};
@@ -68,7 +71,7 @@ module.exports = function (grunt) {
 			options: {
 				jshintrc: 'jshint.json'
 			},
-			source: ['src/*.js', 'src/*/*.js']
+			source: ['src/core.js', 'src/*/*.js']
 		}
 
 	});

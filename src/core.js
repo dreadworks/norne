@@ -1,14 +1,11 @@
-(function () {
-    'use strict';
 
-    var norne, exc;
-
-
-    norne = function (opts, callback) {
-        callback.call(norne, norne.world(opts));
+    /**
+     *  Norne base function. Will get exposed to the
+     *  global namespace.
+     */
+    var norne = function (opts, callback) {
+        callback.call(norne, {} /*norne.world(opts)*/);
     };
-
-    exc = { toString: function () { return this.name; } };
 
 
     /**
@@ -18,10 +15,6 @@
 
         debug: true,
         version: '0.0.1',
-
-        exc: _({}).extend(exc, {
-            name: 'norne.exception'
-        }),
 
         /**
          * Used to extend norne itself.
@@ -33,20 +26,13 @@
          *                      
          */
         register: function (name, opts, fn) {
-            var exc = _({}).extend(this.exc, { 
-                name: 'norne.registerException' 
-            }), proxy;
-
-            if (!_(name).isString()) {
-                throw _(exc).extend({
-                    message: 'First parameter must be a string.'
-                });
-            }
+            var proxy;
 
             if (norne[name]) {
-                throw _(exc).extend({
-                    message: 'Module with this name already exists (' + name + ')'
-                });
+                norne.exc.raise(
+                    'norne.register',
+                    'Module with this name already exists (' + name + ')'
+                );
             }
 
             if (_(opts).isFunction()) {
@@ -72,14 +58,25 @@
         },
 
 
+        /**
+         *  Remove a registered module from norne.
+         *  Returns true if deletion was successful.
+         *
+         *  @param name The modules name
+         *  @type name String
+         */
         unregister: function (name) {
-            delete norne[name];
+            if (norne[name]) {
+                return delete norne[name];    
+            }
+            return false;
         },
 
+
+        /**
+         *  String representation of norne.
+         */
         toString: function () {
             return 'Norne Engine Version ' + this.version;
         }
     });
-
-    window.norne = norne;
-}());

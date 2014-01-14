@@ -1,19 +1,71 @@
-norne.obj.define('evt').as({
+	
+	/**
+	 *	Factory for event objects.
+	 */
+	norne.obj.define('evt').as({
 
-	events: {},
+		_events: {},
 
-	on: function (evtname, callback) {
+		/**
+		 *	Register a callback to <evtname>. May be called
+		 *	by invoking .trigger(<evtname>).
+		 *
+		 *	@param evtname The name of the event
+		 *	@type evtname String
+		 *	@param callback Gets called upon .trigger(<evtname>)	
+		 *	@type callback Function
+		 */
+		on: function (evtname, callback) {
+			if (!this._events[evtname]) {
+				this._events[evtname] = [];
+			}
 
-	},
+			if (this._events[evtname]) {
+				this._events[evtname].push(callback);
+			}
+		},
+		
+		
+		/**
+		 *	Unregister a callback from <evtname>. If no
+		 *	<callback> gets provided, the event will be
+		 *	removed completely.
+		 *
+		 *	@param evtname The name of the event
+		 *	@type evtname String
+		 *	@param callback {optional} Callback to be removed
+		 *	@type callback Function
+		 */
+		off: function (evtname, callback) {
+			if (!callback) {
+				delete this._events[evtname];
+			} else {
+				this._events[evtname] = _(this._events[evtname]).without(callback);
+			}
+		},
 
-	off: function (evtname) {
 
-	},
+		/**
+		 *	Trigger all callbacks registered under <evtname>.
+		 *	All arguments after evtname will get passed through
+		 *	to every callback.
+		 *
+		 *	@param evtname The name of the event
+		 *	@type evtname String
+		 */
+		trigger: function (evtname) {
+			var args = Array.prototype.slice.call(arguments);
+			args.shift();
 
-	trigger: function (evtname, evt) {
+			_(this._events[evtname]).each(function (handler) {
+				handler.apply(this, args);
+			});
+		}
 
-	}
+	});
 
-});
 
-norne.register('evt', norne.obj.create('evt'));
+	/**
+	 *	Global norne event system for library wide events.
+	 */
+	norne.register('evt', norne.obj.create('evt'));

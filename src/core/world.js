@@ -1,75 +1,57 @@
-(function (norne) {
-
-	var worldWidth = 0;
-
-	norne.register('world', {
-
-		canvas: undefined,
-		lanes: {},
-
-		exc: _({}).extend(norne.exception, {
-			name: 'norne.world'
-		}),
 
 
-		/**
-		 *	Adds a lane to the world.
-		 *
-		 *	@param lane The lane to be added
-		 *	@type lane norne.lane.create()
-		 */
-		addLane: function (lane) {
-			var	width;
+	(function () {
 
-			if (this.lanes[lane.dist]) {
-				throw _(this.exc).extend({
-					message: 'A lane with that distance already exists'
-				});
-			}
+		var worldfac = norne.obj
+			.define('core.world')
+			.uses('evt')
+			.as({
 
-			width = lane.
+				lanes: {},
 
-/*
-			width = 100 * lane.dist + this.viewportWidth();
-			if (width > worldWidth) {
-				worldWidth = width;
-			}
-*/
-			this.lanes[lane.dist] = lane;
-		},
+				depth: function () {
+					return this._depth;
+				},
+
+				width: function () {
+					return this._width;
+				},
+
+				addLane: function (lane) {
+					if (lane.width() > this._width) {
+						this._width = lane.width();
+					}
+
+					this.lanes[lane.dist] = lane;
+				},
+
+				addCharacter: function (character) {
+					// TODO implement when core.character is supplied.
+				}
+
+			}, function (depth) {
+				this._width = 0;
+				this._depth = depth || 100;
+
+			});
 
 
 		/**
-		 *	Returns the worlds canvas width.
-		 */
-		viewportWidth: function () {
-			return this.canvas.clientWidth;
-		},
-
-
-		/**
-		 *	Returns the calculated world width
-		 *	based on the rightmost ground point of
-		 *	all lanes.
-		 */
-		worldWidth: function () {
-			return worldWidth;
-		},
-
-
-		/**
-		 *	Create the world, this starts the renderer.
+		 *	globally accessible proxy to create worlds
 		 *
 		 */
-		create: function () {
-			// TODO
-		}
+		norne.register('world', {
 
-	}, function (norne, opts) {
-		
-		this.canvas = opts.canvas || document.body;
-		return this;
+			worlds: [],
 
-	});
+			clear: function () {
+				this.worlds = [];
+			}
 
-}(norne));
+		}, function (norne, depth) {
+			var world = worldfac.create(depth);
+			this.worlds.push(world);
+			return world;
+		});
+
+	}());

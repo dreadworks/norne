@@ -20,6 +20,26 @@ describe('norne.obj', function () {
 	});
 
 
+	it('prevents overwrite attempts', function () {
+		norne.obj.define('test');
+
+		function catcher() {
+			return norne.obj.define('test');
+		}
+
+		expect(catcher).toThrow();
+		norne.obj.erase('test');
+	});
+
+
+	it('returns correct values when erasing', function () {
+		norne.obj.define('test');
+
+		expect(norne.obj.erase('test')).toBe(true);
+		expect(norne.obj.erase('test')).toBe(false);
+	});		
+
+
 	it('can create', function () {
 		var obj, base, inst1;
 		expect(norne.obj.create).toBeDefined();
@@ -87,6 +107,24 @@ describe('norne.obj', function () {
 	});
 
 
+	it('constructor always returns the objects instance', function () {
+		var obj, base, inst1;
+
+		base = { x: 0 };
+		obj = norne.obj.define('test').as(base, function () {
+			return this.x;
+		});
+
+		inst1 = obj.create();
+		expect(inst1.x).toEqual(base.x);
+
+		inst1 = norne.obj.create('test');
+		expect(inst1.x).toEqual(base.x);
+
+		norne.obj.erase('test');
+	});
+
+
 	it('can be invoked globally', function () {
 		var inst1;
 
@@ -115,6 +153,21 @@ describe('norne.obj', function () {
 		base.x = 2;
 		expect(obj.x).toEqual(0);
 
+		norne.obj.erase('test');
+	});
+
+
+	it('can be extended by other norne.obj definitions', function () {
+		var obj, base;
+
+		base = { x: 1 };
+		norne.obj.define('base').as(base);
+		norne.obj.define('test').uses('base');
+
+		obj = norne.obj.create('test');
+		expect(obj.x).toEqual(base.x);
+
+		norne.obj.erase('base');
 		norne.obj.erase('test');
 	});
 
