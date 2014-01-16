@@ -4,8 +4,6 @@
 	 */
 	norne.obj.define('evt').as({
 
-		_events: {},
-
 		/**
 		 *	Register a callback to <evtname>. May be called
 		 *	by invoking .trigger(<evtname>).
@@ -53,15 +51,21 @@
 		 *	@param evtname The name of the event
 		 *	@type evtname String
 		 */
-		trigger: function (evtname) {
-			var args = Array.prototype.slice.call(arguments);
+		trigger: function (evtname, context) {
+			var args, that;
+
+			that = context || this;
+			args = Array.prototype.slice.call(arguments);
 			args.shift();
 
 			_(this._events[evtname]).each(function (handler) {
-				handler.apply(this, args);
+				handler.apply(that, args);
 			});
 		}
 
+	}, function () {
+		console.info('created new evt obj');
+		this._events = {};
 	});
 
 

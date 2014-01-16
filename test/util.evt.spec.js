@@ -75,4 +75,23 @@ describe('norne.evt', function () {
 		expect(stub.callback).toHaveBeenCalledWith(a, b);
 	});
 
+
+	it('passes the correct context to the callbacks', function () {
+		var context, stub;
+
+		stub = {
+			callback: function () {
+				expect(this).toEqual(norne);
+			}
+		};
+
+		spyOn(stub, 'callback');
+		norne.evt.on('test', stub.callback);
+
+		norne.evt.trigger('test');
+		norne.evt.off('test');
+
+		expect(stub.callback).toHaveBeenCalled();
+	});
+
 });
