@@ -27,6 +27,18 @@ describe('core.world', function () {
 	});
 
 
+	it('can handle depth() as a setter', function () {
+		var world, depth;
+		depth = 50;
+
+		world = norne.world();
+		expect(world.depth()).toEqual(100);
+
+		expect(world.depth(depth)).toEqual(depth);
+		expect(world.depth()).toEqual(depth); 
+	});
+
+
 	it('saves the worlds', function () {
 		var world, world2;
 
@@ -56,6 +68,9 @@ describe('core.world', function () {
 		l1 = norne.obj.create('core.lane', 0);
 		l1.addPoint(0, 0);
 		world.addLane(l1);
+
+		norne.world.clear();
 	});
+
 
 });
