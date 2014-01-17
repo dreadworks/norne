@@ -45,6 +45,12 @@
 				},
 
 
+				/**
+				 *	Retrieve data via ajax.
+				 *
+				 *	@param url Resource
+				 *	@type url String
+				 */
 				get: function (url) {
 					var xhr;
 
