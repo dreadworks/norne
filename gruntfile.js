@@ -25,6 +25,9 @@ module.exports = function (grunt) {
 		'core/lane',
 		'core/character',
 
+		// render stuff
+		'render/canvas',
+
 		'outro'
 	];
 
