@@ -163,6 +163,13 @@
 			create: function(name) {
 				var args, context;
 
+				if (!_(this.objs[name]).isObject()) {
+					norne.exc.raise(
+						'norne.obj',
+						'create: Object is not defined (' + name +')'
+					);
+				}
+
 				args = _(arguments).toArray();
 				name = args.shift();
 				context = this.objs[name];
