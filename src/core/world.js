@@ -2,21 +2,57 @@
 
 	(function () {
 
+		/**
+		 *	Instances of core.world represent
+		 *	a norne world consisting of lanes,
+		 *	a character and decorative elements.
+		 */
 		var worldfac = norne.obj
 			.define('core.world')
 			.uses('evt')
 			.as({
 
-				lanes: {},
 
-				depth: function () {
+				/**
+				 *	This gets or sets the worlds depth.
+				 *	It describes how deep or flat the world
+				 *	appears. If the depth is 100, the lane
+				 *	with dist 100 gets mapped to the viewports
+				 *	size and is static.
+				 *
+				 *	@param depth {optional} Value between 0 and 100
+				 *	@type depth Number
+				 */
+				depth: function (depth) {
+					if (depth < 0 || 100 < depth) {
+						norne.exc.raise(
+							'norne.world',
+							'The depth must be a value between 0 and 100'
+						);
+					}
+
+					if (depth) {
+						this._depth = depth;
+					}
 					return this._depth;
 				},
 
+
+				/**
+				 *	The worlds width is the outermost
+				 *	right point x of any added lane.
+				 */
 				width: function () {
 					return this._width;
 				},
 
+
+				/**
+				 *	Add a lane to the world.
+				 *
+				 *	@param lane The lane to be added
+				 *	@type lane norne.obj.create('core.lane')
+				 */
 				addLane: function (lane) {
 					if (lane.width() > this._width) {
 						this._width = lane.width();
@@ -25,14 +61,19 @@
 					this.lanes[lane.dist] = lane;
 				},
 
+
 				addCharacter: function (character) {
 					// TODO implement when core.character is supplied.
 				}
 
 			}, function (depth) {
+
+				// private
 				this._width = 0;
 				this._depth = depth || 100;
 
+				// public
+				this.lanes = {};
 			});
 
 

@@ -37,15 +37,7 @@
 			 *	@type arguments Object
 			 */
 			uses: function () {
-				var that = this;
-			
-				_(arguments).each(function (arg) {
-					if (_(arg).isString()) {
-						arg = norne.obj.create(arg);
-					}
-
-					that.extensions.push(arg);
-				});
+				this.extensions = _(arguments).toArray();
 				return this;
 			},
 
@@ -64,6 +56,11 @@
 			 *	@type constructor Function
 			 */
 			as: function (object, constructor) {
+				if (_(object).isFunction()) {
+					constructor = object;
+					object = {};
+				}
+
 				this.base = _({}).extend(object);
 				this.constr = constructor;
 				return this;
@@ -78,6 +75,9 @@
 
 				// copy extensions
 				_(this.extensions).each(function (e) {
+					if (_(e).isString()) {
+						e = norne.obj.create(e);
+					}
 					_(that).extend(e);
 				});
 
@@ -163,7 +163,7 @@
 			create: function(name) {
 				var args, context;
 
-				args = Array.prototype.slice.call(arguments);
+				args = _(arguments).toArray();
 				name = args.shift();
 				context = this.objs[name];
 

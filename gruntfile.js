@@ -1,7 +1,8 @@
 module.exports = function (grunt) {
 
-	var config, pgk;
+	var config, pgk, port;
 
+	port = 8080;
 	pkg = grunt.file.readJSON('package.json');
 
 	config =  {
@@ -21,6 +22,7 @@ module.exports = function (grunt) {
 			'src/util/obj.js',
 			'src/util/evt.js',
 			'src/util/exc.js',
+			'src/util/xhr.js',
 
 			// core library
 			'src/core/world.js',
@@ -62,7 +64,8 @@ module.exports = function (grunt) {
 				options: {
 					specs: 'test/*.spec.js',
 					template: 'test/grunt.tmpl',
-					vendor: 'lib/*.js'
+					vendor: 'lib/*.js',
+					'--web-security': false
 				}
 			}
 		},
@@ -72,6 +75,16 @@ module.exports = function (grunt) {
 				jshintrc: 'jshint.json'
 			},
 			source: ['src/core.js', 'src/*/*.js']
+		},
+
+		connect: {
+			test: {
+				options: {
+					port: port,
+					base: 'test/assets',
+					keepalive: false
+				}
+			}
 		}
 
 	});
@@ -81,9 +94,10 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-jasmine');
+	grunt.loadNpmTasks('grunt-contrib-connect');
 
 
 	grunt.registerTask('dev', ['clean:dev', 'concat:dev']);
-	grunt.registerTask('test', ['dev', 'jshint', 'jasmine:dev']);
+	grunt.registerTask('test', ['dev', 'jshint', 'connect:test', 'jasmine:dev']);
 
 };

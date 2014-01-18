@@ -47,4 +47,53 @@ describe('core.lane', function () {
 		expect(lane.width()).toEqual(max);
 	});
 
+
+	it('lets me retrieve points (sorted) from a certain range', function () {
+		var lane, p_true, p_false, p_union, p_diff, points;
+
+		// should be inside the range
+		p_true = [
+			{x: 30, y: 0}, {x: -50, y: 0}, {x: 100, y: 0}, {x: 60, y: 0}
+		];
+
+		// should be outside the range
+		p_false = [
+			{x: 2000, y: 0}, {x: 101, y: 0}, {x: -80, y: 0}
+		];
+
+		// all elements sorted
+		p_union = _(_.union(p_true, p_false)).sortBy(function (p) {
+			return p.x;
+		});
+
+		// just elements in range, sorted
+		p_diff = _(p_union).difference(p_false);
+
+		lane = norne.obj.create('core.lane', 0);
+		_(_.union(p_false, p_true)).each(function (p) {
+			lane.addPoint(p.x, p.y);
+		});
+
+		// without parameters, all points must be returned
+		points = lane.getPoints();
+		_(p_union).each(function (p, i) {
+			expect(points[i].x).toEqual(p.x);
+			expect(points[i].y).toEqual(p.y);
+		});
+
+		// now with params, p[x-1] until p[y+1] must be returned
+		points = lane.getPoints(0, 60);
+		_(p_diff).each(function (p, i) {
+			expect(points[i].x).toEqual(p.x);
+			expect(points[i].y).toEqual(p.y);
+		});
+
+	});
+
+
+	it('should retrieve correct points in extreme cases', function () {
+		// TODO test for cases like one point added at 0,0
+		// or the range is outside defined points etc.
+	});
+
 });
