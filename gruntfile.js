@@ -1,9 +1,31 @@
 module.exports = function (grunt) {
 
-	var config, pgk, port;
+	var config, sources, pgk, port, _;
+
+	_ = require('underscore');
 
 	port = 8080;
 	pkg = grunt.file.readJSON('package.json');
+	sources = [
+		'intro',
+
+		// norne and norne.register
+		'core',
+		'register',
+
+		// utilities
+		'util/obj',
+		'util/evt',
+		'util/exc',
+		'util/xhr',
+
+		// core library
+		'core/norne',
+		'core/world',
+		'core/lane',
+
+		'outro'
+	];
 
 	config =  {
 
@@ -14,25 +36,19 @@ module.exports = function (grunt) {
 			test: 'text/'+ pkg.name +'.js'
 		},
 
-		sources: [
-			'src/intro.js',
-			'src/core.js',
+		sources: (function () {
+			return _(sources).map(function (source) {
+				return 'src/' + source + '.js';
+			});
+		}()),
 
-			// utilities
-			'src/util/obj.js',
-			'src/util/evt.js',
-			'src/util/exc.js',
-			'src/util/xhr.js',
-
-			// core library
-			'src/core/world.js',
-			'src/core/lane.js',
-
-			'src/outro.js'
-		]
+		tests: (function () {
+			return _(sources).map(function (source) {
+				return 'test/' + source + '.spec.js';
+			});
+		}())
 
 	};
-
 
 	grunt.initConfig({
 		pkg: config.pkg,
@@ -54,7 +70,7 @@ module.exports = function (grunt) {
 		},
 
 		watch: {
-			files: ['src/**/*.js', 'test/*.spec.js'],
+			files: ['src/**/*.js', 'test/*.spec.js', 'test/**/*.spec.js'],
 			tasks: 'test'
 		},
 
@@ -62,7 +78,7 @@ module.exports = function (grunt) {
 			dev: {
 				src: config.target.dev,
 				options: {
-					specs: 'test/*.spec.js',
+					specs: config.tests,
 					template: 'test/grunt.tmpl',
 					vendor: 'lib/*.js',
 					'--web-security': false
