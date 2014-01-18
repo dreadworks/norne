@@ -70,7 +70,7 @@
                     "Missing opts parameters " + optsparams
                 );
             }
- 
+  
             that = this;
             _(this).extend(opts);
 
