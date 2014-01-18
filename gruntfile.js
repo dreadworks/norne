@@ -23,6 +23,7 @@ module.exports = function (grunt) {
 		'core/norne',
 		'core/world',
 		'core/lane',
+		'core/character',
 
 		'outro'
 	];

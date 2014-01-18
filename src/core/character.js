@@ -16,6 +16,7 @@
 
             _(this).extend(defaults, opts);
 
+
         });
 
 
@@ -69,7 +70,7 @@
                     "Missing opts parameters " + optsparams
                 );
             }
-
+ 
             that = this;
             _(this).extend(opts);
 

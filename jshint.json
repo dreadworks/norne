@@ -13,6 +13,7 @@
     "browser" : true,
     "globals" : {
         "_": true,
-        "norne": true
+        "norne": true,
+        "console": true
     }
 }
