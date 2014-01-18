@@ -32,7 +32,7 @@
 		 *
 		 */
 		norne.obj
-			.define('render.world')
+			.define('render.canvas')
 			.uses('evt')
 			.as({
 

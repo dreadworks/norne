@@ -20,9 +20,12 @@ module.exports = function (grunt) {
 		'util/xhr',
 
 		// core library
-		'core/norne',
+		'core/env',
 		'core/world',
 		'core/lane',
+
+		// renderer
+		'render/canvas',
 
 		'outro'
 	];
