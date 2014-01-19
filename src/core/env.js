@@ -1,26 +1,42 @@
 
-	norne.obj
-		.define('core.env')
-		.as({
+	(function () {
 
-			setRenderer: function (name, canvas) {
-				if (!_(canvas).isElement()) {
-					norne.exc.raise(
-						'norne',
-						'setRenderer: no canvas provided'
-					);
-				}
+		var exc;
+		exc = _(norne.exc.raise).partial('norne');
 
-				this.renderer = norne.obj.create(name, this.world);
-			}
+		norne.obj
+			.define('core.env')
+			.as({
 
-		}, function (opts) {
+				setRenderer: function (name, canvas) {
+					if (!_(canvas).isElement()) {
+						exc('setRenderer: no canvas provided');
+					}
 
-			var defaults = {
-				depth: 100
-			};
+					this.renderer = norne.obj.create(name, this.world);
+					return this.renderer;
+				},
 
-			opts = _(defaults).extend(opts);
-			this.world = norne.world(opts.depth);
 
-		});
+				createLane: function (dist) {
+					var lane;
+
+					lane = norne.obj.create('core.lane', dist);
+					this.world.addLane(lane);
+
+					return lane;
+				},
+
+
+			}, function (opts) {
+
+				var defaults = {
+					depth: 100
+				};
+
+				opts = _(defaults).extend(opts);
+				this.world = norne.world(opts.depth);
+
+			});
+
+	}());

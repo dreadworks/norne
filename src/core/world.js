@@ -54,9 +54,13 @@
 				 *	@type lane norne.obj.create('core.lane')
 				 */
 				addLane: function (lane) {
-					if (lane.width() > this._width) {
-						this._width = lane.width();
-					}
+					var that = this;
+
+					lane.on('addPoint', function () {
+						if (lane.width() > that._width) {
+							that._width = lane.width();
+						}
+					});
 
 					this.lanes[lane.dist] = lane;
 				},
@@ -92,6 +96,7 @@
 		}, function (norne, depth) {
 			var world = worldfac.create(depth);
 			this.worlds.push(world);
+			norne.trigger('addWorld', world, this.worlds.length-1);
 			return world;
 		});
 
