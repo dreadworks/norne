@@ -73,7 +73,7 @@ module.exports = function (grunt) {
 		},
 
 		watch: {
-			files: ['src/**/*.js', 'test/*.spec.js', 'test/**/*.spec.js'],
+			files: _(config.sources).union(config.tests),
 			tasks: 'test'
 		},
 
@@ -93,7 +93,7 @@ module.exports = function (grunt) {
 			options: {
 				jshintrc: 'jshint.json'
 			},
-			source: ['src/core.js', 'src/*/*.js']
+			source: _(config.sources).without('src/intro.js', 'src/outro.js')
 		},
 
 		connect: {
