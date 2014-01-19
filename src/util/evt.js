@@ -72,4 +72,4 @@
 	/**
 	 *	Global norne event system for library wide events.
 	 */
-	norne.register('evt', norne.obj.create('evt'));
+	_(norne).extend(norne.obj.create('evt'));
