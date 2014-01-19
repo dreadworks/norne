@@ -1,6 +1,8 @@
 
-	(function (world) {
+	(function () {
 
+
+		var exc;
 
 		/**
 		 *	Binary search for the index of a lane points x
@@ -19,6 +21,10 @@
 			// or the array is one in size.
 			if (i === 0) {
 				return (y === 1 && a[0].x < pos) ? 1:0;
+			}
+
+			if (i === a.length) {
+				return i;
 			}
 
 			// searched index got found: return
@@ -142,13 +148,29 @@
 				 *	from position x and the last point the
 				 *	next point right from position y.
 				 *
+				 *	The pixel value takes the dist property
+				 *	of the lane in count.
+				 *
 				 *	@param x {optional} Left delimiter of the range
 				 *	@type x Number
 				 *	@param y {optional} Right delimiter of the range
 				 *	@type y Number
 				 */
 				getPoints: function (x, y) {
-					return this.ground.get(x,y);
+					var points;
+
+					points = this.ground.get(x,y);
+					points = _(points).map(function (p) {
+						_.each(_(points).keys(), function (x) {
+
+
+
+						});
+
+						return p;
+					});
+
+					return points;
 				}
 
 		/**
@@ -168,4 +190,4 @@
 
 		});
 
-	}(norne.world));
+	}());

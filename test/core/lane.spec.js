@@ -48,7 +48,47 @@ describe('core.lane', function () {
 	});
 
 
-	it('lets me retrieve points (sorted) from a certain range', function () {
+	it('handles sorted insertion', function () {
+		var lane, points, range;
+
+		lane = norne.obj.create('core.lane', 0);
+		points = [{x: -30, y: 0}, {x: 40, y: 0}, {x: 100, y: 0}];
+
+		_(points).each(function (p) {
+			lane.addPoint(p.x, p.y);
+		});
+
+		range = lane.getPoints();
+		_(points).each(function (p, i) {
+			expect(range[i].x).toEqual(p.x);
+			expect(range[i].y).toEqual(p.y);
+		});
+	});
+
+
+	it('handles unsorted insertion', function () {
+		var lane, points, range;
+
+		lane = norne.obj.create('core.lane', 0);
+		points = [{x: 30, y: 0}, {x: -50, y: 0}, {x: 100, y: 0}, {x: 60, y: 0}];
+
+		_(points).each(function (p) {
+			lane.addPoint(p.x, p.y);
+		});
+
+		range = lane.getPoints();
+		points = _(points).sortBy(function (p) {
+			return p.x;
+		});
+
+		_(points).each(function (p, i) {
+			expect(range[i].x).toEqual(p.x);
+			expect(range[i].y).toEqual(p.y);
+		});
+	});
+
+
+	it('lets me retrieve from range', function () {
 		var lane, p_true, p_false, p_union, p_diff, points;
 
 		// should be inside the range
@@ -74,20 +114,12 @@ describe('core.lane', function () {
 			lane.addPoint(p.x, p.y);
 		});
 
-		// without parameters, all points must be returned
-		points = lane.getPoints();
-		_(p_union).each(function (p, i) {
-			expect(points[i].x).toEqual(p.x);
-			expect(points[i].y).toEqual(p.y);
-		});
-
 		// now with params, p[x-1] until p[y+1] must be returned
 		points = lane.getPoints(0, 60);
 		_(p_diff).each(function (p, i) {
 			expect(points[i].x).toEqual(p.x);
 			expect(points[i].y).toEqual(p.y);
 		});
-
 	});
 
 
