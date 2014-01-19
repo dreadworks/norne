@@ -112,7 +112,7 @@
 		 */
 		norne.obj
 			.define('core.lane')
-			.uses('evt')
+			.uses('util.evt')
 			.as({
 
 				/**

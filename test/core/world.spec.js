@@ -8,7 +8,7 @@ describe('core.world', function () {
 	it('is accessible', function () {
 		var world = norne.world();
 		expect(world).toBeDefined();
-	});
+	}); 
 
 
 	it('may be constructed with depth', function () {

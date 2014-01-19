@@ -11,7 +11,7 @@
 		 */
 		brokerfac = norne.obj
 			.define('render.canvas.broker')
-			.uses('evt')
+			.uses('util.evt')
 			.as({
 
 				somethingHappened: function () {
@@ -33,7 +33,7 @@
 		 */
 		norne.obj
 			.define('render.canvas')
-			.uses('evt')
+			.uses('util.evt')
 			.as({
 
 

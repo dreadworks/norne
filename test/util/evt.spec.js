@@ -100,8 +100,8 @@ describe('norne.evt', function () {
 	it('handles callbacks autonomous', function () {
 		var evt1, evt2;
 
-		evt1 = norne.obj.create('evt');
-		evt2 = norne.obj.create('evt');
+		evt1 = norne.obj.create('util.evt');
+		evt2 = norne.obj.create('util.evt');
 
 		evt1.on('test', stub.callback);
 		evt2.on('test', stub.anotherCallback);
@@ -115,8 +115,8 @@ describe('norne.evt', function () {
 	it('works with norne.obj.define', function () {
 		var fac1, fac2, evt1, evt2, evt3;
 
-		fac1 = norne.obj.define('evt1').uses('evt');
-		fac2 = norne.obj.define('evt2').uses('evt');
+		fac1 = norne.obj.define('evt1').uses('util.evt');
+		fac2 = norne.obj.define('evt2').uses('util.evt');
 
 		evt1 = fac1.create();
 		evt2 = fac1.create();

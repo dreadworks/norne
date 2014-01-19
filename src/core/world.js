@@ -9,7 +9,7 @@
 		 */
 		var worldfac = norne.obj
 			.define('core.world')
-			.uses('evt')
+			.uses('util.evt')
 			.as({
 
 
