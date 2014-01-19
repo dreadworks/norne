@@ -1,13 +1,16 @@
 
 
 	(function () {
+		var worldfac, exc;
+
+		exc = _(norne.exc.raise).partial('norne.world');
 
 		/**
 		 *	Instances of core.world represent
 		 *	a norne world consisting of lanes,
 		 *	a character and decorative elements.
 		 */
-		var worldfac = norne.obj
+		worldfac = norne.obj
 			.define('core.world')
 			.uses('util.evt')
 			.as({
@@ -25,10 +28,7 @@
 				 */
 				depth: function (depth) {
 					if (depth < 0 || 100 < depth) {
-						norne.exc.raise(
-							'norne.world',
-							'The depth must be a value between 0 and 100'
-						);
+						exc('The depth must be a value between 0 and 100');
 					}
 
 					if (depth) {
@@ -54,15 +54,26 @@
 				 *	@type lane norne.obj.create('core.lane')
 				 */
 				addLane: function (lane) {
-					var that = this;
+					var that;
 
+					if (!lane) {
+						exc('You must provide a lane');
+					}
+
+					if (this.lanes[lane.dist]) {
+						exc('A lane in dist '+ lane.dist +' is already defined');
+					}
+
+					that = this;
 					lane.on('addPoint', function () {
 						if (lane.width() > that._width) {
 							that._width = lane.width();
 						}
+						that.trigger('addPoint', this, lane.dist);
 					});
 
-					this.lanes[lane.dist] = lane;
+					that.lanes[lane.dist] = lane;
+					that.trigger('addLane', this);
 				},
 
 

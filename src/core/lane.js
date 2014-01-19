@@ -157,20 +157,7 @@
 				 *	@type y Number
 				 */
 				getPoints: function (x, y) {
-					var points;
-
-					points = this.ground.get(x,y);
-					points = _(points).map(function (p) {
-						_.each(_(points).keys(), function (x) {
-
-
-
-						});
-
-						return p;
-					});
-
-					return points;
+					return this.ground.get(x,y);
 				}
 
 		/**
