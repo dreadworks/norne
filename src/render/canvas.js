@@ -168,7 +168,11 @@
 					if (b > 255) { b = 255; }
 					else if (b < 0) { b = 0; }
 
-					return ((g << 8) | (b) | (r << 16)).toString(16);
+					r = r.toString(16).length === 1 ? '0' + r.toString(16) : r.toString(16);
+					g = g.toString(16).length === 1 ? '0' + g.toString(16) : g.toString(16);
+					b = b.toString(16).length === 1 ? '0' + b.toString(16) : b.toString(16);
+
+					return r + g + b;
 				},
 
 				// Creates a LinearGradient out of the given
