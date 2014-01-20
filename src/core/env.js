@@ -13,7 +13,10 @@
 						exc('setRenderer: no canvas provided');
 					}
 
-					this.renderer = norne.obj.create(name, this.world);
+					this.renderer = norne.obj.create(
+						name, this.world, canvas
+					);
+					
 					return this.renderer;
 				},
 

@@ -2,16 +2,16 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8"/>
-        <title>A norne tree</title>
+        <title>Some fancy trees</title>
 
         <script type="text/javascript" src="lib/_-1.5.2.js"></script>
-		<script type="text/javascript" src="lib/jquery-1.10.2.js"></script>
+        <script type="text/javascript" src="lib/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="lib/sketch.js"></script>
-		<script type="text/javascript" src="lib/physicsjs-full-0.5.3.js"></script>
-        <script type="text/javascript" src="tree.js"></script>
+        <script type="text/javascript" src="lib/physicsjs-full-0.5.3.js"></script>
+        <script type="text/javascript" src="trees.js"></script>
 
         <style type="text/css">
-		
+        
         body {
             background: #eee;
             font: 14px/1.3em sans-serif;
@@ -31,23 +31,23 @@
             font-size: 4em;
             color: #ccc;
             text-transform: uppercase;
-            float: left;
+            display: block;
         }
 
-		#viewport {
-			margin: 50px auto 0;
-			border: 1px solid #ccc;
+        canvas {
+            display: inline-block;
+            margin: 5px 20px;
+            width: 300px;
+            height: 400px;
+            border: 1px solid #ccc;
             background: white;
-            display: block;
             clear: both;
-		}
+        }
 
         </style>
     </head>
     <body>
-        <h1>Norne Tree Prototype</h1>
 
-        <canvas id="viewport"></canvas>
         <div id="stats">
             steps: <span id="stats_steps"></span>
         </div>
@@ -56,6 +56,9 @@
             <button class='go'>go</button>
             <button class='pause'>pause</button>
         </div>
-		
+
+        
+        
+        
     </body>
 </html>

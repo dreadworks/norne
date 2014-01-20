@@ -23,6 +23,7 @@ module.exports = function (grunt) {
 		'core/env',
 		'core/world',
 		'core/lane',
+		'core/character',
 
 		// renderer
 		'render/canvas',

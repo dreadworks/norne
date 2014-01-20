@@ -69,16 +69,28 @@
 						if (lane.width() > that._width) {
 							that._width = lane.width();
 						}
-						that.trigger('addPoint', this, lane.dist);
+						that.trigger('laneChanged', lane.dist);
 					});
 
 					that.lanes[lane.dist] = lane;
-					that.trigger('addLane', this);
+					that.trigger('laneAdded', lane.dist);
 				},
 
 
-				addCharacter: function (character) {
-					// TODO implement when core.character is supplied.
+				/**
+				 *	Returns the ground points from a 
+				 *	lane. The values are already transformed
+				 *	based on the lanes dist property.
+				 */
+				getLanePoints: function (dist, x, y) {
+					var lane, points;
+					
+					lane = this.lanes[dist];
+					points = lane.getPoints(x, y);
+
+					console.info(points);
+
+					return points;
 				}
 
 			}, function (depth) {
