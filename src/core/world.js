@@ -51,7 +51,7 @@
 				 *	Add a lane to the world.
 				 *
 				 *	@param lane The lane to be added
-				 *	@type lane norne.obj.create('core.lane')
+				 *	@type lane norne.obj.create('data.lane')
 				 */
 				addLane: function (lane) {
 					var that;

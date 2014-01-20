@@ -65,7 +65,7 @@ describe('core.world', function () {
 		world = norne.world();
 		expect(world.addLane).toBeDefined();
 
-		l1 = norne.obj.create('core.lane', 0);
+		l1 = norne.obj.create('data.lane', 0);
 		l1.addPoint(0, 0);
 		world.addLane(l1);
 
@@ -78,7 +78,7 @@ describe('core.world', function () {
 
 		world = norne.world();
 		function addLane() {
-			var lane = norne.obj.create('core.lane', 0);
+			var lane = norne.obj.create('data.lane', 0);
 			world.addLane(lane);
 		}
 

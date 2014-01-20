@@ -24,7 +24,7 @@
 				createLane: function (dist) {
 					var lane;
 
-					lane = norne.obj.create('core.lane', dist);
+					lane = norne.obj.create('data.lane', dist);
 					this.world.addLane(lane);
 
 					return lane;

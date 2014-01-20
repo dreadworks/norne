@@ -9,11 +9,11 @@ module.exports = function (grunt) {
 	sources = [
 		'intro',
 
-		// norne and norne.register
+		// exposed norne object
 		'core',
-		'register',
 
 		// utilities
+		'util/register',
 		'util/obj',
 		'util/evt',
 		'util/exc',
@@ -22,8 +22,10 @@ module.exports = function (grunt) {
 		// core library
 		'core/env',
 		'core/world',
-		'core/lane',
-		'core/character',
+
+		// data objects (the model)
+		'data/lane',
+		'data/character',
 
 		// renderer
 		'render/canvas',

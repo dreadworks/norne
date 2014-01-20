@@ -1,14 +1,14 @@
-describe('core.lane', function () {
+describe('data.lane', function () {
 
 	it('should be accessible', function () {
-		var lanefac = norne.obj.get('core.lane');
+		var lanefac = norne.obj.get('data.lane');
 		expect(lanefac).toBeDefined();
 	});
 
 
 	it('checks the constructors parameters', function () {
 		function catcher () {
-			norne.obj.create('core.lane');
+			norne.obj.create('data.lane');
 		}
 
 		expect(catcher).toThrow();
@@ -18,7 +18,7 @@ describe('core.lane', function () {
 	it('should let me add points', function () {
 		var lane, point, stub;
 
-		lane = norne.obj.create('core.lane', 0);
+		lane = norne.obj.create('data.lane', 0);
 		point = { x: 50, y: 100};
 		stub = {
 			evt: function (p) {
@@ -37,7 +37,7 @@ describe('core.lane', function () {
 
 
 	it('returns the correct width', function () {
-		var lane = norne.obj.create('core.lane', 0),
+		var lane = norne.obj.create('data.lane', 0),
 			max = 100;
 
 		lane.addPoint(10, 0);
@@ -51,7 +51,7 @@ describe('core.lane', function () {
 	it('handles sorted insertion', function () {
 		var lane, points, range;
 
-		lane = norne.obj.create('core.lane', 0);
+		lane = norne.obj.create('data.lane', 0);
 		points = [{x: -30, y: 0}, {x: 40, y: 0}, {x: 100, y: 0}];
 
 		_(points).each(function (p) {
@@ -69,7 +69,7 @@ describe('core.lane', function () {
 	it('handles unsorted insertion', function () {
 		var lane, points, range;
 
-		lane = norne.obj.create('core.lane', 0);
+		lane = norne.obj.create('data.lane', 0);
 		points = [{x: 30, y: 0}, {x: -50, y: 0}, {x: 100, y: 0}, {x: 60, y: 0}];
 
 		_(points).each(function (p) {
@@ -109,7 +109,7 @@ describe('core.lane', function () {
 		// just elements in range, sorted
 		p_diff = _(p_union).difference(p_false);
 
-		lane = norne.obj.create('core.lane', 0);
+		lane = norne.obj.create('data.lane', 0);
 		_(_.union(p_false, p_true)).each(function (p) {
 			lane.addPoint(p.x, p.y);
 		});

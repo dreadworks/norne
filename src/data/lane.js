@@ -48,7 +48,7 @@
 		 *	horizontal position (x).
 		 */
 		var pointfac = norne.obj
-			.define('core.lane.point')
+			.define('data.lane.point')
 			.as({}, function (x, y) {
 				this.x = x;
 				this.y = y;
@@ -63,7 +63,7 @@
 		 *	its property x (the horizontal position).
 		 */
 		groundfac = norne.obj
-			.define('core.lane.ground')
+			.define('data.lane.ground')
 			.as({
 
 				add: function (p) {
@@ -111,7 +111,7 @@
 		 *	lanes. They are observable via evt.
 		 */
 		norne.obj
-			.define('core.lane')
+			.define('data.lane')
 			.uses('util.evt')
 			.as({
 
@@ -167,7 +167,7 @@
 
 			if (!_(dist).isNumber()) {
 				norne.exc.raise(
-					'core.lane',
+					'data.lane',
 					'You must provide a correct dist argument'
 				);
 			}
