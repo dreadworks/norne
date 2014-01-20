@@ -9,14 +9,19 @@
 			.as({
 
 				setRenderer: function (name, canvas) {
+					var that;
+
 					if (!_(canvas).isElement()) {
 						exc('setRenderer: no canvas provided');
 					}
 
-					this.renderer = norne.obj.create(
-						name, this.world, canvas
-					);
-					
+					that = this;
+					this.renderer = norne.obj.create(name, {
+						world: this.world, 
+						canvas: canvas,
+						delay: 1000/that.opts.fps
+					});
+
 					return this.renderer;
 				},
 
@@ -34,11 +39,12 @@
 			}, function (opts) {
 
 				var defaults = {
-					depth: 100
+					depth: 100,
+					fps: 30
 				};
 
-				opts = _(defaults).extend(opts);
-				this.world = norne.world(opts.depth);
+				this.opts = _(defaults).extend(opts);
+				this.world = norne.world(this.opts.depth);
 
 			});
 

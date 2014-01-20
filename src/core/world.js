@@ -48,6 +48,16 @@
 
 
 				/**
+				 *	Describes the users current position
+				 *	in the world.
+				 */
+				pos: function () {
+					// TODO to be implemented.
+					return 0;
+				},
+
+
+				/**
 				 *	Add a lane to the world.
 				 *
 				 *	@param lane The lane to be added

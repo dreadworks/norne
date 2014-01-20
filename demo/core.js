@@ -6,7 +6,11 @@
 
 
 			// build a norne instance
-			norne({ depth: 100 }, function (env) {
+			norne({ 
+				depth: 100,
+				fps: 25,
+
+			}, function (env) {
 				var lane;
 
 				env.setRenderer('render.canvas', $('#norne')[0]);

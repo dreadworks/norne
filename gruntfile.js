@@ -27,7 +27,9 @@ module.exports = function (grunt) {
 		'data/lane',
 		'data/character',
 
-		// renderer
+		// rendering
+		'render/clock',
+		'render/broker',
 		'render/canvas',
 
 		'outro'

@@ -2,66 +2,9 @@
 
 	(function () {
 
-		var brokerfac, exc;
+		var exc;
 
 		exc = _(norne.exc.raise).partial('render.canvas');
-
-		/**
-		 *
-		 *
-		 *
-		 */
-		brokerfac = norne.obj
-			.define('render.canvas.broker')
-			.uses('util.evt')
-			.as({
-
-				mapPoints: function (points) {
-					var that = this;
-					return _(points).map(function (p) {
-						return {
-							x: p.x,
-							y: that.canvas.height - p.y
-						};
-					});
-				},
-
-				laneChanged: function (dist) {
-					var points, index;
-
-					points = this.world.getLanePoints(dist);
-					index = _(this.dists).indexOf(dist, true);
-
-					console.log('broker.laneChanged: points', points);
-					points = this.mapPoints(points);
-
-					// the provided lane is new and must be inserted
-					if (index === -1) {
-						console.log('broker.laneChanged: adding new dist ', dist);
-						index = _(this.dists).sortedIndex(dist);
-						this.dists.splice(index, 0, dist);
-						this.proxy.lanes.splice(index, 0, { points: points });
-					} else {
-						this.proxy.lanes[index].points = points;
-					}
-
-					this.trigger('update', this.proxy);
-				}
-
-			}, function (world, canvas) {
-				var lanechanged;
-
-				this.canvas = canvas;
-				this.world = world;
-				this.proxy = { lanes: [] };
-				this.dists = [];
-
-
-				lanechanged = _(this.laneChanged).bind(this);
-				this.world.on('laneAdded', lanechanged);
-				this.world.on('laneChanged', lanechanged);
-
-			});
 
 
 		/*
@@ -208,7 +151,7 @@
 			.as({
 
 				// paints the current state of the world
-				repaint: function (world) {
+				repaint: function () {
 					console.log('canvas: repaint');
 					var that, lanes, character;
 
@@ -222,11 +165,18 @@
 							that.laneRenderer.renderLane(lane);
 						}
 					});
-
-					// repaint the character
-					character = world.character;
 				},
 
+
+				/**
+				 *	Creates a canvas HTML-Element and sets
+				 *	this.canvas and this.ctx. The width and height
+				 *	of the canvas element are determined by the
+				 *	width and height of the provided wrapper.
+				 *
+				 *	@param wrapper HTML-Element that will contain the canvas
+				 *	@type wrapper Element
+				 */
 				setCanvas: function (wrapper) {
 					var c = document.createElement('canvas');
 					c.setAttribute('height', wrapper.offsetHeight);
@@ -236,6 +186,7 @@
 					this.canvas = c;
 					this.ctx = this.canvas.getContext('2d');
 				},
+
 
 				// clears the whole canvas to paint
 				// the new state
@@ -252,17 +203,25 @@
 			 *	@param canvas where the environment gets rendered
 			 *	@type canvas HTMLElement
 			 */
-			}, function (world, canvas) {
+			}, function (opts) {
 
-				this.setCanvas(canvas);
+				this.setCanvas(opts.canvas);
 				this.laneRenderer = norne.obj.create(
 					'render.canvas.lane', this.canvas
 				);
 
-				// register for update events in the broker
-				this.broker = brokerfac.create(world, this.canvas);
-				this.broker.on('update', _(this.repaint).bind(this));
+				// create a clock that handles repainting cicles
+				this.clock = norne.obj.create(
+					'render.clock', opts.delay
+				);
 
+				// create broker that handles data caching and preparation
+				this.broker = norne.obj.create(
+					'render.broker', opts.world, this.canvas, this.clock
+				);
+
+				// everytime the clock ticks, a repaint is issued
+				this.clock.on('tick', _(this.repaint).bind(this));
 			});
 
 	}());
