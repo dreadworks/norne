@@ -36,6 +36,14 @@
 				},
 
 
+				setCharacter: function (opts) {
+					// TODO
+					return {
+						addAnimation: function () {}
+					};
+				}
+
+
 			}, function (opts) {
 
 				var defaults = {
