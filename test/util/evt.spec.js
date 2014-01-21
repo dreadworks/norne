@@ -129,6 +129,39 @@ describe('norne.evt', function () {
 		evt1.trigger('test');
 		expect(stub.callback).toHaveBeenCalled();
 		expect(stub.anotherCallback).not.toHaveBeenCalled();
+
+		norne.obj.erase('evt1');
+		norne.obj.erase('evt2');
+	});
+
+
+	it('may be used with predefined event classes', function () {
+		var x, evtfac, emitter;
+
+		x = 3;
+		evtfac = norne.obj
+			.define('evt.module.evtname')
+			.as(function (arg) {
+				this.x = arg;
+			});
+
+		emitter = norne.obj
+			.define('test')
+			.uses('util.evt')
+			.create();
+
+		emitter.on('module.evtname', stub.callback);
+		emitter.on('module.evtname', function (evt) {
+			expect(evt.data.x).toEqual(x);
+			expect(evt.module).toEqual('module');
+			expect(evt.name).toEqual('evtname');
+		});
+
+		emitter.trigger('module.evtname', x);
+		expect(stub.callback).toHaveBeenCalled();
+
+		norne.obj.erase('test');
+		norne.obj.erase('evt.module.evtname');
 	});
 
 });

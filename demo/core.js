@@ -11,18 +11,18 @@
 				fps: 25,
 
 			}, function (env) {
-				var lane, character;
+
+				var lanes, character;
 
 				env.setRenderer('render.canvas', $('#norne')[0]);
 
-				lane = env.createLane(50);
-
-
-				lane.color('0099ff');
-
-				lane.addPoint(-30, 50);
-				lane.addPoint(40, 0);
-				lane.addPoint(1300, 40);
+				lanes = [{
+					dist: 50,
+					color: '0099ff',
+					points: [
+						{ x: -30, y: 50 }, { x: 40, y: 0 }, { x: 1300, y: 40 }
+					]
+				}];
 
 				character = env.setCharacter({
                         sprite: 'sprite_sheet.png',
@@ -37,7 +37,17 @@
 	                    framecount: 27
                 });
 
-				console.log('init done', lane, env);
+				
+				_(lanes).each(function (lane) {
+					var l = env.createLane(lane.dist);
+					l.color(lane.color);
+					_(lane.points).each(function (p) {
+						l.addPoint(p.x, p.y);
+					});
+				});
+
+				console.log('init done', env);
+
 
 			});
 
