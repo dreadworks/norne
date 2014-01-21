@@ -1,131 +1,40 @@
 
 
-    /*
-     * A Single Frame Object
-     */
-    norne.obj
-        .define('data.character.sprite.frame')
-        .as({
-
-        }, function (opts) {
-
-            var defaults = {
-                x: 0,
-                y: 0
-            };
-
-            _(this).extend(defaults, opts);
+    (function () {
 
 
-        });
+        var exc;
+        exc = _(norne.exc.raise).partial('data.character');
 
 
+        /*
+         * Character
+         */
+        norne.obj
+            .define('data.character')
+            .as({
 
-    /*
-     * Single Sprite Animation
-     */
-    norne.obj
-        .define('data.character.sprite')
-        .as({
+                addAnimation: function (name, params) {
+                    this.animations.push(name);
 
-            frame: function () {
-                return this.frames[this.index];
-            },
+                }
 
-            //
-            // Push to the next frame
-            step: function () {
-                this.index = (this.index+1) % this.frames.length;
-            },
+            }, function (opts) {
 
-            //
-            // reset animation
-            reset: function () {
-                this.index = 0;
-            }
+                var x, y, width, height, sprite,
+                    animations;
 
-        }, function (opts) {
-            var defaults, range, optsparams, that;
+                if (!opts.sprite) {
+                    exc('No Image provided');
+                }
 
-            this.index = 0;
-            this.frames = [];
+                this.animations = [];
 
-            defaults = [
-                'fwidth',   // frame width
-                'fheight',  // frame height
-                'startx',   // x-Position of first frame
-                'starty',   // y-Position of first frame
-                'columns',  // frames per row
-                'rows'      // num of rows
-            ];
+                this.width = opts.width || 100;
+                this.height = opts.height || 100;
 
-            /*
-             * Test for the needed properties
-             */
-            optsparams = Object.getOwnPropertyNames(opts);
-            optsparams = _(defaults).difference(optsparams);
-            if (optsparams.length > 0) {
-                norne.exc.raise(
-                    "core.character",
-                    "Missing opts parameters " + optsparams
-                );
-            }
-  
-            that = this;
-            _(this).extend(opts);
-
-            range = _.range(that.columns*that.rows);
-            _(range).each(function (i) {
-                that.frames.push(
-                    norne.obj.create('data.character.sprite.frame', {
-                        x: that.startx + (i % that.columns) * that.fwidth, 
-                        y: that.starty + (parseInt(i/that.columns)) * that.fheight
-                    })
-                );
             });
 
-        });
 
 
-    /*
-     * Collection of Sprite-Animations
-     * Needs an image in 'opts' in order to work
-     */
-    norne.obj
-        .define('data.character.spritesheet')
-        .as({
-
-            animations: {},
-
-            addAnimation: function (name, sprite) {
-                this.animations[name] = sprite;
-            }
-
-        }, function (opts) {
-
-
-            _(this).extend(opts);
-
-        });
-
-
-    /*
-     * Character
-     */
-    norne.obj
-        .define('data.character')
-        .as({
-
-            spritesheet: norne.obj.create('data.character.spritesheet'),
-
-            x: 0,
-            y: 0
-
-        }, function (opts) {
-
-        });
-
-
-
-
-
+    })();

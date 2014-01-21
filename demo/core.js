@@ -11,7 +11,7 @@
 				fps: 25,
 
 			}, function (env) {
-				var lane;
+				var lane, character;
 
 				env.setRenderer('render.canvas', $('#norne')[0]);
 
@@ -23,6 +23,19 @@
 				lane.addPoint(-30, 50);
 				lane.addPoint(40, 0);
 				lane.addPoint(1300, 40);
+
+				character = env.setCharacter({
+                        sprite: 'sprite_sheet.png',
+                        width: '130',
+                        height: '150'
+                });
+ 
+	            character.addAnimation('walking.right', {
+	                    frame: { width: 130, height: 150 },
+	                    start: { x: 0, y: 0 },
+	                    columns: 7,
+	                    framecount: 27
+                });
 
 				console.log('init done', lane, env);
 

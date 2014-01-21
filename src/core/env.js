@@ -35,6 +35,17 @@
 					return lane;
 				},
 
+				setCharacter: function (params) {
+					var character;
+
+					character = norne.obj.create(
+							'data.character',
+							params
+						);
+
+					return character;
+				}
+
 
 			}, function (opts) {
 

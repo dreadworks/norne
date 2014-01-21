@@ -1,5 +1,6 @@
 describe("core.character.spritesheet", function () {
 
+    /*
     it("init spritesheet with image", function () {
         var spritesheet;
 
@@ -61,6 +62,7 @@ describe("core.character.spritesheet", function () {
         
 
     });
+    */
 
 
 });
