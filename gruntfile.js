@@ -9,23 +9,27 @@ module.exports = function (grunt) {
 	sources = [
 		'intro',
 
-		// norne and norne.register
+		// exposed norne object
 		'core',
-		'register',
 
 		// utilities
+		'util/register',
 		'util/obj',
 		'util/evt',
 		'util/exc',
 		'util/xhr',
 
 		// core library
-		'core/norne',
+		'core/env',
 		'core/world',
-		'core/lane',
-		'core/character',
 
-		// render stuff
+		// data objects (the model)
+		'data/lane',
+		'data/character',
+
+		// rendering
+		'render/clock',
+		'render/broker',
 		'render/canvas',
 
 		'outro'
@@ -74,7 +78,7 @@ module.exports = function (grunt) {
 		},
 
 		watch: {
-			files: ['src/**/*.js', 'test/*.spec.js', 'test/**/*.spec.js'],
+			files: _(config.sources).union(config.tests),
 			tasks: 'test'
 		},
 
@@ -94,7 +98,7 @@ module.exports = function (grunt) {
 			options: {
 				jshintrc: 'jshint.json'
 			},
-			source: ['src/core.js', 'src/*/*.js']
+			source: _(config.sources).without('src/intro.js', 'src/outro.js')
 		},
 
 		connect: {

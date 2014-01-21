@@ -13,54 +13,56 @@ describe('norne.evt', function () {
 	});
 
 	it('should be accessible', function () {
-		expect(norne.evt).toBeDefined();
+		expect(norne.on).toBeDefined();
+		expect(norne.off).toBeDefined();
+		expect(norne.trigger).toBeDefined();
 	});
 
 
 	it('lets me register callbacks', function () {
-		expect(norne.evt.on).toBeDefined();
-		expect(norne.evt.trigger).toBeDefined();
+		expect(norne.on).toBeDefined();
+		expect(norne.trigger).toBeDefined();
 
-		norne.evt.on('test', stub.callback);
-		norne.evt.trigger('test');
+		norne.on('test', stub.callback);
+		norne.trigger('test');
 		expect(stub.callback).toHaveBeenCalled();
 	});
 
 
 	it('lets me deactivate the event', function () {
-		expect(norne.evt.off).toBeDefined();
+		expect(norne.off).toBeDefined();
 
-		norne.evt.on('test', stub.callback);
-		norne.evt.off('test');
+		norne.on('test', stub.callback);
+		norne.off('test');
 
-		norne.evt.trigger('test');
+		norne.trigger('test');
 		expect(stub.callback).not.toHaveBeenCalled();
 	});
 
 
 	it('handles multiple callbacks', function () {
-		norne.evt.on('test', stub.callback);
-		norne.evt.on('test', stub.anotherCallback);
+		norne.on('test', stub.callback);
+		norne.on('test', stub.anotherCallback);
 
-		norne.evt.trigger('test');
+		norne.trigger('test');
 		expect(stub.callback).toHaveBeenCalled();
 		expect(stub.anotherCallback).toHaveBeenCalled();
 
-		norne.evt.off('test');
+		norne.off('test');
 	});
 
 
 	it('lets me remove particular callbacks', function () {
-		norne.evt.on('test', stub.callback);
-		norne.evt.on('test', stub.anotherCallback);
+		norne.on('test', stub.callback);
+		norne.on('test', stub.anotherCallback);
 
-		norne.evt.off('test', stub.anotherCallback);
-		norne.evt.trigger('test');
+		norne.off('test', stub.anotherCallback);
+		norne.trigger('test');
 
 		expect(stub.callback).toHaveBeenCalled();
 		expect(stub.anotherCallback).not.toHaveBeenCalled();
 
-		norne.evt.off('test');
+		norne.off('test');
 	});
 
 
@@ -70,8 +72,8 @@ describe('norne.evt', function () {
 		a = 0;
 		b = 1;
 
-		norne.evt.on('test', stub.callback);
-		norne.evt.trigger('test', a, b);
+		norne.on('test', stub.callback);
+		norne.trigger('test', a, b);
 		expect(stub.callback).toHaveBeenCalledWith(a, b);
 	});
 
@@ -86,10 +88,10 @@ describe('norne.evt', function () {
 		};
 
 		spyOn(stub, 'callback');
-		norne.evt.on('test', stub.callback);
+		norne.on('test', stub.callback);
 
-		norne.evt.trigger('test');
-		norne.evt.off('test');
+		norne.trigger('test');
+		norne.off('test');
 
 		expect(stub.callback).toHaveBeenCalled();
 	});
@@ -98,8 +100,8 @@ describe('norne.evt', function () {
 	it('handles callbacks autonomous', function () {
 		var evt1, evt2;
 
-		evt1 = norne.obj.create('evt');
-		evt2 = norne.obj.create('evt');
+		evt1 = norne.obj.create('util.evt');
+		evt2 = norne.obj.create('util.evt');
 
 		evt1.on('test', stub.callback);
 		evt2.on('test', stub.anotherCallback);
@@ -113,8 +115,8 @@ describe('norne.evt', function () {
 	it('works with norne.obj.define', function () {
 		var fac1, fac2, evt1, evt2, evt3;
 
-		fac1 = norne.obj.define('evt1').uses('evt');
-		fac2 = norne.obj.define('evt2').uses('evt');
+		fac1 = norne.obj.define('evt1').uses('util.evt');
+		fac2 = norne.obj.define('evt2').uses('util.evt');
 
 		evt1 = fac1.create();
 		evt2 = fac1.create();

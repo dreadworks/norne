@@ -1,6 +1,9 @@
 
-	(function (world) {
+	(function () {
 
+
+		var exc;
+		exc = _(norne.exc.raise).partial('data.lane');
 
 		/**
 		 *	Binary search for the index of a lane points x
@@ -19,6 +22,10 @@
 			// or the array is one in size.
 			if (i === 0) {
 				return (y === 1 && a[0].x < pos) ? 1:0;
+			}
+
+			if (i === a.length) {
+				return i;
 			}
 
 			// searched index got found: return
@@ -42,7 +49,7 @@
 		 *	horizontal position (x).
 		 */
 		var pointfac = norne.obj
-			.define('core.lane.point')
+			.define('data.lane.point')
 			.as({}, function (x, y) {
 				this.x = x;
 				this.y = y;
@@ -57,7 +64,7 @@
 		 *	its property x (the horizontal position).
 		 */
 		groundfac = norne.obj
-			.define('core.lane.ground')
+			.define('data.lane.ground')
 			.as({
 
 				add: function (p) {
@@ -105,8 +112,8 @@
 		 *	lanes. They are observable via evt.
 		 */
 		norne.obj
-			.define('core.lane')
-			.uses('evt')
+			.define('data.lane')
+			.uses('util.evt')
 			.as({
 
 				/**
@@ -142,6 +149,9 @@
 				 *	from position x and the last point the
 				 *	next point right from position y.
 				 *
+				 *	The pixel value takes the dist property
+				 *	of the lane in count.
+				 *
 				 *	@param x {optional} Left delimiter of the range
 				 *	@type x Number
 				 *	@param y {optional} Right delimiter of the range
@@ -149,6 +159,28 @@
 				 */
 				getPoints: function (x, y) {
 					return this.ground.get(x,y);
+				},
+
+
+				/**
+				 *	Sets or gets the lanes base color.
+				 *
+				 *	@param color {optional} The lanes color.
+				 *	@type color String
+				 */
+				color: function (color) {
+
+					// TODO an event must be thrown for the broker.
+
+					if (color) {
+						if (!this._colorregex.test(color)) {
+							exc('Please provide a correct color value');
+						}
+						this._color = color;
+						this.trigger('changedColor');
+					}
+
+					return this._color;
 				}
 
 		/**
@@ -157,15 +189,14 @@
 		}, function (dist) {
 
 			if (!_(dist).isNumber()) {
-				norne.exc.raise(
-					'core.lane',
-					'You must provide a correct dist argument'
-				);
+				exc('You must provide a correct dist argument');
 			}
+
+			this._colorregex = /[0-9a-f]{6}/i;
 
 			this.dist = dist;
 			this.ground = groundfac.create();
 
 		});
 
-	}(norne.world));
+	}());

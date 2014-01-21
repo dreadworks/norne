@@ -8,7 +8,7 @@ describe('core.world', function () {
 	it('is accessible', function () {
 		var world = norne.world();
 		expect(world).toBeDefined();
-	});
+	}); 
 
 
 	it('may be constructed with depth', function () {
@@ -65,11 +65,25 @@ describe('core.world', function () {
 		world = norne.world();
 		expect(world.addLane).toBeDefined();
 
-		l1 = norne.obj.create('core.lane', 0);
+		l1 = norne.obj.create('data.lane', 0);
 		l1.addPoint(0, 0);
 		world.addLane(l1);
 
 		norne.world.clear();
+	});
+
+
+	it('prevents me from adding two lanes with the same dist', function () {
+		var world;
+
+		world = norne.world();
+		function addLane() {
+			var lane = norne.obj.create('data.lane', 0);
+			world.addLane(lane);
+		}
+
+		addLane();
+		expect(addLane).toThrow();
 	});
 
 

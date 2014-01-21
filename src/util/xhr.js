@@ -7,8 +7,8 @@
 		slice = Array.prototype.slice;
 
 		xhrfac = norne.obj
-			.define('xhr')
-			.uses('evt')
+			.define('util.xhr')
+			.uses('util.evt')
 			.as({
 
 

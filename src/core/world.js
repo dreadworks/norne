@@ -1,15 +1,18 @@
 
 
 	(function () {
+		var worldfac, exc;
+
+		exc = _(norne.exc.raise).partial('norne.world');
 
 		/**
 		 *	Instances of core.world represent
 		 *	a norne world consisting of lanes,
 		 *	a character and decorative elements.
 		 */
-		var worldfac = norne.obj
+		worldfac = norne.obj
 			.define('core.world')
-			.uses('evt')
+			.uses('util.evt')
 			.as({
 
 
@@ -25,10 +28,7 @@
 				 */
 				depth: function (depth) {
 					if (depth < 0 || 100 < depth) {
-						norne.exc.raise(
-							'norne.world',
-							'The depth must be a value between 0 and 100'
-						);
+						exc('The depth must be a value between 0 and 100');
 					}
 
 					if (depth) {
@@ -48,22 +48,60 @@
 
 
 				/**
-				 *	Add a lane to the world.
-				 *
-				 *	@param lane The lane to be added
-				 *	@type lane norne.obj.create('core.lane')
+				 *	Describes the users current position
+				 *	in the world.
 				 */
-				addLane: function (lane) {
-					if (lane.width() > this._width) {
-						this._width = lane.width();
-					}
-
-					this.lanes[lane.dist] = lane;
+				pos: function () {
+					// TODO to be implemented.
+					return 0;
 				},
 
 
-				addCharacter: function (character) {
-					// TODO implement when core.character is supplied.
+				/**
+				 *	Add a lane to the world.
+				 *
+				 *	@param lane The lane to be added
+				 *	@type lane norne.obj.create('data.lane')
+				 */
+				addLane: function (lane) {
+					var that;
+
+					if (!lane) {
+						exc('You must provide a lane');
+					}
+
+					if (this.lanes[lane.dist]) {
+						exc('A lane in dist '+ lane.dist +' is already defined');
+					}
+
+					that = this;
+					
+					function evt() {
+						that.trigger('laneChanged', lane.dist);
+					}
+
+					lane.on('addPoint', function () {
+						if (lane.width() > that._width) {
+							that._width = lane.width();
+						}
+						evt();
+					});
+
+					lane.on('colorChanged', evt);
+
+					that.lanes[lane.dist] = lane;
+					that.trigger('laneAdded', lane.dist);
+				},
+
+
+				/**
+				 *	Returns the lane at distance dist.
+				 *
+				 *	@param dist The lanes dist
+				 *	@type dist Number
+				 */
+				getLane: function (dist) {
+					return this.lanes[dist];
 				}
 
 			}, function (depth) {
@@ -92,6 +130,7 @@
 		}, function (norne, depth) {
 			var world = worldfac.create(depth);
 			this.worlds.push(world);
+			norne.trigger('addWorld', world, this.worlds.length-1);
 			return world;
 		});
 

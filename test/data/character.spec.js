@@ -3,7 +3,7 @@ describe("core.character.spritesheet", function () {
     it("init spritesheet with image", function () {
         var spritesheet;
 
-        spritesheet = norne.obj.create('core.character.spritesheet', {
+        spritesheet = norne.obj.create('data.character.spritesheet', {
             image: 'animage.png'
         });
 
@@ -14,7 +14,7 @@ describe("core.character.spritesheet", function () {
     it("add some frames to a sprite", function () {
         var sprite, frame;
 
-        sprite = norne.obj.create('core.character.sprite', {
+        sprite = norne.obj.create('data.character.sprite', {
             fwidth: 100,
             fheight: 100,
             startx: 0,
@@ -38,7 +38,7 @@ describe("core.character.spritesheet", function () {
     it("test the sprite frame calculation", function () {
         var sprite, frame;
 
-        sprite = norne.obj.create('core.character.sprite', {
+        sprite = norne.obj.create('data.character.sprite', {
             fwidth: 100,
             fheight: 100,
             startx: 0,

@@ -2,7 +2,7 @@
 	/**
 	 *	Factory for event objects.
 	 */
-	norne.obj.define('evt').as({
+	norne.obj.define('util.evt').as({
 
 		/**
 		 *	Register a callback to <evtname>. May be called
@@ -72,4 +72,4 @@
 	/**
 	 *	Global norne event system for library wide events.
 	 */
-	norne.register('evt', norne.obj.create('evt'));
+	_(norne).extend(norne.obj.create('util.evt'));

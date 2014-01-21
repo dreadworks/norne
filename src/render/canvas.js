@@ -2,89 +2,13 @@
 
 	(function () {
 
-		var brokerfac;
+		var exc;
 
-		/**
-		 *
-		 *
-		 *
-		 */
-		brokerfac = norne.obj
-			.define('render.canvas.broker')
-			.uses('evt')
-			.as({
-
-				somethingHappened: function () {
-					this.trigger('update', {});
-				}
-
-			}, function (world) {
-
-				this.world = world;
-				this.world.on('update', this.somethingHappened);
-
-			});
-
-
-		/**
-		 * Basic Renderer for Canvas Element
-		 * 
-		 * Params:
-		 *	el (str): id of canvas dom-element
-		 */
-		norne.obj
-			.define('render.canvas')
-			.uses('evt')
-			.as({
-
-				// paints the current state of the world
-				repaint: function (world) {
-					var that, lanes, character;
-
-					that = this;
-					this.clearCanvas();
-
-					// repaint the lanes
-					lanes = world.lanes;
-					_(lanes).each(function (l) {
-						that.laneRenderer.renderLane(l);
-					});
-
-					// repaint the character
-					character = world.character;
-					this.repaintCharacter(character);
-				},
-
-				// clears the whole canvas to paint
-				// the new state
-				clearCanvas: function () {
-					this.ctx.clearRect(
-							0, 0,
-							this.canvas.width,
-							this.canvas.height
-						);
-				},
-
-				repaintCharacter: function (character) {
-					// pass
-				}
-
-			}, function (world, opts) {
-
-				this.broker = brokerfac.create(world);
-				this.canvas = document.getElementById(opts.el);
-				this.ctx = this.canvas.getContext('2d');
-
-				this.laneRenderer = norne.obj.create('render.canvas.lane', this.canvas);
-
-				// register for update events in the broker
-				this.broker.on('update', this.repaint);
-
-			});
+		exc = _(norne.exc.raise).partial('render.canvas');
 
 
 		/*
-		 * Renderer for Lanes
+		 * Renderer for lanes
 		 */
 		norne.obj
 			.define('render.canvas.lane')
@@ -94,7 +18,7 @@
 				renderLane: function (lane) {
 					var color = lane.color,
 						points = lane.points;
-					
+
 					this.paintLane(points, color);
 					this.fillLane(points, color);
 					this.fillStroke(color);
@@ -102,8 +26,12 @@
 
 				// paints the path for a lane
 				paintLane: function (points, color) {
+					if (!points) {
+						return;
+					}
+
 					this.ctx.beginPath();
-					this.ctx.moveTo(points[0][0], points[0][1]);
+					this.ctx.moveTo(points[0].x, points[0].y);
 
 					// cut off the first element
 					points = _.rest(points);
@@ -116,13 +44,15 @@
 
 					for (var i = 0; i < points.length / 3; i += 3) {
 						this.ctx.bezierCurveTo(
-								points[i][0],
-								points[i][1],
-								points[i+1][0],
-								points[i+1][1],
-								points[i+2][0],
-								points[i+2][1]
-							);
+							points[i].x,
+							points[i].y,
+
+							points[i+1].x,
+							points[i+1].y,
+
+							points[i+2].x,
+							points[i+2].y
+						);
 					}
 
 					this.ctx.lineTo(this.canvas.width+10, this.canvas.height+10);
@@ -145,7 +75,7 @@
 				// the given color
 				fillStroke: function (color) {
 					this.ctx.strokeStyle = this.shadeColor(color, -50);
-					this.ctx.lineWidth = 3;
+					this.ctx.lineWidth = 2;
 					this.ctx.stroke();
 				},
 
@@ -163,8 +93,10 @@
 
 					if (r > 255) { r = 255; }
 					else if (r < 0) { r = 0; }
+
 					if (g > 255) { g = 255; }
 					else if (g < 0) { g = 0; }
+
 					if (b > 255) { b = 255; }
 					else if (b < 0) { b = 0; }
 
@@ -184,8 +116,10 @@
 						lingrand;
 
 					y1 = _.min(points, function (point) {
-						return point[1];
-					})[1];
+						return point.y;
+					});
+
+					y1 = y1.y;
 
 					lingrand = this.ctx.createLinearGradient(x1, y1, x2, y2);
 					lingrand.addColorStop(0, this.shadeColor(color, -40));
@@ -201,5 +135,91 @@
 
 			});
 
+
+
+		/**
+		 *	Renders the environment using Context2D
+		 */
+		norne.obj
+			.define('render.canvas')
+			.uses('util.evt')
+			.as({
+
+				// paints the current state of the world
+				repaint: function () {
+					var that, character;
+
+					that = this;
+					this.clearCanvas();
+
+					// repaint the lanes
+					_(this.lanes).each(function (lane) {
+						if (lane.points.length) {
+							that.laneRenderer.renderLane(lane);
+						}
+					});
+				},
+
+
+				/**
+				 *	Creates a canvas HTML-Element and sets
+				 *	this.canvas and this.ctx. The width and height
+				 *	of the canvas element are determined by the
+				 *	width and height of the provided wrapper.
+				 *
+				 *	@param wrapper HTML-Element that will contain the canvas
+				 *	@type wrapper Element
+				 */
+				setCanvas: function (wrapper) {
+					var c = document.createElement('canvas');
+					c.setAttribute('height', wrapper.offsetHeight);
+					c.setAttribute('width', wrapper.offsetWidth);
+					wrapper.appendChild(c);
+
+					this.canvas = c;
+					this.ctx = this.canvas.getContext('2d');
+				},
+
+
+				// clears the whole canvas to paint
+				// the new state
+				clearCanvas: function () {
+					this.ctx.clearRect(
+						0, 0,
+						this.canvas.width,
+						this.canvas.height
+					);
+				}
+
+			/**
+			 *
+			 *	@param canvas where the environment gets rendered
+			 *	@type canvas HTMLElement
+			 */
+			}, function (opts) {
+
+				this.setCanvas(opts.canvas);
+				this.laneRenderer = norne.obj.create(
+					'render.canvas.lane', this.canvas
+				);
+
+				// create a clock that handles repainting cicles
+				this.clock = norne.obj.create(
+					'render.clock', opts.delay
+				);
+
+				// create broker that handles data caching and preparation
+				this.broker = norne.obj.create(
+					'render.broker', opts.world, this.canvas, this.clock
+				);
+
+				// TODO find a better approach
+				this.lanes = this.broker.proxy.lanes;
+
+				// everytime the clock ticks, a repaint is issued
+				this.clock.on('tick', _(this.repaint).bind(this));
+			});
+
 	}());
+
 
