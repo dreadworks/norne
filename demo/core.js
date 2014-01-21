@@ -16,6 +16,10 @@
 				env.setRenderer('render.canvas', $('#norne')[0]);
 
 				lane = env.createLane(50);
+
+
+				lane.color('0099ff');
+
 				lane.addPoint(-30, 50);
 				lane.addPoint(40, 0);
 				lane.addPoint(1300, 40);

@@ -62,4 +62,6 @@
 		}, function (delay) {
 			this._flag = false;
 			this.start(delay);
+
+			window.clock = this;
 		});

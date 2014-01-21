@@ -3,6 +3,7 @@
 
 
 		var exc;
+		exc = _(norne.exc.raise).partial('data.lane');
 
 		/**
 		 *	Binary search for the index of a lane points x
@@ -158,6 +159,28 @@
 				 */
 				getPoints: function (x, y) {
 					return this.ground.get(x,y);
+				},
+
+
+				/**
+				 *	Sets or gets the lanes base color.
+				 *
+				 *	@param color {optional} The lanes color.
+				 *	@type color String
+				 */
+				color: function (color) {
+
+					// TODO an event must be thrown for the broker.
+
+					if (color) {
+						if (!this._colorregex.test(color)) {
+							exc('Please provide a correct color value');
+						}
+						this._color = color;
+						this.trigger('changedColor');
+					}
+
+					return this._color;
 				}
 
 		/**
@@ -166,11 +189,10 @@
 		}, function (dist) {
 
 			if (!_(dist).isNumber()) {
-				norne.exc.raise(
-					'data.lane',
-					'You must provide a correct dist argument'
-				);
+				exc('You must provide a correct dist argument');
 			}
+
+			this._colorregex = /[0-9a-f]{6}/i;
 
 			this.dist = dist;
 			this.ground = groundfac.create();

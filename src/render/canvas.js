@@ -42,10 +42,8 @@
 						points.push(_.last(points));
 					}
 
-					console.log('lane.paintLane: points to draw', points);
-
 					for (var i = 0; i < points.length / 3; i += 3) {
-						console.log('lane.paintLane: drawing ',
+						this.ctx.bezierCurveTo(
 							points[i].x,
 							points[i].y,
 
@@ -55,17 +53,6 @@
 							points[i+2].x,
 							points[i+2].y
 						);
-
-						this.ctx.bezierCurveTo(
-								points[i].x,
-								points[i].y,
-
-								points[i+1].x,
-								points[i+1].y,
-
-								points[i+2].x,
-								points[i+2].y
-							);
 					}
 
 					this.ctx.lineTo(this.canvas.width+10, this.canvas.height+10);
@@ -78,8 +65,8 @@
 				// body will have a darkened version
 				// of the given color
 				fillLane: function (points, color) {
-					//var lingrand = this.linearGradient(points, color);
-					this.ctx.fillStyle = 'rgb(200, 200, 200)';//lingrand;
+					var lingrand = this.linearGradient(points, color);
+					this.ctx.fillStyle = lingrand;
 					this.ctx.fill();
 				},
 
@@ -88,7 +75,7 @@
 				// the given color
 				fillStroke: function (color) {
 					this.ctx.strokeStyle = this.shadeColor(color, -50);
-					this.ctx.lineWidth = 3;
+					this.ctx.lineWidth = 2;
 					this.ctx.stroke();
 				},
 
@@ -106,12 +93,18 @@
 
 					if (r > 255) { r = 255; }
 					else if (r < 0) { r = 0; }
+
 					if (g > 255) { g = 255; }
 					else if (g < 0) { g = 0; }
+
 					if (b > 255) { b = 255; }
 					else if (b < 0) { b = 0; }
 
-					return ((g << 8) | (b) | (r << 16)).toString(16);
+					r = r.toString(16).length === 1 ? '0' + r.toString(16) : r.toString(16);
+					g = g.toString(16).length === 1 ? '0' + g.toString(16) : g.toString(16);
+					b = b.toString(16).length === 1 ? '0' + b.toString(16) : b.toString(16);
+
+					return r + g + b;
 				},
 
 				// Creates a LinearGradient out of the given
@@ -123,8 +116,10 @@
 						lingrand;
 
 					y1 = _.min(points, function (point) {
-						return point[1];
-					})[1];
+						return point.y;
+					});
+
+					y1 = y1.y;
 
 					lingrand = this.ctx.createLinearGradient(x1, y1, x2, y2);
 					lingrand.addColorStop(0, this.shadeColor(color, -40));
@@ -152,15 +147,13 @@
 
 				// paints the current state of the world
 				repaint: function () {
-					console.log('canvas: repaint');
-					var that, lanes, character;
+					var that, character;
 
 					that = this;
 					this.clearCanvas();
 
 					// repaint the lanes
-					lanes = this.broker.proxy.lanes;
-					_(lanes).each(function (lane) {
+					_(this.lanes).each(function (lane) {
 						if (lane.points.length) {
 							that.laneRenderer.renderLane(lane);
 						}
@@ -219,6 +212,9 @@
 				this.broker = norne.obj.create(
 					'render.broker', opts.world, this.canvas, this.clock
 				);
+
+				// TODO find a better approach
+				this.lanes = this.broker.proxy.lanes;
 
 				// everytime the clock ticks, a repaint is issued
 				this.clock.on('tick', _(this.repaint).bind(this));

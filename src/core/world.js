@@ -75,12 +75,19 @@
 					}
 
 					that = this;
+					
+					function evt() {
+						that.trigger('laneChanged', lane.dist);
+					}
+
 					lane.on('addPoint', function () {
 						if (lane.width() > that._width) {
 							that._width = lane.width();
 						}
-						that.trigger('laneChanged', lane.dist);
+						evt();
 					});
+
+					lane.on('colorChanged', evt);
 
 					that.lanes[lane.dist] = lane;
 					that.trigger('laneAdded', lane.dist);
@@ -88,19 +95,13 @@
 
 
 				/**
-				 *	Returns the ground points from a 
-				 *	lane. The values are already transformed
-				 *	based on the lanes dist property.
+				 *	Returns the lane at distance dist.
+				 *
+				 *	@param dist The lanes dist
+				 *	@type dist Number
 				 */
-				getLanePoints: function (dist, x, y) {
-					var lane, points;
-					
-					lane = this.lanes[dist];
-					points = lane.getPoints(x, y);
-
-					console.info(points);
-
-					return points;
+				getLane: function (dist) {
+					return this.lanes[dist];
 				}
 
 			}, function (depth) {

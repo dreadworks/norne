@@ -49,7 +49,7 @@
 			 *	@type dist Number
 			 */
 			laneChanged: function (dist) {
-				var points, index;
+				var points, lane, index;
 
 				// TODO
 				//	If lanes are only altered, only the changed
@@ -57,20 +57,22 @@
 				//	more performant way to handle point arrays must
 				//	be found.
 				//
-				points = this.world.getLanePoints(dist);
+				lane = this.world.getLane(dist);
 				index = _(this.dists).indexOf(dist, true);
 
-				console.log('broker.laneChanged: points', points);
-				points = this.mapPoints(points);
+				points = this.mapPoints(lane.getPoints());
 
 				// the provided lane is new and must be inserted
 				if (index === -1) {
-					console.log('broker.laneChanged: adding new dist ', dist);
 					index = _(this.dists).sortedIndex(dist);
 					this.dists.splice(index, 0, dist);
-					this.proxy.lanes.splice(index, 0, { points: points });
+					this.proxy.lanes.splice(index, 0, { 
+						color: lane.color(),
+						points: points 
+					});
 				} else {
 					this.proxy.lanes[index].points = points;
+					this.proxy.lanes[index].color = lane.color();
 				}
 
 				this.trigger('update', this.proxy);
