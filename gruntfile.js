@@ -20,7 +20,6 @@ module.exports = function (grunt) {
 		'util/xhr',
 
 		// core library
-		'core/env',
 		'core/world',
 
 		// data objects (the model)

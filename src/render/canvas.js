@@ -3,7 +3,6 @@
 	(function () {
 
 		var exc;
-
 		exc = _(norne.exc.raise).partial('render.canvas');
 
 
@@ -153,7 +152,8 @@
 					this.clearCanvas();
 
 					// repaint the lanes
-					_(this.lanes).each(function (lane) {
+					console.log(this);
+					_(this.proxy.lanes).each(function (lane) {
 						if (lane.points.length) {
 							that.laneRenderer.renderLane(lane);
 						}
@@ -162,6 +162,9 @@
 
 
 				/**
+				 *	If no <wrapper> gets provided, returns
+				 *	the currently set canvas.
+				 *	
 				 *	Creates a canvas HTML-Element and sets
 				 *	this.canvas and this.ctx. The width and height
 				 *	of the canvas element are determined by the
@@ -170,7 +173,7 @@
 				 *	@param wrapper HTML-Element that will contain the canvas
 				 *	@type wrapper Element
 				 */
-				setCanvas: function (wrapper) {
+				canvas: function (wrapper) {
 					var c = document.createElement('canvas');
 					c.setAttribute('height', wrapper.offsetHeight);
 					c.setAttribute('width', wrapper.offsetWidth);
@@ -196,25 +199,15 @@
 			 *	@param canvas where the environment gets rendered
 			 *	@type canvas HTMLElement
 			 */
-			}, function (opts) {
+			}, function (proxy, clock, wrapper) {
 
-				this.setCanvas(opts.canvas);
+				this.canvas(wrapper);
 				this.laneRenderer = norne.obj.create(
 					'render.canvas.lane', this.canvas
 				);
 
-				// create a clock that handles repainting cicles
-				this.clock = norne.obj.create(
-					'render.clock', opts.delay
-				);
-
-				// create broker that handles data caching and preparation
-				this.broker = norne.obj.create(
-					'render.broker', opts.world, this.canvas, this.clock
-				);
-
-				// TODO find a better approach
-				this.lanes = this.broker.proxy.lanes;
+				this.clock = clock;
+				this.proxy = proxy;
 
 				// everytime the clock ticks, a repaint is issued
 				this.clock.on('tick', _(this.repaint).bind(this));

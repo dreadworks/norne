@@ -152,7 +152,7 @@ describe('norne.evt', function () {
 
 		emitter.on('module.evtname', stub.callback);
 		emitter.on('module.evtname', function (evt) {
-			expect(evt.data.x).toEqual(x);
+			expect(evt.x).toEqual(x);
 			expect(evt.module).toEqual('module');
 			expect(evt.name).toEqual('evtname');
 		});

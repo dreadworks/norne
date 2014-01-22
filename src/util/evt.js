@@ -66,16 +66,16 @@
 				// is used to create predefined event objects
 				if (evtregex.test(evtname)) {
 					match = evtregex.exec(evtname);
-					console.info(match);
 
 					args.unshift('evt.' + evtname);
 					args = norne.obj.create.apply(norne.obj, args);
 
-					args = [{
-						data: args,
+					_(args).extend({
 						module: match[1],
 						name: match[2]
-					}];
+					});
+
+					args = [args];
 				}
 
 				_(this._events[evtname]).each(function (handler) {

@@ -2,7 +2,7 @@
 	(function () {
 
 
-		var exc;
+		var exc, pointfac, groundfac;
 		exc = _(norne.exc.raise).partial('data.lane');
 
 		/**
@@ -43,17 +43,32 @@
 		}
 
 
+		// EVENTS
+
+
+		norne.obj
+			.define('evt.lane.addPoint')
+			.as(function (lane) {
+				this.lane = lane;
+			});
+
+
+
+
+		// OBJECTS
+
+
 		/**
 		 *	Point objects describe the height
 		 *	of the ground (y) at an arbitrary
 		 *	horizontal position (x).
 		 */
-		var pointfac = norne.obj
+		pointfac = norne.obj
 			.define('data.lane.point')
 			.as({}, function (x, y) {
 				this.x = x;
 				this.y = y;
-			}),
+			});
 
 
 		/**

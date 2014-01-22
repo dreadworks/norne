@@ -2,7 +2,7 @@
 	'use strict';
 
 	$(function () {
-		//try {
+		try {
 
 
 			// build a norne instance
@@ -10,7 +10,7 @@
 				depth: 100,
 				fps: 25,
 
-			}, function (env) {
+			}, function (world) {
 				var lanes, character;
 
 				lanes = [{
@@ -21,9 +21,9 @@
 					]
 				}];
 
-				env.setRenderer('render.canvas', $('#norne')[0]);
+				world.renderer('render.canvas', $('#norne')[0]);
 
-				character = env.setCharacter({
+				character = world.character({
 					sprite: 'url://*.png',
 					width: 'xpx',
 					height: 'ypx'
@@ -38,21 +38,22 @@
 
 				
 				_(lanes).each(function (lane) {
-					var l = env.createLane(lane.dist);
+					var l = world.createLane(lane.dist);
 					l.color(lane.color);
 					_(lane.points).each(function (p) {
 						l.addPoint(p.x, p.y);
 					});
 				});
 
-				console.log('init done', env);
+				console.log('init done', world);
 
 			});
 
 
-		//} catch(exc) {
-		//	console.error(exc.name, exc.message);
-		//}
+		} catch(exc) {
+			console.error(exc.name, exc.message);
+			throw exc;
+		}
 	});
 
 }(jQuery));

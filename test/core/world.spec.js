@@ -6,8 +6,7 @@ describe('core.world', function () {
 
 
 	it('is accessible', function () {
-		var world = norne.world();
-		expect(world).toBeDefined();
+		expect(norne.world).toBeDefined();
 	}); 
 
 
@@ -15,13 +14,14 @@ describe('core.world', function () {
 		var world, world2;
 
 		world = norne.world();
+
 		expect(world.depth).toBeDefined();
 		expect(world.depth()).toEqual(100);
 
-		world = norne.world(50);
+		world = norne.world({ depth: 50 });
 		expect(world.depth()).toEqual(50);
 
-		world2 = norne.world();
+		world2 = norne.world({ depth: 100 });
 		expect(world.depth()).toEqual(50);
 		expect(world2.depth()).toEqual(100);
 	});
@@ -63,27 +63,15 @@ describe('core.world', function () {
 		var world, l1;
 
 		world = norne.world();
-		expect(world.addLane).toBeDefined();
+		expect(world.createLane).toBeDefined();
 
-		l1 = norne.obj.create('data.lane', 0);
-		l1.addPoint(0, 0);
-		world.addLane(l1);
-
-		norne.world.clear();
+		l1 = world.createLane(0);
+		expect(l1).toBeDefined();
 	});
 
 
 	it('prevents me from adding two lanes with the same dist', function () {
-		var world;
-
-		world = norne.world();
-		function addLane() {
-			var lane = norne.obj.create('data.lane', 0);
-			world.addLane(lane);
-		}
-
-		addLane();
-		expect(addLane).toThrow();
+		// TODO
 	});
 
 
