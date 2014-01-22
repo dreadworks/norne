@@ -2,8 +2,7 @@
 	/**
 	 *	Handles interval for repainting.
 	 */
-	norne.obj
-		.define('render.clock')
+	define('render.clock')
 		.uses('util.evt')
 		.as({			
 
@@ -62,6 +61,4 @@
 		}, function (delay) {
 			this._flag = false;
 			this.start(delay);
-
-			window.clock = this;
 		});

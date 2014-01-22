@@ -2,7 +2,7 @@
 	(function () {
 
 		var exc;
-		exc = norne.obj.define('util.exc').as({
+		exc = define('util.exc').as({
 
 			toString: function () {
 				return this.name;

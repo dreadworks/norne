@@ -9,8 +9,7 @@
 		/*
 		 * Renderer for lanes
 		 */
-		norne.obj
-			.define('render.canvas.lane')
+		define('render.canvas.lane')
 			.as({
 
 				// renders a single lane
@@ -139,8 +138,7 @@
 		/**
 		 *	Renders the environment using Context2D
 		 */
-		norne.obj
-			.define('render.canvas')
+		define('render.canvas')
 			.uses('util.evt')
 			.as({
 
@@ -152,7 +150,6 @@
 					this.clearCanvas();
 
 					// repaint the lanes
-					console.log(this);
 					_(this.proxy.lanes).each(function (lane) {
 						if (lane.points.length) {
 							that.laneRenderer.renderLane(lane);
@@ -202,7 +199,7 @@
 			}, function (proxy, clock, wrapper) {
 
 				this.canvas(wrapper);
-				this.laneRenderer = norne.obj.create(
+				this.laneRenderer = create(
 					'render.canvas.lane', this.canvas
 				);
 

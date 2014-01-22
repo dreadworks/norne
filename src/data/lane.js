@@ -46,8 +46,7 @@
 		// EVENTS
 
 
-		norne.obj
-			.define('evt.lane.addPoint')
+		define('evt.lane.addPoint')
 			.as(function (lane) {
 				this.lane = lane;
 			});
@@ -63,8 +62,7 @@
 		 *	of the ground (y) at an arbitrary
 		 *	horizontal position (x).
 		 */
-		pointfac = norne.obj
-			.define('data.lane.point')
+		pointfac = define('data.lane.point')
 			.as({}, function (x, y) {
 				this.x = x;
 				this.y = y;
@@ -78,8 +76,7 @@
 		 *	Encapsulates an array, that stays sorted by
 		 *	its property x (the horizontal position).
 		 */
-		groundfac = norne.obj
-			.define('data.lane.ground')
+		groundfac = define('data.lane.ground')
 			.as({
 
 				add: function (p) {
@@ -126,8 +123,7 @@
 		 *	needed to maintain and render
 		 *	lanes. They are observable via evt.
 		 */
-		norne.obj
-			.define('data.lane')
+		define('data.lane')
 			.uses('util.evt')
 			.as({
 

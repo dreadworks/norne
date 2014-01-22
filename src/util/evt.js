@@ -6,7 +6,7 @@
 		/**
 		 *	Factory for event objects.
 		 */
-		norne.obj.define('util.evt').as({
+		define('util.evt').as({
 
 			/**
 			 *	Register a callback to <evtname>. May be called
@@ -68,7 +68,7 @@
 					match = evtregex.exec(evtname);
 
 					args.unshift('evt.' + evtname);
-					args = norne.obj.create.apply(norne.obj, args);
+					args = create.apply(norne.obj, args);
 
 					_(args).extend({
 						module: match[1],
@@ -91,7 +91,7 @@
 		/**
 		 *	Global norne event system for library wide events.
 		 */
-		_(norne).extend(norne.obj.create('util.evt'));
+		_(norne).extend(create('util.evt'));
 
 
 	}());

@@ -1,13 +1,9 @@
 
 	(function () {
 
-		var xhrfac,
-			slice;
+		var xhrfac;
 
-		slice = Array.prototype.slice;
-
-		xhrfac = norne.obj
-			.define('util.xhr')
+		xhrfac = define('util.xhr')
 			.uses('util.evt')
 			.as({
 

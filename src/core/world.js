@@ -3,9 +3,7 @@
 	
 	(function () {
 
-		var exc, define;
-
-		define = _(norne.obj.define).bind(norne.obj);
+		var exc;
 		exc = _(norne.exc.raise).partial('norne');
 
 
@@ -147,17 +145,12 @@
 					}
 
 					that = this;
-					clock = norne.obj.create(
-						'render.clock', 1000/this.opts.fps
-					);
-
-					this.broker = norne.obj.create(
-						'render.broker', this, canvas, clock
-					);
+					clock = create('render.clock',  1000/this.opts.fps);
+					this.broker = create('render.broker',  this, canvas, clock);
 					proxy = this.broker.proxy;
 
 					// create
-					this.renderer = norne.obj.create(
+					this.renderer = create(
 						name, proxy, clock, canvas
 					);
 
@@ -191,7 +184,7 @@
 					}
 
 					that = this;
-					lane = norne.obj.create('data.lane', dist);
+					lane = create('data.lane', dist);
 
 					lane.on('lane.addPoint', function (evt) {
 						var width;
@@ -230,7 +223,7 @@
 				this.depth(this.opts.depth);
 
 				// maintains
-				this.lanes = norne.obj.create('core.world.lanes');
+				this.lanes = create('core.world.lanes');
 
 			});
 
@@ -249,7 +242,7 @@
 			}
 
 		}, function (norne, opts) {
-			var world = norne.obj.create('core.world', opts);
+			var world = create('core.world', opts);
 			this.worlds.push(world);
 			// TODO trigger event
 			return world;

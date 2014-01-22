@@ -3,8 +3,7 @@
     /*
      * A Single Frame Object
      */
-    norne.obj
-        .define('data.character.sprite.frame')
+    define('data.character.sprite.frame')
         .as({
 
         }, function (opts) {
@@ -24,8 +23,7 @@
     /*
      * Single Sprite Animation
      */
-    norne.obj
-        .define('data.character.sprite')
+    define('data.character.sprite')
         .as({
 
             frame: function () {
@@ -77,7 +75,7 @@
             range = _.range(that.columns*that.rows);
             _(range).each(function (i) {
                 that.frames.push(
-                    norne.obj.create('data.character.sprite.frame', {
+                    create('data.character.sprite.frame', {
                         x: that.startx + (i % that.columns) * that.fwidth, 
                         y: that.starty + (parseInt(i/that.columns)) * that.fheight
                     })
@@ -91,8 +89,7 @@
      * Collection of Sprite-Animations
      * Needs an image in 'opts' in order to work
      */
-    norne.obj
-        .define('data.character.spritesheet')
+    define('data.character.spritesheet')
         .as({
 
             animations: {},
@@ -112,11 +109,10 @@
     /*
      * Character
      */
-    norne.obj
-        .define('data.character')
+    define('data.character')
         .as({
 
-            spritesheet: norne.obj.create('data.character.spritesheet'),
+            spritesheet: create('data.character.spritesheet'),
 
             x: 0,
             y: 0

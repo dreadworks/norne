@@ -6,8 +6,7 @@
 		/**
 		 *	The broker that handles proxy.lanes
 		 */
-		lanebroker = norne.obj
-			.define('render.broker.lanes')
+		lanebroker = define('render.broker.lanes')
 			.uses('util.evt')
 			.as({
 
@@ -28,7 +27,6 @@
 					that = this;
 					pos = -this.parent.world.pos();
 					height = that.parent.canvas.offsetHeight;
-					console.log('height', height);
 
 					return _(points).map(function (p) {
 						return {
@@ -98,8 +96,7 @@
 		/**
 		 *	The broker that handles proxy.character
 		 */
-		charbroker = norne.obj
-			.define('render.broker.character')
+		charbroker = define('render.broker.character')
 			.uses('util.evt')
 			.as({
 
@@ -117,8 +114,7 @@
 		 *	from core.world to viewport pixel values. They also serve
 		 *	as a cache for retrieved values.
 		 */
-		norne.obj
-			.define('render.broker')
+		define('render.broker')
 			.uses('util.evt')
 			.as({
 
@@ -142,8 +138,7 @@
 					args.unshift(this);
 					args.unshift('render.broker.' + name);
 
-					subbroker = norne.obj
-						.create.apply(norne.obj, args);
+					subbroker = create.apply(norne.obj, args);
 
 					this.broker[name] = subbroker;
 					subbroker.on('update', this.render);

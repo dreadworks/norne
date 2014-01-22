@@ -177,4 +177,9 @@
 				return context.create.apply(context, args);
 			}
 		});
+
 	}());
+
+	// expose define and create as global shortcuts
+	define = _(norne.obj.define).bind(norne.obj);
+	create = _(norne.obj.create).bind(norne.obj);

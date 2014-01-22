@@ -9,3 +9,5 @@
 (function () {
 	
 	'use strict';
+
+	var define, create;
