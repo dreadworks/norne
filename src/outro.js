@@ -1,4 +1,4 @@
 
-	window.norne = norne;
+    window.norne = norne;
 
 }());

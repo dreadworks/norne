@@ -1,13 +1,13 @@
 /**
- *	norne engine
+ *  norne engine
  *
- *	@author Lukas Hueck, Felix Hamann
- *	http://github.com/dreadworks/norne
+ *  @author Lukas Hueck, Felix Hamann
+ *  http://github.com/dreadworks/norne
  *
- *	Licensed under GPLv2
+ *  Licensed under GPLv2
  */
 (function () {
-	
-	'use strict';
+    
+    'use strict';
 
-	var define, create;
+    var define, create;
