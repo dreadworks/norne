@@ -1,8 +1,6 @@
 
     (function () {
-        var obj, slice;
-
-        slice = Array.prototype.slice;
+        var obj;
 
         /**
          *  These are the factory objects encapsulating
