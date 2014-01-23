@@ -18,6 +18,7 @@ module.exports = function (grunt) {
         'util/evt',
         'util/exc',
         'util/xhr',
+        'util/clock',
 
         // core library
         'core/world',
@@ -27,7 +28,6 @@ module.exports = function (grunt) {
         'data/character',
 
         // rendering
-        'render/clock',
         'render/broker',
         'render/canvas',
 

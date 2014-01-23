@@ -162,7 +162,7 @@
                     }
 
                     that = this;
-                    clock = create('render.clock',  1000/this.opts.fps);
+                    clock = create('util.clock',  1000/this.opts.fps);
                     this.broker = create('render.broker',  this, canvas, clock);
                     proxy = this.broker.proxy;
 
