@@ -40,7 +40,7 @@
                         points.push(_.last(points));
                     }
 
-                    for (var i = 0; i < points.length / 3; i += 3) {
+                    for (var i = 0; i < points.length; i += 3) {
                         this.ctx.bezierCurveTo(
                             points[i].x,
                             points[i].y,

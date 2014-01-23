@@ -68,6 +68,23 @@
                     lane.on('addPoint', function (point) {
                         that.trigger('addPoint', lane, point);
                     });
+                },
+
+
+                /**
+                 *  Remove the lane in distance <dist>
+                 *
+                 *  @param dist The lanes dist
+                 *  @type dist Number
+                 */
+                del: function (dist) {
+
+                    if (delete this.lanes[lane.dist]) {
+                        this.trigger('removeLane', dist);
+                        return true;
+                    }
+
+                    return false;
                 }
 
             }, function () {
@@ -156,7 +173,7 @@
 
                     // configure
                     this.broker.add(
-                        'lanes', this.lanes, proxy.lanes
+                        'lanes', this.lanes
                     );
 
                     return this.renderer;
@@ -186,18 +203,19 @@
                     that = this;
                     lane = create('data.lane', dist);
 
-                    lane.on('lane.addPoint', function (evt) {
-                        var width;
-                        width = evt.lane.width();
-
-                        if (that._width < width) {
-                            that._width = width;
-                            that.trigger('world.widthChanged', width);
-                        }
-                    });
-
                     this.lanes.add(lane);
                     return lane;
+                },
+
+
+                /**
+                 *  Remove a lane from the world.
+                 *  
+                 *  @param dist The lanes dist
+                 *  @type dist Number
+                 */
+                removeLane: function (dist) {
+                    return this.lanes.del(dist);
                 },
 
 
@@ -210,7 +228,6 @@
 
 
             }, function (opts) {
-
                 var defaults = {
                     depth: 100,
                     fps: 30
