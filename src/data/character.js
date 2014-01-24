@@ -34,8 +34,7 @@
         /*
          * Character
          */
-        norne.obj
-            .define('data.character')
+        define('data.character')
             .uses('util.evt')
             .as({
 
@@ -56,7 +55,7 @@
                  *  relevant information for an animation
                  */
                 addAnimation: function (name, params) {
-                    var sprite = norne.obj.create(
+                    var sprite = create(
                             'data.character.sprite',
                             params
                         );
@@ -97,7 +96,7 @@
                     exc('No Image provided');
                 }
 
-                this.spritesheet = norne.obj.create(
+                this.spritesheet = create(
                         'data.character.spritesheet',
                         opts.sprite
                     );
@@ -113,8 +112,7 @@
          *  A single frame inside an animation. Holds
          *  the clipping coordinates.
          */
-        norne.obj
-            .define('data.character.sprite.frame')
+        define('data.character.sprite.frame')
             .as({
 
             }, function (opts) {
@@ -138,8 +136,7 @@
          *  holds the clipping coordinates for the frames
          *  defining an animation.
          */
-        norne.obj
-            .define('data.character.sprite')
+        define('data.character.sprite')
             .as({
 
                 /**
@@ -187,7 +184,7 @@
                 range = _.range(that.framecount);
                 _(range).each(function (i) {
                     that.frames.push(
-                        norne.obj.create('data.character.sprite.frame', {
+                        create('data.character.sprite.frame', {
                             x: that.start.x + (i % that.columns) * that.frame.width, 
                             y: that.start.y + (parseInt(i/that.columns)) * that.frame.height,
                             width: that.frame.width,
@@ -204,8 +201,7 @@
          *  is basically an image with several animation patterns
          *  (here 'sprites').
          */
-        norne.obj
-            .define('data.character.spritesheet')
+        define('data.character.spritesheet')
             .as({
 
                 animations: {},

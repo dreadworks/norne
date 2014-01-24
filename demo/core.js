@@ -14,7 +14,6 @@
 
 				var lanes, character;
 
-
 				// renderer must be set first!
 				world.renderer('render.canvas', $('#norne')[0]);
 

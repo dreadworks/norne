@@ -10,8 +10,7 @@
         /*
          * Character Renderer
          */
-        norne.obj
-            .define('render.character')
+        define('render.character')
             .as({
 
                 render: function () {
