@@ -1,5 +1,6 @@
 
 
+
 	(function () {
 
 		var exc;
@@ -29,6 +30,9 @@
 							that.laneRenderer.renderLane(lane);
 						}
 					});
+
+					// repaint character
+					this.characterRenderer.render();
 				},
 
 
@@ -96,5 +100,6 @@
 			});
 
 	}());
+
 
 

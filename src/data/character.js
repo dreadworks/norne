@@ -7,6 +7,30 @@
         exc = _(norne.exc.raise).partial('data.character');
 
 
+
+        // EVENTS
+
+
+        /**
+         *  Events gets triggered whenever a new
+         *  animation is available.
+         */
+        define('evt.character.addAnimation')
+            .as(function (name) {
+                this.name = name;
+            });
+
+        /**
+         *  Events gets triggered whenever the
+         *  character changed its active animation.
+         */
+        define('evt.character.changedAnimation')
+            .as(function () {
+                
+            });
+
+
+
         /*
          * Character
          */
@@ -38,16 +62,21 @@
                         );
                     this.spritesheet.addAnimation(name, sprite);
 
-                    // ##!!##!!##!!##!!
-                    this.setAnimation(name);
+                    this.trigger('addAnimation', name);
                 },
 
                 /**
                  *  Sets the active animation.
                  */
                 setAnimation: function (name) {
+                    if (this.animation) {
+                        this.animation.stop();
+                    }
+
                     this.animation =
                         this.spritesheet.animations[name];
+                    this.animation.start();
+
 
                     this.trigger('changedAnimation');
                 },
@@ -125,6 +154,7 @@
                  */
                 step: function () {
                     this.index = (this.index+1) % this.frames.length;
+                    this.trigger('changedAnimation');
                 },
 
                 /**
@@ -132,6 +162,15 @@
                  */
                 reset: function () {
                     this.index = 0;
+                },
+
+                stop: function () {
+                    clearInterval(this.intervalId);
+                    this.reset();
+                },
+
+                start: function () {
+                    this.intervalId = setInterval(this.step, this.tick);
                 }
 
             }, function (opts) {
@@ -140,6 +179,7 @@
 
                 this.index = 0;
                 this.frames = [];
+                this.tick = opts.tick;
       
                 that = this;
                 _(this).extend(opts);

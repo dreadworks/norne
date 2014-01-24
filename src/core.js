@@ -4,7 +4,7 @@
      *  global namespace.
      */
     var norne = function (opts, callback) {
-        var n = norne.obj.create('core.env');
+        var n = norne.obj.create('core.world', opts);
         if (_(callback).isFunction()) {
             callback(n);
         }

@@ -1,5 +1,5 @@
-	
-	/**
+    
+    /**
      *  Define singletons that extend the norne library
      */
     _(norne).extend({

@@ -21,7 +21,7 @@
                 },
 
                 paintCharacter: function () {
-                    var frame = this.animation.frame();
+                    var frame = this.proxy.frame;
 
                     this.ctx.drawImage(
                             this.image,
@@ -41,6 +41,7 @@
 
                 this.image = new Image();
                 this.image.src = this.spritesheet.image;
+                
                 this.image.onload = function () {
                     this.imgLoaded = true;
                 };

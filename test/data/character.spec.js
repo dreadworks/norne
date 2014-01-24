@@ -34,8 +34,8 @@ describe("core.character.spritesheet", function () {
                 }
             );
 
-        callback = function () {
-            console.log('hallo');
+        callback = function (name) {
+            console.info('New Animation: ' + name);
         };
 
         character.on('changedAnimation', callback);
@@ -50,7 +50,7 @@ describe("core.character.spritesheet", function () {
                 }
             );
 
-        //expect(callback).toHaveBeenCalled();
+        character.setAnimation('walking.right');
 
         var frame = character.getAnimation().getFrame();
         expect(frame.x).toEqual(10);

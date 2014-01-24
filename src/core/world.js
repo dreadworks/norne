@@ -1,137 +1,263 @@
 
 
-	(function () {
-		var worldfac, exc;
+    
+    (function () {
 
-		exc = _(norne.exc.raise).partial('norne.world');
-
-		/**
-		 *	Instances of core.world represent
-		 *	a norne world consisting of lanes,
-		 *	a character and decorative elements.
-		 */
-		worldfac = norne.obj
-			.define('core.world')
-			.uses('util.evt')
-			.as({
+        var exc;
+        exc = _(norne.exc.raise).partial('norne');
 
 
-				/**
-				 *	This gets or sets the worlds depth.
-				 *	It describes how deep or flat the world
-				 *	appears. If the depth is 100, the lane
-				 *	with dist 100 gets mapped to the viewports
-				 *	size and is static.
-				 *
-				 *	@param depth {optional} Value between 0 and 100
-				 *	@type depth Number
-				 */
-				depth: function (depth) {
-					if (depth < 0 || 100 < depth) {
-						exc('The depth must be a value between 0 and 100');
-					}
+        // EVENTS
+        define('evt.world.widthChanged')
+            .as(function (width) {
+                this.width = width;
+            });
 
-					if (depth) {
-						this._depth = depth;
-					}
-					return this._depth;
-				},
+        define('evt.world.depthChanged')
+            .as(function (depth) {
+                this.depth = depth;
+            });
+
+        define('evt.world.rendererChanged')
+            .as(function (renderer) {
+                this.renderer = renderer;
+            });
 
 
-				/**
-				 *	The worlds width is the outermost
-				 *	right point x of any added lane.
-				 */
-				width: function () {
-					return this._width;
-				},
+        // OBJECTS
+        /**
+         *  Maintains lanes. Listens to the lanes
+         *  events and delegates those for use by
+         *  the lane broker or other interested parties.
+         */
+        define('core.world.lanes')
+            .uses('util.evt')
+            .as({
+
+                /** 
+                 *  Returns true if a lane with the provided
+                 *  dist property exists.
+                 *
+                 *  @param dist The lanes dist
+                 *  @type dist Number
+                 */
+                has: function (dist) {
+                    return !_(this.lanes[dist]).isUndefined();
+                },
+
+                /**
+                 *  Get lane with the provided dist property
+                 *
+                 *  @param dist The lanes dist
+                 *  @type dist Number
+                 */
+                get: function (dist) {
+                    return this.lanes[dist];
+                },
+
+                /**
+                 *  Add a lane to the maintainer.
+                 *
+                 *  @param lane The lane to be added
+                 *  @type lane data.lane
+                 */              
+                add: function (lane) {
+                    var that = this;
+                    this.lanes[lane.dist] = lane;
+
+                    lane.on('addPoint', function (point) {
+                        that.trigger('addPoint', lane, point);
+                    });
+                }
+
+            }, function () {
+                this.lanes = {};
+            });
 
 
-				/**
-				 *	Describes the users current position
-				 *	in the world.
-				 */
-				pos: function () {
-					// TODO to be implemented.
-					return 0;
-				},
+        /**
+         *  Instances of core.world represent
+         *  a norne world consisting of lanes,
+         *  a character and decorative elements.
+         */
+        define('core.world')
+            .uses('util.evt')
+            .as({
+
+                /**
+                 *  TODO 
+                 */
+                pos: function () {
+                    return 0;
+                },
 
 
-				/**
-				 *	Add a lane to the world.
-				 *
-				 *	@param lane The lane to be added
-				 *	@type lane norne.obj.create('data.lane')
-				 */
-				addLane: function (lane) {
-					var that;
+                /**
+                 *  This gets or sets the worlds depth.
+                 *  It describes how deep or flat the world
+                 *  appears. If the depth is 100, the lane
+                 *  with dist 100 gets mapped to the viewports
+                 *  size and is static.
+                 *
+                 *  @param depth {optional} Value between 0 and 100
+                 *  @type depth Number
+                 */
+                depth: function (depth) {
+                    if (depth < 0 || 100 < depth) {
+                        exc('The depth must be a value between 0 and 100');
+                    }
 
-					if (!lane) {
-						exc('You must provide a lane');
-					}
+                    if (depth) {
+                        this._depth = depth;
+                        this.trigger('world.depthChanged', depth);
+                    }
 
-					if (this.lanes[lane.dist]) {
-						exc('A lane in dist '+ lane.dist +' is already defined');
-					}
-
-					that = this;
-					
-					function evt() {
-						that.trigger('laneChanged', lane.dist);
-					}
-
-					lane.on('addPoint', function () {
-						if (lane.width() > that._width) {
-							that._width = lane.width();
-						}
-						evt();
-					});
-
-					lane.on('colorChanged', evt);
-
-					that.lanes[lane.dist] = lane;
-					that.trigger('laneAdded', lane.dist);
-				},
+                    return this._depth;
+                },
 
 
-				/**
-				 *	Returns the lane at distance dist.
-				 *
-				 *	@param dist The lanes dist
-				 *	@type dist Number
-				 */
-				getLane: function (dist) {
-					return this.lanes[dist];
-				}
+                /**
+                 *  Set or get the renderer. The name must be
+                 *  a defined renderer, for example "render.canvas".
+                 *  The renderers constructor gets passed the proxy
+                 *  that describes all elements that get rendered,
+                 *  the clock that triggers a "tick" event everytime
+                 *  something in the proxy changes and the canvas - an
+                 *  HTML-Element where the world should be drawn.
+                 *
+                 *  If no arguments are provided, the currently set
+                 *  renderer gets returned.
+                 *
+                 *  @param name The renderers name
+                 *  @type name String
+                 *  @param canvas The element where the world gets drawn to
+                 *  @type canvas Element
+                 *
+                 */
+                renderer: function (name, canvas) {
+                    var that, clock, proxy;
 
-			}, function (depth) {
+                    if (arguments.length === 0) {
+                        return this.renderer;
+                    }
 
-				// private
-				this._width = 0;
-				this._depth = depth || 100;
+                    if (!_(canvas).isElement()) {
+                        exc('setRenderer: no canvas provided');
+                    }
 
-				// public
-				this.lanes = {};
-			});
+                    that = this;
+                    clock = create('render.clock',  1000/this.opts.fps);
+                    this.broker = create('render.broker',  this, canvas, clock);
+                    proxy = this.broker.proxy;
+
+                    // create
+                    this.renderer = create(
+                        name, proxy, clock, canvas
+                    );
+
+                    // configure
+                    this.broker.add(
+                        'lanes', this.lanes, proxy.lanes
+                    );
+
+                    return this.renderer;
+                },
 
 
-		/**
-		 *	globally accessible proxy to create worlds
-		 *
-		 */
-		norne.register('world', {
+                /**
+                 *  Create a new lane. The lane gets appended
+                 *  to the world. This function returns the created
+                 *  lane instance.
+                 *
+                 *  @param dist A value that describes how deep in the 
+                 *              world the lane appears
+                 *  @type dist Number (between 0 and 100)
+                 */
+                createLane: function (dist) {
+                    var lane, that;
 
-			worlds: [],
+                    if (dist < 0 || 100 < dist) {
+                        exc('You must provide a correct dist argument');
+                    }
 
-			clear: function () {
-				this.worlds = [];
-			}
+                    if (this.lanes.has(dist)) {
+                        exc('A lane in dist '+ lane.dist +' is already defined');
+                    }
 
-		}, function (norne, depth) {
-			var world = worldfac.create(depth);
-			this.worlds.push(world);
-			norne.trigger('addWorld', world, this.worlds.length-1);
-			return world;
-		});
+                    that = this;
+                    lane = create('data.lane', dist);
 
-	}());
+                    lane.on('lane.addPoint', function (evt) {
+                        var width;
+                        width = evt.lane.width();
+
+                        if (that._width < width) {
+                            that._width = width;
+                            that.trigger('world.widthChanged', width);
+                        }
+                    });
+
+                    this.lanes.add(lane);
+                    return lane;
+                },
+
+
+                character: function (opts) {
+                    var that;
+
+                    if (arguments.length === 0) {
+                        return this.character;
+                    }
+
+                    this.character = create('data.character', opts);
+
+                    this.broker.add(
+                            'character',
+                            this.character,
+                            this.broker.proxy.character
+                        );
+
+                    return character;
+                }
+
+
+            }, function (opts) {
+
+                var defaults = {
+                    depth: 100,
+                    fps: 30
+                };
+
+                _(defaults).extend(opts);
+
+                // properties
+                this.opts = defaults;
+                this.depth(this.opts.depth);
+
+                // maintains
+                this.lanes = create('core.world.lanes');
+
+            });
+
+
+
+        /**
+         *  globally accessible proxy to create worlds
+         *
+         */
+        norne.register('world', {
+
+            worlds: [],
+
+            clear: function () {
+                this.worlds = [];
+            }
+
+        }, function (norne, opts) {
+            var world = create('core.world', opts);
+            this.worlds.push(world);
+            // TODO trigger event
+            return world;
+        });
+
+    }());
