@@ -10,4 +10,4 @@
     
     'use strict';
 
-    var define, create;
+    var norne, define, create;

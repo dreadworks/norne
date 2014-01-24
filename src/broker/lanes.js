@@ -38,10 +38,37 @@
             },
 
 
+            /**
+             *  Returns the index on which the lane
+             *  is saved in the proxy object.
+             *
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param reversed Whether the elements are 
+             *         sorted in reverse order
+             *  @type reversed Boolean
+             */
             getIndex: function (dist, reversed) {
                 var index = _(this.dists).indexOf(dist, true);
                 return (reversed === true) ?
                     this.proxy.length - index - 1 : index;
+            },
+
+
+            /**
+             *  Apply an relative offset to all x values 
+             *  of the lane in the proxy at the specified dist.
+             *
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param offset Relative offset
+             *  @type offset Number
+             */
+            applyOffset: function (dist, offset) {
+                var points = this.proxy[this.getIndex(dist, true)];
+                points.points = _(points.points).map(function (p) {
+                    return { y: p.y, x: p.x + offset };
+                });
             },
 
 
@@ -76,6 +103,7 @@
              */
             mapPoints: function (points, dist) {
                 var that, height, offset;
+                console.log('mapping points');
 
                 that = this;
                 height = this.parent.canvas.offsetHeight;
@@ -90,9 +118,14 @@
 
 
             /**
-             *  
+             *  If force is not true, this method
+             *  decides whether or not the proxy must
+             *  be updated.
              *
-             *  TODO implement range based caching.
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param force Force update the points
+             *  @type force Boolean
              */
              updatePoints: function (dist, force) {
                 var cache, a, b, points, offset;
@@ -108,13 +141,7 @@
 
                         // use the points saved in the proxy
                         // upon cache hits
-                        points = this.proxy[this.getIndex(dist, true)];
-
-                        // apply offset
-                        points.points = _(points.points).map(function (p) {
-                            return { y: p.y, x: p.x + offset };
-                        });
-
+                        this.applyOffset(dist, offset);
                         this.trigger('update');
                         return;
 
@@ -128,18 +155,19 @@
                     points = this.lanes.get(dist).getPoints(a, b);
                 }
 
-                // apply offset
-                points = _(points).map(function (p) {
-                    return { y: p.y, x: p.x + offset };
-                });
-
+                this.applyOffset(offset);
                 this.updateProxy(points, dist);
              },
 
 
              /**
-              * Takes a list of points, maps them and
-              * inserts them into the proxy.
+              *  Takes a list of points, maps them and
+              *  inserts them into the proxy.
+              *
+              *  @param points Points to be inserted
+              *  @type points Array
+              *  @param dist The lanes dist
+              *  @type dist Number
               */
              updateProxy: function (points, dist) {
                 var index;
