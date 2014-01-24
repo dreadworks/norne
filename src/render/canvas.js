@@ -17,6 +17,7 @@
                     var color = lane.color,
                         points = lane.points;
 
+                    console.log(_(points).first().x);
                     this.paintLane(points, color);
                     this.fillLane(points, color);
                     this.fillStroke(color);
@@ -151,7 +152,7 @@
 
                     // repaint the lanes
                     _(this.proxy.lanes).each(function (lane) {
-                        if (lane.points.length) {
+                        if (lane.points && lane.points.length) {
                             that.laneRenderer.renderLane(lane);
                         }
                     });
@@ -178,6 +179,11 @@
 
                     this.canvas = c;
                     this.ctx = this.canvas.getContext('2d');
+                },
+
+
+                canvasWidth: function () {
+                    return this.canvas.offsetWidth;
                 },
 
 

@@ -13,32 +13,7 @@
 			}, function (world) {
 				var lanes, character;
 
-				lanes = [{
-					dist: 0,
-					color: '0099ff',
-					points: [
-						{ x: 0, y: 150 }, { x: 500, y: 200 }, { x: 1000, y: 150 }, { x: 1400, y: 0 }
-					]
-				},{
-					dist: 20,
-					color: '1881C7',
-					points: [
-						{ x: 0, y: 500 }, { x: 40, y: 0 }, { x: 1500, y: 500 }
-					]
-				},{
-					dist: 50,
-					color: '27658F',
-					points: [
-						{ x: 0, y: 50 }, { x: 40, y: 0 }, { x: 1300, y: 40 }
-					]
-				},{
-					dist: 100,
-					color: '254A63',
-					points: [
-						{ x: 0, y: 500 }, { x: 40, y: 700 }, { x: 1000, y: 900 }
-					]
-				}];
-
+				// renderer must be set first!
 				world.renderer('render.canvas', $('#norne')[0]);
 
 				character = world.character({
@@ -54,7 +29,21 @@
 					framecount: 4
 				});
 
-				
+				_(5).times(function (dist) {
+					var lane;
+
+					dist *= 20;
+					lane = world.createLane(dist);
+					lane.color('BFA57A');
+
+					_(10).times(function (i) {
+						lane.addPoint(i*1000, Math.floor(Math.random() * 500));
+					});
+				});
+
+
+
+
 				_(lanes).each(function (lane) {
 					var l = world.createLane(lane.dist);
 					l.color(lane.color);
@@ -64,6 +53,7 @@
 				});
 
 				console.log('init done', world);
+				window.world = world;
 
 			});
 

@@ -7,23 +7,6 @@
         exc = _(norne.exc.raise).partial('norne');
 
 
-        // EVENTS
-        define('evt.world.widthChanged')
-            .as(function (width) {
-                this.width = width;
-            });
-
-        define('evt.world.depthChanged')
-            .as(function (depth) {
-                this.depth = depth;
-            });
-
-        define('evt.world.rendererChanged')
-            .as(function (renderer) {
-                this.renderer = renderer;
-            });
-
-
         // OBJECTS
         /**
          *  Maintains lanes. Listens to the lanes
@@ -42,7 +25,7 @@
                  *  @type dist Number
                  */
                 has: function (dist) {
-                    return !_(this.lanes[dist]).isUndefined();
+                    return !_(this[dist]).isUndefined();
                 },
 
                 /**
@@ -52,7 +35,7 @@
                  *  @type dist Number
                  */
                 get: function (dist) {
-                    return this.lanes[dist];
+                    return this[dist];
                 },
 
                 /**
@@ -63,7 +46,7 @@
                  */              
                 add: function (lane) {
                     var that = this;
-                    this.lanes[lane.dist] = lane;
+                    this[lane.dist] = lane;
 
                     lane.on('addPoint', function (point) {
                         that.trigger('addPoint', lane, point);
@@ -79,7 +62,7 @@
                  */
                 del: function (dist) {
 
-                    if (delete this.lanes[lane.dist]) {
+                    if (delete this[lane.dist]) {
                         this.trigger('removeLane', dist);
                         return true;
                     }
@@ -88,7 +71,8 @@
                 }
 
             }, function () {
-                this.lanes = {};
+                // maintained by broker.lanes
+                this.cache = {};
             });
 
         /**
@@ -101,10 +85,18 @@
             .as({
 
                 /**
-                 *  TODO 
+                 *  Gets or sets the current position in the world.
+                 *  
+                 *  @param pos (optional) New position in the world
+                 *  @type pos Number
                  */
-                pos: function () {
-                    return 0;
+                pos: function (pos) {
+                    if (_(pos).isNumber()) {
+                        this._pos = pos;
+                        this.trigger('posChanged', pos, this.width());
+                    }
+
+                    return this._pos;
                 },
 
 
@@ -112,10 +104,10 @@
                  *  This gets or sets the worlds depth.
                  *  It describes how deep or flat the world
                  *  appears. If the depth is 100, the lane
-                 *  with dist 100 gets mapped to the viewports
-                 *  size and is static.
+                 *  will be scaled by the factor 10. With
+                 *  depth 10, no lane gets scaled.
                  *
-                 *  @param depth {optional} Value between 0 and 100
+                 *  @param depth (optional) Value between 10 and 100
                  *  @type depth Number
                  */
                 depth: function (depth) {
@@ -125,10 +117,15 @@
 
                     if (depth) {
                         this._depth = depth;
-                        this.trigger('world.depthChanged', depth);
+                        this.trigger('depthChanged', depth);
                     }
 
                     return this._depth;
+                },
+
+
+                width: function () {
+                    return (this._renderer) ? this._renderer.canvasWidth() : 0;
                 },
 
 
@@ -167,7 +164,7 @@
                     proxy = this.broker.proxy;
 
                     // create
-                    this.renderer = create(
+                    this._renderer = create(
                         name, proxy, clock, canvas
                     );
 
@@ -176,7 +173,7 @@
                         'lanes', this.lanes
                     );
 
-                    return this.renderer;
+                    return this._renderer;
                 },
 
 
@@ -230,7 +227,8 @@
             }, function (opts) {
                 var defaults = {
                     depth: 100,
-                    fps: 30
+                    fps: 30,
+                    pos: 0
                 };
 
                 _(defaults).extend(opts);
@@ -238,6 +236,9 @@
                 // properties
                 this.opts = defaults;
                 this.depth(this.opts.depth);
+                this.pos(this.opts.pos);
+
+                console.log('opts', this.opts);
 
                 // maintains
                 this.lanes = create('core.world.lanes');

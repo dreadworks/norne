@@ -31,7 +31,7 @@
             }
 
             // searched index got found: return
-            if (a[i-1].x < pos && pos < a[i].x) {
+            if (a[i-1].x <= pos && pos <= a[i].x) {
                 return i;
             }
 
