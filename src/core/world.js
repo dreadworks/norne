@@ -161,7 +161,7 @@
 
                     that = this;
                     clock = create('util.clock',  1000/this.opts.fps);
-                    this.broker = create('render.broker',  this, canvas, clock);
+                    this.broker = create('broker.world',  this, canvas, clock);
                     proxy = this.broker.proxy;
 
                     // create
@@ -232,7 +232,7 @@
                             this.broker.proxy.character
                         );
 
-                    return character;
+                    return this.character;
                 }
 
 
