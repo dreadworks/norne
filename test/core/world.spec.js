@@ -71,8 +71,16 @@ describe('core.world', function () {
 
 
     it('prevents me from adding two lanes with the same dist', function () {
-        // TODO
+        var world;
+
+        world = norne.world();
+        function add() {
+            world.createLane(0);    
+        }
+        
+        add();
+        expect(add).toThrow();
     });
 
-
 });
+

@@ -22,6 +22,7 @@ describe("core.character.spritesheet", function () {
 
     });
 
+    /*
     it("should let me define sprites", function () {
         var character, callback;
 
@@ -77,6 +78,6 @@ describe("core.character.spritesheet", function () {
         expect(frame.y).toEqual(20);
 
     });
-
+    */
 
 });

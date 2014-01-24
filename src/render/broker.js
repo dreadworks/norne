@@ -10,6 +10,64 @@
             .uses('util.evt')
             .as({
 
+
+                /**
+                 *  The offset describes the relative
+                 *  shift of any lane based on its
+                 *  distance.
+                 */
+                offset: function (dist) {
+                    var offset = this.range.a - this.range.a_old;
+                    offset = this.mapPoint(offset, dist);
+                    return -offset;
+                },
+
+
+                /**
+                 *  Getter and setter for the depthfactor
+                 *  used to map points.
+                 *
+                 *  @param depth The worlds depth
+                 *  @type depth Number
+                 */
+                depthfactor: function (depth) {
+
+                    if (!depth) {
+                        return this._depthfactor || 0;
+                    }
+
+                    this._depthfactor = (depth < 10 || 100 < depth) ? 
+                        0 : 10/depth;
+
+                    return this._depthfactor;
+                },
+
+
+                getIndex: function (dist, reversed) {
+                    var index = _(this.dists).indexOf(dist, true);
+                    return (reversed === true) ?
+                        this.proxy.length - index - 1 : index;
+                },
+
+
+                /**
+                 *  Map the provided value based on
+                 *  the lanes dist and the worlds depth.
+                 *
+                 *  @param x The value to be mapped
+                 *  @type x Number
+                 *  @param distfactor The lanes distfactor
+                 *  @type distfactor Number
+                 */
+                mapPoint: function (x, dist) {
+                    var depthfactor, distfactor;
+
+                    distfactor = (100-dist) / 100;
+                    depthfactor = this.depthfactor() * x;
+
+                    return depthfactor + distfactor * (x - depthfactor);
+                },
+
                 /**
                  *  This method translates the absolute pixel
                  *  values delivered by the world to relative pixel
@@ -21,20 +79,81 @@
                  *  @param points Objects with x and y properties.
                  *  @type points Array
                  */
-                mapPoints: function (points) {
-                    var that, height, pos;
+                mapPoints: function (points, dist) {
+                    var that, height, offset;
 
                     that = this;
-                    pos = -this.parent.world.pos();
-                    height = that.parent.canvas.offsetHeight;
+                    height = this.parent.canvas.offsetHeight;
 
                     return _(points).map(function (p) {
                         return {
-                            x: pos + p.x,
+                            x: that.mapPoint(p.x, dist),
                             y: height - p.y
                         };
                     });
                 },
+
+
+                /**
+                 *  
+                 *
+                 *  TODO implement range based caching.
+                 */
+                 updatePoints: function (dist, force) {
+                    var cache, a, b, points, offset;
+
+                    a = this.range.a;
+                    b = this.range.b;
+                    cache = this.lanes.cache;
+                    offset = this.offset(dist);
+
+                    // if no update is forced, ask the cache
+                    if (force !== true) {
+                        if (cache[dist].a < a && b < cache[dist].b) {
+
+                            // use the points saved in the proxy
+                            // upon cache hits
+                            points = this.proxy[this.getIndex(dist, true)];
+
+                            // apply offset
+                            points.points = _(points.points).map(function (p) {
+                                return { y: p.y, x: p.x + offset };
+                            });
+
+                            this.trigger('update');
+                            return;
+
+                        } else { 
+                            // retrieve points and update the cache
+                            points = this.lanes.get(dist).getPoints(a, b);
+                            cache[dist].a = _(points).first().x;
+                            cache[dist].b = _(points).last().x;
+                        }
+                    } else {
+                        points = this.lanes.get(dist).getPoints(a, b);
+                    }
+
+                    // apply offset
+                    points = _(points).map(function (p) {
+                        return { y: p.y, x: p.x + offset };
+                    });
+
+                    this.updateProxy(points, dist);
+                 },
+
+
+                 /**
+                  * Takes a list of points, maps them and
+                  * inserts them into the proxy.
+                  */
+                 updateProxy: function (points, dist) {
+                    var index;
+
+                    points = this.mapPoints(points, dist);
+                    index = this.getIndex(dist, true);
+                    this.proxy[index].points = points;
+                    this.trigger('update');
+                 },
 
 
                 /**
@@ -49,46 +168,64 @@
                  *
                  *  @param dist The lanes dist
                  *  @type dist Number
-                 *
-                 *  TODO implement range based caching.
                  */
                 pointAdded: function (lane, point) {
-                    var points, index;
+                    var index;
 
-                    index = _(this.dists).indexOf(lane.dist, true);
-                    points = this.mapPoints(lane.getPoints());
-
-                    // the provided lane is new and must be inserted
+                    index = this.getIndex(lane.dist);
                     if (index === -1) {
+
+                        // find index, where the new dist must be inserted
                         index = _(this.dists).sortedIndex(lane.dist);
 
                         // insert into the data structures
                         this.dists.splice(index, 0, lane.dist);
+
+                        // reverse the order for painting
+                        index = this.getIndex(lane.dist, true);
                         this.proxy.splice(index, 0, { 
-                            color: lane.color(),
-                            points: points 
-                        });
-
-                    } else {
-
-                        _(this.proxy[index]).extend({
-                            points: points,
                             color: lane.color()
                         });
+
+                        // create cache object
+                        this.lanes.cache[lane.dist] = {};
+
                     }
 
-                    this.trigger('update');
+                    this.updatePoints(lane.dist, true);
                 }
 
-            }, function (parent, lanes, laneproxy) {
+            }, function (parent, lanes) {
                 var that = this;
 
                 this.parent = parent;
                 this.dists = [];
                 this.lanes = lanes;
-                this.proxy = laneproxy;
+                this.proxy = parent.proxy.lanes;
 
-                lanes.on('addPoint', _(this.pointAdded).bind(this));
+                // ground updates
+                this.lanes.on('addPoint', _(this.pointAdded).bind(this));
+
+                // visual depth of the world
+                parent.world.on('depthChanged', _(this.depthfactor).bind(this));
+                this.depthfactor(parent.world.depth());
+
+                // movement inside the world
+                parent.world.on('posChanged', function (pos, width) {
+                    
+                    that.offset(pos);
+                    that.range = { a: pos, b: pos+width, a_old: that.range.a };
+
+                    _(that.dists).each(function (dist) {
+                        that.updatePoints(dist);
+                    });
+                });
+
+                this.range = {
+                    a: parent.world.pos(),
+                    b: parent.world.pos() + parent.world.width(),
+                    a_old: 0
+                };
             });
 
 
@@ -114,7 +251,7 @@
 
                 this.proxy.image = character.image;
 
-                this.character.on('changedAnimation', this.update)
+                this.character.on('changedAnimation', this.update);
 
             });
 

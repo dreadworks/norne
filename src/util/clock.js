@@ -2,7 +2,7 @@
     /**
      *  Handles interval for repainting.
      */
-    define('render.clock')
+    define('util.clock')
         .uses('util.evt')
         .as({           
 

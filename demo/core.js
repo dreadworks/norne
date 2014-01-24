@@ -10,43 +10,43 @@
 				depth: 100,
 				fps: 25,
 
-			}, function (env) {
+			}, function (world) {
 
 				var lanes, character;
 
-				env.setRenderer('render.canvas', $('#norne')[0]);
 
-				lanes = [{
-					dist: 50,
-					color: '0099ff',
-					points: [
-						{ x: -30, y: 50 }, { x: 40, y: 0 }, { x: 1300, y: 40 }
-					]
-				}];
+				// renderer must be set first!
+				world.renderer('render.canvas', $('#norne')[0]);
 
-				character = env.setCharacter({
-                        sprite: 'sprite_sheet.png',
-                        width: '130',
-                        height: '150'
-                });
- 
-	            character.addAnimation('walking.right', {
-	                    frame: { width: 130, height: 150 },
-	                    start: { x: 0, y: 0 },
-	                    columns: 7,
-	                    framecount: 27
-                });
+				character = world.character({
+					sprite: 'url://*.png',
+					width: 'xpx',
+					height: 'ypx'
+				});
 
-				
-				_(lanes).each(function (lane) {
-					var l = env.createLane(lane.dist);
-					l.color(lane.color);
-					_(lane.points).each(function (p) {
-						l.addPoint(p.x, p.y);
+				character.addAnimation('walking.right', {
+					frame: { width: 1, height: 1 },
+					start: { x: 1, y: 1 },
+					columns: 4,
+					framecount: 4
+				});
+
+
+				_(5).times(function (dist) {
+					var lane;
+
+					dist *= 20;
+					lane = world.createLane(dist);
+					lane.color('BFA57A');
+
+					_(10).times(function (i) {
+						lane.addPoint(i*1000, Math.floor(Math.random() * 500));
 					});
 				});
 
-				console.log('init done', env);
+
+				console.log('init done', world);
+				window.world = world;
 
 
 			});

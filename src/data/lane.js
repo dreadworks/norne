@@ -2,8 +2,10 @@
     (function () {
 
 
-        var exc, pointfac, groundfac;
+        var exc, colorregex, pointfac, groundfac;
+
         exc = _(norne.exc.raise).partial('data.lane');
+        colorregex = /[0-9a-f]{6}/i;
 
         /**
          *  Binary search for the index of a lane points x
@@ -29,7 +31,7 @@
             }
 
             // searched index got found: return
-            if (a[i-1].x < pos && pos < a[i].x) {
+            if (a[i-1].x <= pos && pos <= a[i].x) {
                 return i;
             }
 
@@ -184,7 +186,7 @@
                     // TODO an event must be thrown for the broker.
 
                     if (color) {
-                        if (!this._colorregex.test(color)) {
+                        if (!colorregex.test(color)) {
                             exc('Please provide a correct color value');
                         }
                         this._color = color;
@@ -202,8 +204,6 @@
             if (!_(dist).isNumber()) {
                 exc('You must provide a correct dist argument');
             }
-
-            this._colorregex = /[0-9a-f]{6}/i;
 
             this.dist = dist;
             this.ground = groundfac.create();

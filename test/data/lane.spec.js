@@ -123,6 +123,22 @@ describe('data.lane', function () {
     });
 
 
+    it('handles range overflow', function () {
+        var lane, points, range;
+
+        points = [100, 110, 120];
+        lane = norne.obj.create('data.lane', 0);
+        _(points).each(function (x) {
+            lane.addPoint(x, 0);
+        });
+
+        range = lane.getPoints(0, 1000);
+        _(points).each(function (x, i) {
+            expect(x).toEqual(range[i].x);
+        });
+    });
+
+
     it('should retrieve correct points in extreme cases', function () {
         // TODO test for cases like one point added at 0,0
         // or the range is outside defined points etc.
