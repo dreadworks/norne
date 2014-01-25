@@ -7,75 +7,6 @@
         exc = _(norne.exc.raise).partial('norne');
 
 
-        // OBJECTS
-        /**
-         *  Maintains lanes. Listens to the lanes
-         *  events and delegates those for use by
-         *  the lane broker or other interested parties.
-         */
-        define('core.world.lanes')
-            .uses('util.evt')
-            .as({
-
-                /** 
-                 *  Returns true if a lane with the provided
-                 *  dist property exists.
-                 *
-                 *  @param dist The lanes dist
-                 *  @type dist Number
-                 */
-                has: function (dist) {
-                    return !_(this[dist]).isUndefined();
-                },
-
-                /**
-                 *  Get lane with the provided dist property
-                 *
-                 *  @param dist The lanes dist
-                 *  @type dist Number
-                 */
-                get: function (dist) {
-                    return this[dist];
-                },
-
-                /**
-                 *  Add a lane to the maintainer.
-                 *
-                 *  @param lane The lane to be added
-                 *  @type lane data.lane
-                 */              
-                add: function (lane) {
-                    var that = this;
-                    this[lane.dist] = lane;
-
-                    lane.on('addPoint', function (point) {
-                        that.trigger('addPoint', lane, point);
-                    });
-                },
-
-
-                /**
-                 *  Remove the lane in distance <dist>
-                 *
-                 *  @param dist The lanes dist
-                 *  @type dist Number
-                 */
-                del: function (dist) {
-
-                    if (delete this[lane.dist]) {
-                        this.trigger('removeLane', dist);
-                        return true;
-                    }
-
-                    return false;
-                }
-
-            }, function () {
-                // maintained by broker.lanes
-                this.cache = {};
-            });
-
-
         /**
          *  Instances of core.world represent
          *  a norne world consisting of lanes,
@@ -249,7 +180,7 @@
                 this.opts = defaults;
 
                 // maintains
-                this.lanes = create('core.world.lanes');
+                this.lanes = create('data.lanes');
 
                 // configure
                 this.depth(this.opts.depth);
