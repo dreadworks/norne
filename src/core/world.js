@@ -148,7 +148,7 @@
                  *  @type canvas Element
                  *
                  */
-                renderer: function (name, canvas) {
+                renderer: function (canvas) {
                     var that, clock, proxy;
 
                     if (arguments.length === 0) {
@@ -156,7 +156,7 @@
                     }
 
                     if (!_(canvas).isElement()) {
-                        exc('setRenderer: no canvas provided');
+                        exc('renderer: no canvas provided');
                     }
 
                     that = this;
@@ -166,7 +166,7 @@
 
                     // create
                     this._renderer = create(
-                        name, proxy, clock, canvas
+                        'render.world', proxy, clock, canvas
                     );
 
                     // configure
@@ -227,10 +227,10 @@
                     this.character = create('data.character', opts);
 
                     this.broker.add(
-                            'character',
-                            this.character,
-                            this.broker.proxy.character
-                        );
+                        'character',
+                        this.character,
+                        this.broker.proxy.character
+                    );
 
                     return this.character;
                 }
@@ -247,35 +247,15 @@
 
                 // properties
                 this.opts = defaults;
-                this.depth(this.opts.depth);
-                this.pos(this.opts.pos);
-
-                console.log('opts', this.opts);
 
                 // maintains
                 this.lanes = create('core.world.lanes');
 
+                // configure
+                this.depth(this.opts.depth);
+                this.pos(this.opts.pos);
+                this.renderer(this.opts.canvas);
+
             });
-
-
-
-        /**
-         *  globally accessible proxy to create worlds
-         *
-         */
-        norne.register('world', {
-
-            worlds: [],
-
-            clear: function () {
-                this.worlds = [];
-            }
-
-        }, function (norne, opts) {
-            var world = create('core.world', opts);
-            this.worlds.push(world);
-            // TODO trigger event
-            return world;
-        });
 
     }());

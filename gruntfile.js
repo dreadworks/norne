@@ -33,8 +33,9 @@ module.exports = function (grunt) {
         'broker/character',
 
         // rendering data in the proxy
-        'render/broker',
-        'render/canvas',
+        'render/world',
+        'render/lane',
+        'render/character',
 
         'outro'
     ];

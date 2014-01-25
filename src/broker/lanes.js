@@ -137,7 +137,7 @@
 
                 // if no update is forced, ask the cache
                 if (force !== true) {
-                    if (cache[dist].a < a && b < cache[dist].b) {
+                    if (cache[dist].a < a || b < cache[dist].b) {
 
                         // use the points saved in the proxy
                         // upon cache hits
