@@ -6,59 +6,9 @@
 
         exc = _(norne.exc.raise).partial('data.lane');
         colorregex = /[0-9a-f]{6}/i;
-
-        /**
-         *  Binary search for the index of a lane points x
-         *  coordinate in Array "a" where the returned index
-         *  i is where a[i-1].x < pos and a[i+1].x > pos.
-         */
-        function bsearch(a, pos, x, y) {
-            x = x || 0;
-            y = y || a.length;
-
-            var i = x + Math.floor((y - x) / 2);
-
-            // this catches the cases where
-            // either the search found that there is
-            // no element in the array smaller than pos
-            // or the array is one in size.
-            if (i === 0) {
-                return (y === 1 && a[0].x < pos) ? 1:0;
-            }
-
-            if (i === a.length) {
-                return i;
-            }
-
-            // searched index got found: return
-            if (a[i-1].x <= pos && pos <= a[i].x) {
-                return i;
-            }
-
-            // recursive call to search
-            // either in the right or left half
-            if (a[i-1].x > pos) {
-                return bsearch(a, pos, x, i);
-            } else {
-                return bsearch(a, pos, i+1, y);
-            }
-        }
-
-
-        // EVENTS
-
-
-        define('evt.lane.addPoint')
-            .as(function (lane) {
-                this.lane = lane;
-            });
-
-
-
+        
 
         // OBJECTS
-
-
         /**
          *  Point objects describe the height
          *  of the ground (y) at an arbitrary
@@ -83,8 +33,9 @@
 
                 add: function (p) {
                     var i;
-                    i = bsearch(this.points, p.x);
+                    i = _(this.points).sortedIndex(p, 'x');
                     this.points.splice(i, 0, p);
+                    return i;
                 },
 
                 max: function () {
@@ -99,7 +50,7 @@
                     }
 
                     a = [];
-                    i = bsearch(this.points, x);
+                    i = _(this.points).sortedIndex({x:x}, 'x');
                     i = (i === 0) ? 0 : i-1;
 
                     do {
@@ -150,9 +101,12 @@
                  *  @type y Number
                  */
                 addPoint: function (x, y) {
-                    var p = pointfac.create(x, y);
-                    this.ground.add(p);
-                    this.trigger('addPoint', p);
+                    var p, i;
+
+                    p = pointfac.create(x, y);
+                    i = this.ground.add(p);
+
+                    this.trigger('addPoint', p, i);
                 },
 
 
@@ -252,8 +206,8 @@
                     var that = this;
                     this[lane.dist] = lane;
 
-                    lane.on('addPoint', function (point) {
-                        that.trigger('addPoint', lane, point);
+                    lane.on('addPoint', function (point, index) {
+                        that.trigger('addPoint', lane, point, index);
                     });
                 },
 
