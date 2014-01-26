@@ -38,7 +38,7 @@
 					tick: 75
 				});
 				
-				/*
+				
 				_(5).times(function (dist) {
 					var lane;
 
@@ -47,22 +47,11 @@
 					lane.color('BFA57A');
 
 					_(10).times(function (i) {
-						lane.addPoint(i*1000, Math.floor(Math.random() * 500));
+						lane.addPoint(i*2000, Math.floor(Math.random() * 300));
 					});
 				});
-				*/
-				_(1).times(function (dist) {
-					var lane;
-
-					var d = 0
-					lane = world.createLane(d);
-					lane.color('BFA57A');
-
-					lane.addPoint(-10, 50);
-					lane.addPoint(200, 50)
-					lane.addPoint(400, 150);
-					lane.addPoint(1400, 150);
-				});
+				
+				
 				
 
 
