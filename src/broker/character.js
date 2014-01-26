@@ -7,7 +7,11 @@
         .as({
 
             update: function () {
-                this.proxy.frame = this.character.getAnimation.getFrame();
+                if (this.character === undefined) {
+                    return;
+                }
+
+                this.proxy.frame = this.character.getAnimation().getFrame();
                 this.trigger('update');
             }
 
@@ -20,6 +24,6 @@
 
             this.proxy.image = character.image;
 
-            this.character.on('changedAnimation', this.update);
+            this.character.on('changedAnimation', _(this.update).bind(this));
 
         });

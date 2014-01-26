@@ -26,6 +26,15 @@
                     if (_(pos).isNumber()) {
                         this._pos = pos;
                         this.trigger('posChanged', pos, this.width());
+
+                        
+
+                        if (this.character()) {
+                            var points = this.character().lane.getPoints();
+                            var bezier = create('util.bezier', points);
+                            var y = bezier.getY(pos);
+                            this.character().setPos(this.width() / 2, y);
+                        }
                     }
 
                     return this._pos;
@@ -152,16 +161,39 @@
                     var that;
 
                     if (arguments.length === 0) {
-                        return this.character;
+                        return this.charact;
                     }
 
-                    this.character = create('data.character', opts);
+                    this.charact = create('data.character', opts);
 
                     this.broker.add(
-                        'character',
-                        this.character,
-                        this.broker.proxy.character
-                    );
+                            'character',
+                            this.charact,
+                            this.broker.proxy.character
+                        );
+
+                    return this.charact;
+                },
+
+                /**
+                 *  Puts the character on a lane
+                 * 
+                 *  @param dist The chosen lane
+                 *  @type dist Number
+                 */
+                put: function (dist) {
+                    var lane;
+
+                    if (!this.character()) {
+                        exc('You must provide a character first');
+                    }
+
+                    if (!this.lanes.has(dist)) {
+                        exc('Theres no lane at dist ' + dist);
+                    }
+
+                    lane = this.lanes.get(dist);
+                    this.character().lane = lane;
 
                     return this.character;
                 }

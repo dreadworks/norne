@@ -19,6 +19,7 @@ module.exports = function (grunt) {
         'util/exc',
         'util/xhr',
         'util/clock',
+        'util/bezier',
 
         // core library
         'core/world',

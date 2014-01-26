@@ -27,6 +27,8 @@
                             that.laneRenderer.renderLane(lane);
                         }
                     });
+
+                    this.characterRenderer.render(this.proxy.character);
                 },
 
 
@@ -78,6 +80,10 @@
                 this.canvas(wrapper);
                 this.laneRenderer = create(
                     'render.lane', this.canvas
+                );
+
+                this.characterRenderer = create(
+                    'render.character', this.canvas
                 );
 
                 this.clock = clock;

@@ -4,7 +4,7 @@
 
 
         var exc;
-        exc = _(norne.exc.raise).partial('render.character');
+        exc = _(norne.exc.raise).partial('render.canvas.character');
 
  
         /*
@@ -13,15 +13,32 @@
         define('render.character')
             .as({
 
-                render: function () {
+                render: function (proxy) {
                     if (this.imgLoaded) {
-                        this.paintCharacter();
+                        this.paintCharacter(proxy);
+                        return;
+                    }
+
+                    if (!this.imageLoaded && proxy.image) {
+                        this.setImageSource(proxy.image);
                     }
                 },
 
-                paintCharacter: function () {
-                    var frame = this.proxy.frame;
+                paintCharacter: function (proxy) {
+                    var frame = proxy.frame;
 
+                    if (!frame) {
+                        return;
+                    }
+                    /*
+                    this.ctx.drawImage(
+                            this.image,
+                            frame.x, frame.y,
+                            frame.width, frame.height,
+                            proxy.x - (proxy.width / 2), proxy.y,
+                            frame.width * proxy.width, frame.height * proxy.height
+                        );
+                    */
                     this.ctx.drawImage(
                             this.image,
                             frame.x, frame.y,
@@ -29,22 +46,25 @@
                             100, 100,
                             100, 100
                         );
-                }
+                },
 
-            }, function (canvas, opts) {
+                setImageSource: function (image) {
+                    var that = this;
 
-                var image, imgLoaded = false;
+                    this.image = new Image();
+                    this.image.src = image;
+                    
+                    this.image.onload = function () {
+                        that.imgLoaded = true;
+                    };
+                } 
+
+            }, function (canvas) {
 
                 this.canvas = canvas;
                 this.ctx = canvas.getContext('2d');
 
-                this.image = new Image();
-                this.image.src = this.spritesheet.image;
-                
-                this.image.onload = function () {
-                    this.imgLoaded = true;
-                };
-
+                this.imgLoaded = false;
             });
 
 

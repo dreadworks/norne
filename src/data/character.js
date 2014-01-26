@@ -29,6 +29,12 @@
                 
             });
 
+        define('evt.character.changedPos')
+            .as(function (x, y) {
+                this.x = x;
+                this.y = y;
+            });
+
 
 
         /*
@@ -62,6 +68,8 @@
                     this.spritesheet.addAnimation(name, sprite);
 
                     this.trigger('addAnimation', name);
+
+                    this.setAnimation(name);
                 },
 
                 /**
@@ -74,10 +82,16 @@
 
                     this.animation =
                         this.spritesheet.animations[name];
-                    this.animation.start();
-
+                    this.animation.startAnimation();
 
                     this.trigger('changedAnimation');
+
+                    var that = this;
+
+                    // badass workaround
+                    this.animation.on('changedAnimation', function () {
+                        that.trigger('changedAnimation');
+                    });
                 },
 
                 /**
@@ -85,6 +99,19 @@
                  */
                 getAnimation: function () {
                     return this.animation;
+                },
+
+                currentFrame: function () {
+                    if (this.animation) {
+                        return this.animation.getFrame();
+                    }
+                },
+
+                setPos: function (x, y) {
+                    this.x = x || this.x;
+                    this.y = y || this.y;
+
+                    this.trigger('changedPos', this.x, this.y);
                 }
 
             }, function (opts) {
@@ -103,6 +130,11 @@
 
                 this.width = opts.width || 100;
                 this.height = opts.height || 100;
+
+                this.x = 0;
+                this.y = 0;
+
+                this.image = opts.sprite;
 
             });
 
@@ -137,6 +169,7 @@
          *  defining an animation.
          */
         define('data.character.sprite')
+            .uses('util.evt')
             .as({
 
                 /**
@@ -166,8 +199,15 @@
                     this.reset();
                 },
 
-                start: function () {
-                    this.intervalId = setInterval(this.step, this.tick);
+                startAnimation: function () {
+                    this.intervalId = setInterval(
+                        (function (self) {
+                            return function () {
+                                self.step();
+                            };
+                        })(this),
+                        this.tick
+                    );
                 }
 
             }, function (opts) {

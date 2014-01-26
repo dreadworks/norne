@@ -13,21 +13,24 @@
 
 			}, function (world) {
 
-				var lanes, character;
+				var character;
 
+/*
 				character = world.character({
-					sprite: 'url://*.png',
-					width: 'xpx',
-					height: 'ypx'
+					sprite: 'sprites.png',
+					width: 1,
+					height: 1
 				});
-
-				character.addAnimation('walking.right', {
-					frame: { width: 1, height: 1 },
-					start: { x: 1, y: 1 },
-					columns: 4,
-					framecount: 4
+				
+				character.addAnimation('standing.right', {
+					frame: { width: 83, height: 143.5 },
+					start: { x: 10, y: 628 },
+					columns: 12,
+					framecount: 22,
+					tick: 75
 				});
-
+				
+ */
 				/*
 				_(5).times(function (dist) {
 					var lane;
