@@ -20,6 +20,12 @@
             },
 
 
+
+            offset: function (dist, pos) {
+                return -this.mapPoint(dist, pos);
+            },
+
+
             /**
              *  Sets or gets the current range on
              *  the x-axis. Used to determine which
@@ -108,9 +114,9 @@
 
                 range = this.range();
                 points = _(this.cache[dist]);
-                offset = this.mapPoint(dist, range.a_old-range.a);
+                offset = this.offset(dist, range.a);
 
-                console.log('updateProxy', range.a, range.b, offset);
+                //console.log('updateProxy', range.a, range.b, offset);
 
                 a = points.sortedIndex({x:range.a}, 'x') - 1;
                 a = (0 < a) ? a : 0;
@@ -120,9 +126,10 @@
                 // insert
                 points = this.cache[dist].slice(a, b);
                 index = this.index(dist, true);
+                offset = this.offset(dist, range.a);
 
                 // applying offset
-                console.log('apply offset', range, offset, points);
+                //console.log('apply offset', range, offset);
                 points = _(points).map(function (p) {
                     return { x: p.x + offset, y: p.y };
                 });
@@ -134,7 +141,7 @@
 
             updateCache: function (dist) {
                 var that, cache, lane, index;
-                console.info('updateCache with ', dist);
+                //console.info('updateCache with ', dist);
 
                 that = this;
                 if (!_.isNumber(dist)) {
