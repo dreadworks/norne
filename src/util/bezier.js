@@ -1,4 +1,8 @@
 
+
+
+
+
     /**
      *  Bezier curves
      */
@@ -11,40 +15,65 @@
                     return -x;
                 }
                 return x;
-            },     
+            },    
 
             /**
              *  Returns the x,y coordinate to
              *  a given t-value.
              */
             getPoint: function (t) {
-                var ctrlpoints, ipoints = [];
+                var ctrlpts, ipoints = [], point, m;
 
                 if (t === 0) {
-                    return _(this.points).first();
+                    point = _(ctrlpts).first();
+                    return {
+                        x: point.x,
+                        y: point.y,
+                        angle: 0
+                    };  
                 } else if (t === 1) {
-                    return _(this.points).last();
+                    point = _(ctrlpts).last();
+                    return {
+                        x: point.x,
+                        y: point.y,
+                        angle: 0
+                    };  
                 }
 
-                ctrlpoints = this.points;
+                ctrlpts = [
+                    this.points[0],
+                    this.ctrl1,
+                    this.ctrl2,
+                    this.points[1]
+                ];
 
-                while (ctrlpoints.length > 1) {
+                while (ctrlpts.length > 1) {
 
-                    for (var i = 0; i < ctrlpoints.length - 1; i++) {
+                    for (var i = 0; i < ctrlpts.length - 1; i++) {
                         ipoints.push(
                             {
-                                x: t * (ctrlpoints[i+1].x - ctrlpoints[i].x) + ctrlpoints[i].x,
-                                y: t * (ctrlpoints[i+1].y - ctrlpoints[i].y) + ctrlpoints[i].y,
+                                x: t * (ctrlpts[i+1].x - ctrlpts[i].x) + ctrlpts[i].x,
+                                y: t * (ctrlpts[i+1].y - ctrlpts[i].y) + ctrlpts[i].y,
                             }
                         );
                     }
 
-                    ctrlpoints = ipoints;
+                    ctrlpts = ipoints;
                     ipoints = [];
+
+                    if (ctrlpts.length === 2) {
+                        m = (ctrlpts[1].y - ctrlpts[0].y) / (ctrlpts[1].x - ctrlpts[0].x);
+                    }
 
                 }
 
-                return _(ctrlpoints).first();
+                point = _(ctrlpts).first();
+
+                return {
+                    x: point.x,
+                    y: point.y,
+                    angle: Math.atan(m)
+                };
             },
 
             getY: function (xval) {
@@ -87,9 +116,14 @@
 
         }, function (points) {
 
+            var xmid;
+
             this.points = points;
 
+            xmid = (this.points[0].x + this.points[1].x) / 2;
+
+            this.ctrl1 = { x: xmid, y: points[0].y };
+            this.ctrl2 = { x: xmid, y: points[1].y };
+
         });
-
-
-
+    

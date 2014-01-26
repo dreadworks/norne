@@ -30,22 +30,26 @@
                     if (!frame) {
                         return;
                     }
-                    /*
+                    
                     this.ctx.drawImage(
-                            this.image,
-                            frame.x, frame.y,
-                            frame.width, frame.height,
-                            proxy.x - (proxy.width / 2), proxy.y,
-                            frame.width * proxy.width, frame.height * proxy.height
+                            this.image, // image to draw
+                            frame.x,    // clipping x-coord
+                            frame.y,    // clipping y-coord
+
+                            frame.width,    // width of the clipped frame
+                            frame.height,   // height of the clipped frame
+                            
+                            proxy.x - (proxy.width / 2),       // x-position on canvas
+                            proxy.y - proxy.height,    // y-position on canvas
+                            
+                            proxy.width,    // width of shown image
+                            proxy.height    // height of shown image
                         );
-                    */
-                    this.ctx.drawImage(
-                            this.image,
-                            frame.x, frame.y,
-                            frame.width, frame.height,
-                            100, 100,
-                            100, 100
-                        );
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(proxy.x, proxy.y, 5, 0, 2*Math.PI);
+                    this.ctx.fillStyle='Blue';
+                    this.ctx.fill();
                 },
 
                 setImageSource: function (image) {

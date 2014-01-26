@@ -26,15 +26,6 @@
                     if (_(pos).isNumber()) {
                         this._pos = pos;
                         this.trigger('posChanged', pos, this.width());
-
-                        
-
-                        if (this.character()) {
-                            var points = this.character().lane.getPoints();
-                            var bezier = create('util.bezier', points);
-                            var y = bezier.getY(pos);
-                            this.character().setPos(this.width() / 2, y);
-                        }
                     }
 
                     return this._pos;
