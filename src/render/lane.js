@@ -26,23 +26,27 @@
                     if (!points) {
                         return;
                     }
-
-                    while (points.length < 3) {
-                        points.push(_(points).last());
-                    }
-
+                    
                     this.ctx.beginPath();
                     this.ctx.moveTo(points[0].x, points[0].y);
 
-                    for (i = 1; i < points.length - 2; i++) {
-                        xc = (points[i].x + points[i + 1].x) / 2;
-                        yc = (points[i].y + points[i + 1].y) / 2;
-                        this.ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+                    for (i = 0; i < points.length - 1; i++) {
+
+                        var xmid = (points[i+1].x + points[i].x) / 2;
+
+                        this.ctx.bezierCurveTo(
+                            xmid,
+                            points[i].y,
+
+                            xmid,
+                            points[i+1].y,
+
+                            points[i+1].x,
+                            points[i+1].y
+                        );
                     }
 
-                    this.ctx.quadraticCurveTo(points[i].x, points[i].y, points[i+1].x,points[i+1].y);
-
-                    this.ctx.lineTo(points[i+1].x, this.canvas.height+10);
+                    this.ctx.lineTo(points[i].x, this.canvas.height+10);
                     this.ctx.lineTo(points[0].x, this.canvas.height+10);
                     this.ctx.closePath();
                 },

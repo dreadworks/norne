@@ -92,6 +92,10 @@
                     return x;
                 }
 
+                console.log('mapped', p.x, 'to', x, 
+                    'depthfactor: ', depthfactor, 
+                    'distfactor', distfactor
+                );
                 return {
                     x: x,
                     y: this.parent.canvas.offsetHeight - p.y

@@ -55,13 +55,18 @@
                 },
 
 
+                /**
+                 *  Returns the current width of the canvas.
+                 */
                 canvasWidth: function () {
                     return this.canvas.offsetWidth;
                 },
 
 
-                // clears the whole canvas to paint
-                // the new state
+                /**
+                 *  Clears the whole canvas context
+                 *  to enable clean repainting.
+                 */
                 clearCanvas: function () {
                     this.ctx.clearRect(
                         0, 0,
@@ -71,9 +76,14 @@
                 }
 
             /**
+             *  World renderer constructor.
              *
-             *  @param canvas where the environment gets rendered
-             *  @type canvas HTMLElement
+             *  @param proxy The object holding rendering information
+             *  @type proxy Object
+             *  @param clock The rendering timer
+             *  @type util.clock
+             *  @param wrapper where the environment gets rendered
+             *  @type wrapper HTMLElement
              */
             }, function (proxy, clock, wrapper) {
 

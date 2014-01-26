@@ -13,8 +13,8 @@
              */
             _execute: function () {
                 if (this._flag) {
-                    this.trigger('tick');
                     this._flag = false;
+                    this.trigger('tick');
                 }
             },
 

@@ -13,9 +13,9 @@
 
 			}, function (world) {
 
-/*
 
 				var character;
+
 				character = world.character({
 					sprite: 'sprites.png',
 					width: 1,
@@ -30,9 +30,8 @@
 					tick: 75
 				});
 				
- *
+
 				var colors = ['409EF1', '2F79BA', '245D8F', '1A456B', '0B2A45'];
-				
 				_(5).times(function (j) {
 					var lane;
 
@@ -43,16 +42,12 @@
 						lane.addPoint(i*1000, Math.floor(Math.random() * 200) * (j+1));
 					});
 				});
-*/				
+		
 
-				var lane;
-				lane = world.createLane(50);
-				lane.color('efefef');
-				_(20).times(function (i) {
-					var y = (i%2 === 0) ? 200 : 400;
-					var x = i * 1000 - 1000;
-					lane.addPoint(x,y);
-				});
+				// put character on dist 0
+				world.put(0);
+				//world.pos(100);
+
 
 				/*
 				world.addTwist('depth', {
