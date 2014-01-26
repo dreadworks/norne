@@ -1,20 +1,50 @@
-    /**
-     *  The broker that handles proxy.lanes
-     */
+
     define('broker.lanes')
         .uses('util.evt')
         .as({
 
+            /**
+             *  Returns the index on which the lane
+             *  is saved in the proxy object.
+             *
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param reversed Whether the elements are 
+             *         sorted in reverse order
+             *  @type reversed Boolean
+             */
+            index: function (dist, reversed) {
+                var index = _(this.dists).indexOf(dist, true);
+                return (reversed === true) ?
+                    this.dists.length - index - 1 : index;
+            },
+
+
+
+            offset: function (dist, pos) {
+                return -this.mapPoint(dist, pos);
+            },
+
 
             /**
-             *  The offset describes the relative
-             *  shift of any lane based on its
-             *  distance.
+             *  Sets or gets the current range on
+             *  the x-axis. Used to determine which
+             *  points must be held inside the proxy.
+             *
+             *  @param a (optional) Left range delimiter
+             *  @type a Number
+             *  @param b (optional) Right range delimiter
+             *  @type b Number
              */
-            offset: function (dist) {
-                var offset = this.range.a - this.range.a_old;
-                offset = this.mapPoint(offset, dist);
-                return -offset;
+            range: function (a, b) {
+                if (_.isNumber(a) && _.isNumber(b)) {
+                    this._range = {
+                        a: a, b: b, 
+                        a_old: (this._range.a === undefined) ? a : this._range.a
+                    };
+                }
+
+                return this._range;
             },
 
 
@@ -39,144 +69,127 @@
 
 
             /**
-             *  Returns the index on which the lane
-             *  is saved in the proxy object.
-             *
-             *  @param dist The lanes dist
-             *  @type dist Number
-             *  @param reversed Whether the elements are 
-             *         sorted in reverse order
-             *  @type reversed Boolean
-             */
-            getIndex: function (dist, reversed) {
-                var index = _(this.dists).indexOf(dist, true);
-                return (reversed === true) ?
-                    this.proxy.length - index - 1 : index;
-            },
-
-
-            /**
-             *  Apply an relative offset to all x values 
-             *  of the lane in the proxy at the specified dist.
-             *
-             *  @param dist The lanes dist
-             *  @type dist Number
-             *  @param offset Relative offset
-             *  @type offset Number
-             */
-            applyOffset: function (dist, offset) {
-                var points = this.proxy[this.getIndex(dist, true)];
-                points.points = _(points.points).map(function (p) {
-                    return { y: p.y, x: p.x + offset };
-                });
-            },
-
-
-            /**
              *  Map the provided value based on
              *  the lanes dist and the worlds depth.
+             *  Creates a new point object.
              *
-             *  @param x The value to be mapped
-             *  @type x Number
-             *  @param distfactor The lanes distfactor
-             *  @type distfactor Number
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param p Either an object with x and y 
+             *           properties or a number.
+             *  @type p Object or Number
              */
-            mapPoint: function (x, dist) {
-                var depthfactor, distfactor;
+            mapPoint: function (dist, p) {
+                var depthfactor, distfactor, x;
+
+                x = (p.x === undefined) ? p : p.x;
 
                 distfactor = (100-dist) / 100;
                 depthfactor = this.depthfactor() * x;
+                x = depthfactor + distfactor * (x - depthfactor);
 
-                return depthfactor + distfactor * (x - depthfactor);
+                if (_(p).isNumber()) {
+                    return x;
+                }
+
+                return {
+                    x: x,
+                    y: this.parent.canvas.offsetHeight - p.y
+                };
             },
 
-            /**
-             *  This method translates the absolute pixel
-             *  values delivered by the world to relative pixel
-             *  values as seen by the canvas.
-             *  This means that the users virtual position in the
-             *  world must be factored in for x-values. Also, the
-             *  y-values must be inverted to show lanes bottom up.
-             *
-             *  @param points Objects with x and y properties.
-             *  @type points Array
-             */
-            mapPoints: function (points, dist) {
-                var that, height, offset;
-                console.log('mapping points');
+
+
+            updateProxy: function (dist) {
+                var index, points, range, offset, a, b, p;
+
+                if (!_.isNumber(dist)) {
+                    a = this;
+                    _(this.dists).each(function (d) {
+                        a.updateProxy(d);
+                    });
+
+                    return;
+                }
+
+                range = this.range();
+                points = _(this.cache[dist]);
+                offset = this.offset(dist, range.a);
+
+                //console.log('updateProxy', range.a, range.b, offset);
+
+                a = points.sortedIndex({x:range.a}, 'x') - 1;
+                a = (0 < a) ? a : 0;
+
+                b = points.sortedIndex({x:range.b}, 'x') + 1;
+
+                // insert
+                points = this.cache[dist].slice(a, b);
+                index = this.index(dist, true);
+                offset = this.offset(dist, range.a);
+
+                // applying offset
+                //console.log('apply offset', range, offset);
+                points = _(points).map(function (p) {
+                    return { x: p.x + offset, y: p.y };
+                });
+
+                this.proxy[index].points = points;
+                this.trigger('update');
+            },
+
+
+            updateCache: function (dist) {
+                var that, cache, lane, index;
+                //console.info('updateCache with ', dist);
 
                 that = this;
-                height = this.parent.canvas.offsetHeight;
+                if (!_.isNumber(dist)) {
+                    _(this.dists).each(function (d) {
+                        that.updateCache(d);
+                    });
+                    return;
+                }
 
-                return _(points).map(function (p) {
-                    return {
-                        x: that.mapPoint(p.x, dist),
-                        y: height - p.y
-                    };
+                lane = this.lanes.get(dist);
+                cache = this.cache[dist];
+
+                // clear old items
+                // and repopulate the cache
+                while (cache.length > 0) { cache.pop(); }
+                _(lane.getPoints()).each(function (p,i) {
+                    that.addPoint(lane, p, i);
                 });
             },
 
 
             /**
-             *  If force is not true, this method
-             *  decides whether or not the proxy must
-             *  be updated.
+             *  The broker handles lanes only if
+             *  they contain actual points to render.
+             *  So if the first point gets added,
+             *  the lane must be inserted into the brokers
+             *  data structures.
              *
              *  @param dist The lanes dist
              *  @type dist Number
-             *  @param force Force update the points
-             *  @type force Boolean
+             *  @param laneproxy The lanes proxy equivalent
+             *  @type laneproxy Object
+             *
              */
-             updatePoints: function (dist, force) {
-                var cache, a, b, points, offset;
-
-                a = this.range.a;
-                b = this.range.b;
-                cache = this.lanes.cache;
-                offset = this.offset(dist);
-
-                // if no update is forced, ask the cache
-                if (force !== true) {
-                    if (cache[dist].a < a || b < cache[dist].b) {
-
-                        // use the points saved in the proxy
-                        // upon cache hits
-                        this.applyOffset(dist, offset);
-                        this.trigger('update');
-                        return;
-
-                    } else { 
-                        // retrieve points and update the cache
-                        points = this.lanes.get(dist).getPoints(a, b);
-                        cache[dist].a = _(points).first().x;
-                        cache[dist].b = _(points).last().x;
-                    }
-                } else {
-                    points = this.lanes.get(dist).getPoints(a, b);
-                }
-
-                this.applyOffset(offset);
-                this.updateProxy(points, dist);
-             },
-
-
-             /**
-              *  Takes a list of points, maps them and
-              *  inserts them into the proxy.
-              *
-              *  @param points Points to be inserted
-              *  @type points Array
-              *  @param dist The lanes dist
-              *  @type dist Number
-              */
-             updateProxy: function (points, dist) {
+            createEntry: function (dist, laneproxy) {
                 var index;
 
-                points = this.mapPoints(points, dist);
-                index = this.getIndex(dist, true);
-                this.proxy[index].points = points;
-                this.trigger('update');
-             },
+                // create a cache entry
+                this.cache[dist] = [];
+
+                // insert dist into the dists reference
+                index = _(this.dists).sortedIndex(dist);
+                this.dists.splice(index, 0, dist);
+
+                // create proxy entry
+                index = this.index(dist, true);
+                this.proxy.splice(index, 0, laneproxy);
+            },
 
 
             /**
@@ -189,64 +202,70 @@
              *  Point values are saved mapped. 
              *  @see this.mapPoints
              *
+             *  TODO implement ranged based caching.
+             *
              *  @param dist The lanes dist
              *  @type dist Number
+             *  @param point The point that got inserted
+             *  @type point Object
+             *  @param index The position of the point
+             *  @type index Number
              */
-            pointAdded: function (lane, point) {
-                var index;
+            addPoint: function (lane, point, index) {
+                var dist, cache, range;
+                dist = lane.dist;
 
-                index = this.getIndex(lane.dist);
-                if (index === -1) {
-
-                    // find index, where the new dist must be inserted
-                    index = _(this.dists).sortedIndex(lane.dist);
-
-                    // insert into the data structures
-                    this.dists.splice(index, 0, lane.dist);
-
-                    // reverse the order for painting
-                    index = this.getIndex(lane.dist, true);
-                    this.proxy.splice(index, 0, { 
-                        color: lane.color()
+                // the lane got newly created
+                if (this.index(dist) === -1) {
+                    this.createEntry(dist, { 
+                        color: lane.color(),
+                        points: []
                     });
-
-                    // create cache object
-                    this.lanes.cache[lane.dist] = {};
-
                 }
 
-                this.updatePoints(lane.dist, true);
+                // mapping and insertion
+                cache = this.cache[dist];
+                point = this.mapPoint(dist, point);
+
+                cache.splice(index, 0, point);
+                this.updateProxy(dist);
             }
 
-        }, function (parent, lanes) {
-            var that = this;
 
-            this.parent = parent;
-            this.dists = [];
+        }, function (parent, lanes) {
+            var that, world;
+
+            that = this;
+            world = parent.world;
+
             this.lanes = lanes;
+            this.parent = parent;
             this.proxy = parent.proxy.lanes;
 
-            // ground updates
-            this.lanes.on('addPoint', _(this.pointAdded).bind(this));
+            this.dists = [];
+            this.cache = {};
 
-            // visual depth of the world
-            parent.world.on('depthChanged', _(this.depthfactor).bind(this));
-            this.depthfactor(parent.world.depth());
+            // privates
+            this._range = {};
+            this.range(
+                parent.world.pos(),
+                parent.world.pos() + parent.world.width()
+            );
 
-            // movement inside the world
-            parent.world.on('posChanged', function (pos, width) {
-                
-                that.offset(pos);
-                that.range = { a: pos, b: pos+width, a_old: that.range.a };
 
-                _(that.dists).each(function (dist) {
-                    that.updatePoints(dist);
-                });
+            // event handler
+            this.lanes.on('addPoint', function (lane, point, index) {
+                that.addPoint(lane, point, index);
             });
 
-            this.range = {
-                a: parent.world.pos(),
-                b: parent.world.pos() + parent.world.width(),
-                a_old: 0
-            };
+            world.on('depthChanged', function (depth) {
+                that.depthfactor(depth);
+                that.updateCache();
+                that.updateProxy(true);
+            });
+
+            world.on('posChanged', function (pos, width) {
+                that.range(pos, pos+width);
+                that.updateProxy();
+            });
         });

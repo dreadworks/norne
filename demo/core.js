@@ -2,7 +2,7 @@
 	'use strict';
 
 	$(function () {
-		//try {
+		try {
 
 
 			// build a norne instance
@@ -13,22 +13,14 @@
 
 			}, function (world) {
 
-				var lanes, character;
+				var character;
+
 
 				character = world.character({
 					sprite: 'sprites.png',
 					width: 1,
 					height: 1
 				});
-
-				character.addAnimation('walking.right', {
-					frame: { width: 130, height: 150 },
-					start: { x: 15, y: 20 },
-					columns: 7,
-					framecount: 27,
-					tick: 35
-				});
-
 				
 				character.addAnimation('standing.right', {
 					frame: { width: 83, height: 143.5 },
@@ -38,7 +30,10 @@
 					tick: 75
 				});
 				
+
+
 				
+				/*
 				_(5).times(function (dist) {
 					var lane;
 
@@ -50,10 +45,17 @@
 						lane.addPoint(i*2000, Math.floor(Math.random() * 300));
 					});
 				});
+				*/
 				
 				
 				
 
+				var lane;
+				lane = world.createLane(0);
+				lane.color('efefef');
+				lane.addPoint(-20,100);
+				lane.addPoint(300,300);
+				lane.addPoint(600,60);
 
 				// put character on dist 0
 				world.put(0);
@@ -67,9 +69,9 @@
 			});
 
 
-		//} catch(exc) {
-		//	console.error(exc.name, exc.message);
-		//}
+		} catch(exc) {
+			console.error(exc.name, exc.message);
+		}
 	});
 
 }(jQuery));
