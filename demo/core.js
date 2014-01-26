@@ -19,19 +19,29 @@
 				world.renderer('render.canvas', $('#norne')[0]);
 
 				character = world.character({
-					sprite: 'url://*.png',
-					width: 'xpx',
-					height: 'ypx'
+					sprite: 'sprites.png',
+					width: 1,
+					height: 1
 				});
 
 				character.addAnimation('walking.right', {
-					frame: { width: 1, height: 1 },
-					start: { x: 1, y: 1 },
-					columns: 4,
-					framecount: 4
+					frame: { width: 130, height: 150 },
+					start: { x: 15, y: 20 },
+					columns: 7,
+					framecount: 27,
+					tick: 35
 				});
 
-
+				
+				character.addAnimation('standing.right', {
+					frame: { width: 83, height: 143.5 },
+					start: { x: 10, y: 628 },
+					columns: 12,
+					framecount: 22,
+					tick: 75
+				});
+				
+				/*
 				_(5).times(function (dist) {
 					var lane;
 
@@ -43,6 +53,25 @@
 						lane.addPoint(i*1000, Math.floor(Math.random() * 500));
 					});
 				});
+				*/
+				_(1).times(function (dist) {
+					var lane;
+
+					var d = 0
+					lane = world.createLane(d);
+					lane.color('BFA57A');
+
+					lane.addPoint(-10, 50);
+					lane.addPoint(200, 50)
+					lane.addPoint(400, 150);
+					lane.addPoint(1400, 150);
+				});
+				
+
+
+				// put character on dist 0
+				world.put(0);
+				world.pos(100);
 
 
 				console.log('init done', world);

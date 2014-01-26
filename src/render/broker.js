@@ -238,7 +238,13 @@
             .as({
 
                 update: function () {
-                    this.proxy.frame = this.character.getAnimation.getFrame();
+                    this.proxy.frame = this.character.currentFrame();
+                    this.proxy.x = this.character.x;
+
+                    var canvHeight = this.parent.canvas.offsetHeight;
+                    this.proxy.y = canvHeight - this.character.y - this.proxy.frame.height;
+                    
+
                     this.trigger('update');
                 }
 
@@ -250,8 +256,12 @@
                 this.proxy = characterproxy;
 
                 this.proxy.image = character.image;
+                this.proxy.frame = this.character.currentFrame();
+                this.proxy.width = character.width;
+                this.proxy.height = character.height;
 
-                this.character.on('changedAnimation', this.update);
+                this.character.on('changedAnimation', _(this.update).bind(this));
+                this.character.on('changedPos', _(this.update).bind(this));
 
             });
 

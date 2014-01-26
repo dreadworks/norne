@@ -6,8 +6,7 @@
         /*
          * Renderer for lanes
          */
-        norne.obj
-            .define('render.lane')
+        define('render.canvas.lane')
             .as({
 
                 // renders a single lane
@@ -22,34 +21,26 @@
 
                 // paints the path for a lane
                 paintLane: function (points, color) {
+                    var i = 1, xc, yc;
+
                     if (!points) {
                         return;
+                    }
+
+                    while (points.length < 3) {
+                        points.push(_(points).last());
                     }
 
                     this.ctx.beginPath();
                     this.ctx.moveTo(points[0].x, points[0].y);
 
-                    // cut off the first element
-                    points = _.rest(points);
-                    // add the last point till the amount is
-                    // a multiple of 3. HTML5 can only paint
-                    // curves with 3 points
-                    while (points.length % 3 !== 0) {
-                        points.push(_.last(points));
+                    for (i = 1; i < points.length - 2; i++) {
+                        xc = (points[i].x + points[i + 1].x) / 2;
+                        yc = (points[i].y + points[i + 1].y) / 2;
+                        this.ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
                     }
 
-                    for (var i = 0; i < points.length / 3; i += 3) {
-                        this.ctx.bezierCurveTo(
-                            points[i].x,
-                            points[i].y,
-
-                            points[i+1].x,
-                            points[i+1].y,
-
-                            points[i+2].x,
-                            points[i+2].y
-                        );
-                    }
+                    this.ctx.quadraticCurveTo(points[i].x, points[i].y, points[i+1].x,points[i+1].y);
 
                     this.ctx.lineTo(this.canvas.width+10, this.canvas.height+10);
                     this.ctx.lineTo(-10, this.canvas.height+10);
@@ -130,6 +121,7 @@
                 this.ctx = canvas.getContext('2d');
 
             });
+
 
 
     }());
