@@ -34,7 +34,7 @@
                 if (_.isNumber(a) && _.isNumber(b)) {
                     this._range = {
                         a: a, b: b, 
-                        a_old: this._range.a || a
+                        a_old: (this._range.a === undefined) ? a : this._range.a
                     };
                 }
 
@@ -65,20 +65,29 @@
             /**
              *  Map the provided value based on
              *  the lanes dist and the worlds depth.
+             *  Creates a new point object.
              *
-             *  @param x The value to be mapped
-             *  @type x Number
-             *  @param distfactor The lanes distfactor
-             *  @type distfactor Number
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param p Either an object with x and y 
+             *           properties or a number.
+             *  @type p Object or Number
              */
             mapPoint: function (dist, p) {
-                var depthfactor, distfactor;
+                var depthfactor, distfactor, x;
+
+                x = (p.x === undefined) ? p : p.x;
 
                 distfactor = (100-dist) / 100;
-                depthfactor = this.depthfactor() * p.x;
+                depthfactor = this.depthfactor() * x;
+                x = depthfactor + distfactor * (x - depthfactor);
+
+                if (_(p).isNumber()) {
+                    return x;
+                }
 
                 return {
-                    x: depthfactor + distfactor * (p.x - depthfactor),
+                    x: x,
                     y: this.parent.canvas.offsetHeight - p.y
                 };
             },
@@ -86,7 +95,7 @@
 
 
             updateProxy: function (dist) {
-                var index, points, range, offset, a, b;
+                var index, points, range, offset, a, b, p;
 
                 if (!_.isNumber(dist)) {
                     a = this;
@@ -99,9 +108,9 @@
 
                 range = this.range();
                 points = _(this.cache[dist]);
-                offset = this.mapPoint(dist, { x:range.a });
+                offset = this.mapPoint(dist, range.a_old-range.a);
 
-                console.log('updateProxy', range.a, range.b);
+                console.log('updateProxy', range.a, range.b, offset);
 
                 a = points.sortedIndex({x:range.a}, 'x') - 1;
                 a = (0 < a) ? a : 0;
@@ -109,15 +118,16 @@
                 b = points.sortedIndex({x:range.b}, 'x') + 1;
 
                 // insert
-                this.cache[dist].a = a;
-                this.cache[dist].b = b;
-
                 points = this.cache[dist].slice(a, b);
                 index = this.index(dist, true);
 
+                // applying offset
+                console.log('apply offset', range, offset, points);
+                points = _(points).map(function (p) {
+                    return { x: p.x + offset, y: p.y };
+                });
 
                 this.proxy[index].points = points;
-
                 this.trigger('update');
             },
 
@@ -207,15 +217,11 @@
                 }
 
                 // mapping and insertion
-                range = this.range();
                 cache = this.cache[dist];
                 point = this.mapPoint(dist, point);
 
                 cache.splice(index, 0, point);
-
-                
                 this.updateProxy(dist);
-                
             }
 
 

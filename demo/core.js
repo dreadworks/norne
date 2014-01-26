@@ -47,7 +47,7 @@
 				lane.color('efefef');
 				_(20).times(function (i) {
 					var y = (i%2 === 0) ? 200 : 400;
-					var x = i * 300 - 1000;
+					var x = i * 1000 - 1000;
 					lane.addPoint(x,y);
 				});
 
