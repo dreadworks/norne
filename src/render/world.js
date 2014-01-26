@@ -62,6 +62,13 @@
                     return this.canvas.offsetWidth;
                 },
 
+                /**
+                 *  Returns the current height of the canvas.
+                 */
+                canvasHeight: function () {
+                    return this.canvas.offsetHeight;
+                },
+
 
                 /**
                  *  Clears the whole canvas context
