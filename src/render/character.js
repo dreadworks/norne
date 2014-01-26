@@ -10,8 +10,7 @@
         /*
          * Character Renderer
          */
-        norne.obj
-            .define('render.canvas.character')
+        define('render.character')
             .as({
 
                 render: function (proxy) {
@@ -20,7 +19,7 @@
                         return;
                     }
 
-                    if (proxy.image) {
+                    if (!this.imageLoaded && proxy.image) {
                         this.setImageSource(proxy.image);
                     }
                 },
@@ -31,13 +30,21 @@
                     if (!frame) {
                         return;
                     }
-
+                    /*
                     this.ctx.drawImage(
                             this.image,
                             frame.x, frame.y,
                             frame.width, frame.height,
                             proxy.x - (proxy.width / 2), proxy.y,
                             frame.width * proxy.width, frame.height * proxy.height
+                        );
+                    */
+                    this.ctx.drawImage(
+                            this.image,
+                            frame.x, frame.y,
+                            frame.width, frame.height,
+                            100, 100,
+                            100, 100
                         );
                 },
 

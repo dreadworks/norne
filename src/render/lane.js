@@ -6,7 +6,7 @@
         /*
          * Renderer for lanes
          */
-        define('render.canvas.lane')
+        define('render.lane')
             .as({
 
                 // renders a single lane
@@ -42,8 +42,8 @@
 
                     this.ctx.quadraticCurveTo(points[i].x, points[i].y, points[i+1].x,points[i+1].y);
 
-                    this.ctx.lineTo(this.canvas.width+10, this.canvas.height+10);
-                    this.ctx.lineTo(-10, this.canvas.height+10);
+                    this.ctx.lineTo(points[i+1].x, this.canvas.height+10);
+                    this.ctx.lineTo(points[0].x, this.canvas.height+10);
                     this.ctx.closePath();
                 },
 

@@ -9,14 +9,11 @@
 			norne({ 
 				depth: 100,
 				fps: 25,
+				canvas: $('#norne')[0]
 
 			}, function (world) {
 
 				var lanes, character;
-
-
-				// renderer must be set first!
-				world.renderer('render.canvas', $('#norne')[0]);
 
 				character = world.character({
 					sprite: 'sprites.png',

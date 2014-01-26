@@ -210,4 +210,73 @@
 
         });
 
+
+         
+        /**
+         *  Maintains lanes. Listens to the lanes
+         *  events and delegates those for use by
+         *  the lane broker or other interested parties.
+         */
+        define('data.lanes')
+            .uses('util.evt')
+            .as({
+
+                /** 
+                 *  Returns true if a lane with the provided
+                 *  dist property exists.
+                 *
+                 *  @param dist The lanes dist
+                 *  @type dist Number
+                 */
+                has: function (dist) {
+                    return !_(this[dist]).isUndefined();
+                },
+
+                /**
+                 *  Get lane with the provided dist property
+                 *
+                 *  @param dist The lanes dist
+                 *  @type dist Number
+                 */
+                get: function (dist) {
+                    return this[dist];
+                },
+
+                /**
+                 *  Add a lane to the maintainer.
+                 *
+                 *  @param lane The lane to be added
+                 *  @type lane data.lane
+                 */              
+                add: function (lane) {
+                    var that = this;
+                    this[lane.dist] = lane;
+
+                    lane.on('addPoint', function (point) {
+                        that.trigger('addPoint', lane, point);
+                    });
+                },
+
+
+                /**
+                 *  Remove the lane in distance <dist>
+                 *
+                 *  @param dist The lanes dist
+                 *  @type dist Number
+                 */
+                del: function (dist) {
+
+                    if (delete this[lane.dist]) {
+                        this.trigger('removeLane', dist);
+                        return true;
+                    }
+
+                    return false;
+                }
+
+            }, function () {
+                // maintained by broker.lanes
+                this.cache = {};
+            });
+
     }());

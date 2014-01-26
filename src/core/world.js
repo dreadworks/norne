@@ -7,75 +7,6 @@
         exc = _(norne.exc.raise).partial('norne');
 
 
-        // OBJECTS
-        /**
-         *  Maintains lanes. Listens to the lanes
-         *  events and delegates those for use by
-         *  the lane broker or other interested parties.
-         */
-        define('core.world.lanes')
-            .uses('util.evt')
-            .as({
-
-                /** 
-                 *  Returns true if a lane with the provided
-                 *  dist property exists.
-                 *
-                 *  @param dist The lanes dist
-                 *  @type dist Number
-                 */
-                has: function (dist) {
-                    return !_(this[dist]).isUndefined();
-                },
-
-                /**
-                 *  Get lane with the provided dist property
-                 *
-                 *  @param dist The lanes dist
-                 *  @type dist Number
-                 */
-                get: function (dist) {
-                    return this[dist];
-                },
-
-                /**
-                 *  Add a lane to the maintainer.
-                 *
-                 *  @param lane The lane to be added
-                 *  @type lane data.lane
-                 */              
-                add: function (lane) {
-                    var that = this;
-                    this[lane.dist] = lane;
-
-                    lane.on('addPoint', function (point) {
-                        that.trigger('addPoint', lane, point);
-                    });
-                },
-
-
-                /**
-                 *  Remove the lane in distance <dist>
-                 *
-                 *  @param dist The lanes dist
-                 *  @type dist Number
-                 */
-                del: function (dist) {
-
-                    if (delete this[lane.dist]) {
-                        this.trigger('removeLane', dist);
-                        return true;
-                    }
-
-                    return false;
-                }
-
-            }, function () {
-                // maintained by broker.lanes
-                this.cache = {};
-            });
-
-
         /**
          *  Instances of core.world represent
          *  a norne world consisting of lanes,
@@ -157,7 +88,7 @@
                  *  @type canvas Element
                  *
                  */
-                renderer: function (name, canvas) {
+                renderer: function (canvas) {
                     var that, clock, proxy;
 
                     if (arguments.length === 0) {
@@ -165,17 +96,17 @@
                     }
 
                     if (!_(canvas).isElement()) {
-                        exc('setRenderer: no canvas provided');
+                        exc('renderer: no canvas provided');
                     }
 
                     that = this;
                     clock = create('util.clock',  1000/this.opts.fps);
-                    this.broker = create('render.broker',  this, canvas, clock);
+                    this.broker = create('broker.world',  this, canvas, clock);
                     proxy = this.broker.proxy;
 
                     // create
                     this._renderer = create(
-                        name, proxy, clock, canvas
+                        'render.world', proxy, clock, canvas
                     );
 
                     // configure
@@ -263,6 +194,8 @@
 
                     lane = this.lanes.get(dist);
                     this.character().lane = lane;
+
+                    return this.character;
                 }
 
 
@@ -277,35 +210,15 @@
 
                 // properties
                 this.opts = defaults;
-                this.depth(this.opts.depth);
-                this.pos(this.opts.pos);
-
-                console.log('opts', this.opts);
 
                 // maintains
-                this.lanes = create('core.world.lanes');
+                this.lanes = create('data.lanes');
+
+                // configure
+                this.depth(this.opts.depth);
+                this.pos(this.opts.pos);
+                this.renderer(this.opts.canvas);
 
             });
-
-
-
-        /**
-         *  globally accessible proxy to create worlds
-         *
-         */
-        norne.register('world', {
-
-            worlds: [],
-
-            clear: function () {
-                this.worlds = [];
-            }
-
-        }, function (norne, opts) {
-            var world = create('core.world', opts);
-            this.worlds.push(world);
-            // TODO trigger event
-            return world;
-        });
 
     }());

@@ -4,16 +4,13 @@
     (function () {
 
         var exc;
-        exc = _(norne.exc.raise).partial('render.canvas');
-
-
-      
+        exc = _(norne.exc.raise).partial('render.world');
 
 
         /**
          *  Renders the environment using Context2D
          */
-        define('render.canvas')
+        define('render.world')
             .uses('util.evt')
             .as({
 
@@ -82,11 +79,11 @@
 
                 this.canvas(wrapper);
                 this.laneRenderer = create(
-                    'render.canvas.lane', this.canvas
+                    'render.lane', this.canvas
                 );
 
                 this.characterRenderer = create(
-                    'render.canvas.character', this.canvas, proxy.character
+                    'render.character', this.canvas
                 );
 
                 this.clock = clock;
