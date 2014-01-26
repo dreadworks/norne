@@ -22,7 +22,7 @@
 
 
             offset: function (dist, pos) {
-                return -this.mapPoint(dist, pos);
+                return -this.world.map(dist, pos);
             },
 
 
@@ -48,62 +48,6 @@
             },
 
 
-            /**
-             *  Getter and setter for the depthfactor
-             *  used to map points.
-             *
-             *  @param depth The worlds depth
-             *  @type depth Number
-             */
-            depthfactor: function (depth) {
-
-                if (!depth) {
-                    return this._depthfactor || 0;
-                }
-
-                this._depthfactor = (depth < 10 || 100 < depth) ? 
-                    0 : 100/depth;
-
-                return this._depthfactor;
-            },
-
-
-            /**
-             *  Map the provided value based on
-             *  the lanes dist and the worlds depth.
-             *  Creates a new point object.
-             *
-             *  @param dist The lanes dist
-             *  @type dist Number
-             *  @param p Either an object with x and y 
-             *           properties or a number.
-             *  @type p Object or Number
-             */
-            mapPoint: function (dist, p) {
-                var depthfactor, distfactor, x;
-
-                x = (p.x === undefined) ? p : p.x;
-
-                distfactor = (100-dist) / 100;
-                depthfactor = this.depthfactor() * x;
-                x = depthfactor + distfactor * (x - depthfactor);
-
-                if (_(p).isNumber()) {
-                    return x;
-                }
-
-                /*console.log('mapped', p.x, 'to', x, 
-                    'depthfactor: ', depthfactor, 
-                    'distfactor', distfactor
-                );*/
-                return {
-                    x: x,
-                    y: this.parent.canvas.offsetHeight - p.y
-                };
-            },
-
-
-
             updateProxy: function (dist) {
                 var index, points, range, offset, a, b, p;
 
@@ -122,7 +66,7 @@
 
                 //console.log('updateProxy', range.a, range.b, offset);
                 //console.log(range.a, range.b);
-                a = this.mapPoint(dist, range.a);
+                a = this.world.map(dist, range.a);
                 b = range.b;
                 //console.log(range.a, range.b);
 
@@ -211,7 +155,7 @@
              *  already inserted lanes altered.
              *
              *  Point values are saved mapped. 
-             *  @see this.mapPoints
+             *  @see world.map
              *
              *  TODO implement ranged based caching.
              *
@@ -236,7 +180,7 @@
 
                 // mapping and insertion
                 cache = this.cache[dist];
-                point = this.mapPoint(dist, point);
+                point = this.world.map(dist, point);
 
                 cache.splice(index, 0, point);
                 this.updateProxy(dist);
@@ -249,20 +193,21 @@
             that = this;
             world = parent.world;
 
+            // shortcuts
             this.lanes = lanes;
-            this.parent = parent;
             this.proxy = parent.proxy.lanes;
+            this.world = parent.world;
 
+            // maintainer
             this.dists = [];
             this.cache = {};
 
             // privates
             this._range = {};
             this.range(
-                parent.world.pos(),
-                parent.world.pos() + parent.world.width()
+                world.pos(),
+                world.pos() + world.width()
             );
-
 
             // event handler
             this.lanes.on('addPoint', function (lane, point, index) {
@@ -270,7 +215,6 @@
             });
 
             world.on('depthChanged', function (depth) {
-                that.depthfactor(depth);
                 that.updateCache();
                 that.updateProxy(true);
             });

@@ -139,9 +139,38 @@ describe('data.lane', function () {
     });
 
 
-    it('should retrieve correct points in extreme cases', function () {
-        // TODO test for cases like one point added at 0,0
-        // or the range is outside defined points etc.
+    it('lets me retrieve paling points', function () {
+        var lane, points, paling;
+
+        lane = norne.obj.create('data.lane', 0);
+        points = [{x:0,y:100},{x:10,y:200},{x:20,y:20}];
+
+        _(points).each(function (p) {
+            lane.addPoint(p.x, p.y);
+        });
+
+        paling = lane.getPalingPoints(12);
+        console.info(paling);
+        expect(_(paling[0]).isEqual(points[1])).toBe(true);
+        expect(_(paling[1]).isEqual(points[2])).toBe(true);
+/*
+        paling = lane.getPalingPoints(10);
+        expect(_(paling[0]).isEqual(points[1])).toBe(true);
+        expect(_(paling[1]).isEqual(points[2])).toBe(true);
+*/
+        paling = lane.getPalingPoints(-10);
+        expect(paling).toBe(undefined);
+
+        paling = lane.getPalingPoints(20);
+        expect(paling).toBe(undefined);
+
+        paling = lane.getPalingPoints(30);
+        expect(paling).toBe(undefined);
     });
 
+});
+
+
+describe('data.lanes', function () {
+    // TODO
 });
