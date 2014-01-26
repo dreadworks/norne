@@ -2,7 +2,7 @@
 	'use strict';
 
 	$(function () {
-		//try {
+		try {
 
 
 			// build a norne instance
@@ -13,9 +13,9 @@
 
 			}, function (world) {
 
-				var character;
-
 /*
+
+				var character;
 				character = world.character({
 					sprite: 'sprites.png',
 					width: 1,
@@ -30,20 +30,20 @@
 					tick: 75
 				});
 				
- */
-				/*
-				_(5).times(function (dist) {
+ *
+				var colors = ['409EF1', '2F79BA', '245D8F', '1A456B', '0B2A45'];
+				
+				_(5).times(function (j) {
 					var lane;
 
-					dist *= 20;
-					lane = world.createLane(dist);
-					lane.color('BFA57A');
+					lane = world.createLane(j*20);
+					lane.color(colors[j]);
 
 					_(10).times(function (i) {
-						lane.addPoint(i*1000, Math.floor(Math.random() * 500));
+						lane.addPoint(i*1000, Math.floor(Math.random() * 200) * (j+1));
 					});
 				});
-				*/
+*/				
 
 				var lane;
 				lane = world.createLane(50);
@@ -54,16 +54,39 @@
 					lane.addPoint(x,y);
 				});
 
-				console.log('init done', world);
-				window.world = world;
+				/*
+				world.addTwist('depth', {
+					from: 30,
+					to: 100,
+					sub: 50
+				});
+				*/
 
+
+				// helper shortcuts for debugging
+				console.log('init done', world);
+
+				window.world = world;
+				
+				window.proxycontent = function () {
+					_(world.broker.broker.lanes.proxy[0].points).each(function (p) {
+						console.log(p.x,p.y);
+					});
+				};
+
+				window.cachecontent = function () {
+					_(world.broker.broker.lanes.cache[50]).each(function (p) {
+						console.log(p.x,p.y);
+					});
+				};
 
 			});
 
 
-		//} catch(exc) {
-		//	console.error(exc.name, exc.message);
-		//}
+		} catch(exc) {
+			console.error(exc.name, exc.message, exc.stack);
+			throw exc;
+		}
 	});
 
 }(jQuery));
