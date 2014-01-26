@@ -62,7 +62,7 @@
                 }
 
                 this._depthfactor = (depth < 10 || 100 < depth) ? 
-                    0 : 10/depth;
+                    0 : 100/depth;
 
                 return this._depthfactor;
             },
@@ -92,10 +92,10 @@
                     return x;
                 }
 
-                console.log('mapped', p.x, 'to', x, 
+                /*console.log('mapped', p.x, 'to', x, 
                     'depthfactor: ', depthfactor, 
                     'distfactor', distfactor
-                );
+                );*/
                 return {
                     x: x,
                     y: this.parent.canvas.offsetHeight - p.y
@@ -121,19 +121,26 @@
                 offset = this.offset(dist, range.a);
 
                 //console.log('updateProxy', range.a, range.b, offset);
+                //console.log(range.a, range.b);
+                a = this.mapPoint(dist, range.a);
+                b = range.b;
+                //console.log(range.a, range.b);
 
-                a = points.sortedIndex({x:range.a}, 'x') - 1;
+                // retrieve indexes for slicing
+                a = points.sortedIndex({x:a}, 'x') - 1;
                 a = (0 < a) ? a : 0;
 
-                b = points.sortedIndex({x:range.b}, 'x') + 1;
+                b = points.sortedIndex({x:b}, 'x') + 2;
 
                 // insert
                 points = this.cache[dist].slice(a, b);
                 index = this.index(dist, true);
                 offset = this.offset(dist, range.a);
 
+                //console.log(a,b, this.cache[dist][a], this.cache[dist][b], offset);
+
                 // applying offset
-                //console.log('apply offset', range, offset);
+                ////console.log('apply offset', range, offset);
                 points = _(points).map(function (p) {
                     return { x: p.x + offset, y: p.y };
                 });
@@ -145,7 +152,7 @@
 
             updateCache: function (dist) {
                 var that, cache, lane, index;
-                //console.info('updateCache with ', dist);
+                ////console.info('updateCache with ', dist);
 
                 that = this;
                 if (!_.isNumber(dist)) {
