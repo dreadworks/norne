@@ -43,25 +43,22 @@
                 },
 
                 get: function (x, y) {
-                    var i, a;
+                    var arr, a, b, points;
 
                     if (!_(x).isNumber()) {
                         return this.points;
                     }
 
-                    a = [];
-                    i = _(this.points).sortedIndex({x:x}, 'x');
-                    i = (i === 0) ? 0 : i-1;
+                    points = _(this.points);
+                    a = points.sortedIndex({x:x}, 'x');
+                    a = (a === 0) ? 0 : a-1;
 
-                    do {
-                        a.push(this.points[i++]);
-                    } while (i < this.points.length && this.points[i].x <= y);
-
-                    if (this.points[i]) {
-                        a.push(this.points[i]);
+                    b = points.sortedIndex({x:y}, 'x');
+                    if (0 <= b && b < this.points.length) {
+                        b = (this.points[b].x === y) ? b+2 : b+1;
                     }
 
-                    return a;
+                    return this.points.slice(a, b);
                 }
 
             }, function () {
@@ -126,6 +123,28 @@
                  */
                 getPoints: function (x, y) {
                     return this.ground.get(x,y);
+                },
+
+
+                /**
+                 *  Returns the two points left and right
+                 *  from the provided x value. If no value
+                 *  was found, undefined is returned.
+                 */
+                getPalingPoints: function (x) {
+                    var points = this.ground.get(x,x);
+
+                    if (this.width() <= x) {
+                        return;
+                    }
+
+                    if (points.length === 3) {
+                        points.shift();
+                    }
+
+                    if (points.length === 2) {
+                        return points;
+                    }
                 },
 
 
