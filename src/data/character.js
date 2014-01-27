@@ -107,9 +107,10 @@
                     }
                 },
 
-                setPos: function (x, y) {
+                setPos: function (x, y, angle) {
                     this.x = x || this.x;
                     this.y = y || this.y;
+                    this.angle = angle || this.angle;
 
                     this.trigger('changedPos', this.x, this.y);
                 }
@@ -133,6 +134,7 @@
 
                 this.x = 0;
                 this.y = 0;
+                this.angle = 0;
 
                 this.image = opts.sprite;
 

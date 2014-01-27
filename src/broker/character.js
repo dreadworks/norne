@@ -7,14 +7,20 @@
         .as({
 
             setCharacterPosition: function (pos, width) {
-                var x, y;
+                var x, pt, points;
+                x = pos + (width / 2);
 
-                x = width / 2;
-                y = 200;
+                if (this.bezier === undefined || !this.bezier.inRangeX(x)) {
+                    points = this.character.lane.getPalingPoints(x);
+                    if (points === undefined) {
+                        return;
+                    }
+                    this.bezier = create('util.bezier', points);                     
+                } 
 
+                pt = this.bezier.getY(x);
 
-
-                this.character.setPos(x, y);
+                this.character.setPos(x, pt.y, pt.angle);
             },
 
             update: function () {
@@ -24,8 +30,10 @@
 
                 this.proxy.frame = this.character.getAnimation().getFrame();
 
-                this.proxy.x = this.character.x;
-                this.proxy.y = this.character.y;
+                this.proxy.x = this.character.x - this.world.pos();
+                this.proxy.y = this.world.height() - this.character.y;
+
+                this.proxy.angle = this.character.angle;
 
                 this.proxy.width = 80;
                 this.proxy.height = 120;
@@ -34,20 +42,21 @@
             }
 
         }, function (parent, character, characterproxy) {
-            var that = this, world;
+            var that = this;
 
             this.parent = parent;
             this.character = character;
             this.proxy = characterproxy;
             this.bezier = undefined;
             
-            world = parent.world;
+            this.world = parent.world;
 
             this.proxy.image = character.image;
 
             this.character.on('changedAnimation', _(this.update).bind(this));
             this.character.on('changedPos', _(this.update).bind(this));
+            
 
-            world.on('posChanged', _(this.setCharacterPosition).bind(this));
+            this.world.on('posChanged', _(this.setCharacterPosition).bind(this));
 
         });

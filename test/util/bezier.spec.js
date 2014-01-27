@@ -18,13 +18,13 @@ describe('util.bezier', function () {
     it('should let me calc an y-value for a given x-value', function () {
         var bezier = norne.obj.create('util.bezier',
             [
-                {x: 50, y: 50},
-                {x: 100, y: 10}
+                {x: 0, y: 0},
+                {x: 1200, y: 100}
             ]
         );
 
-        var y = bezier.getY(75);
-        //console.info(y);
+        var y = bezier.getY(672);
+        console.info(y);
     });
 
 });

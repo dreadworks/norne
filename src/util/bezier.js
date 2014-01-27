@@ -10,6 +10,10 @@
         .uses('util.evt')
         .as({  
 
+            inRangeX: function (xval) {
+                return (this.points[0].x <= xval && xval <= this.points[1].x);
+            },
+
             abs: function (x) {
                 if (x < 0) {
                     return -x;
@@ -77,7 +81,7 @@
             },
 
             getY: function (xval) {
-                var epsilon = 0.05, t, tmin, tmax,
+                var epsilon = 0.2, t, tmin, tmax,
                     value, derivative;
 
                 t = (xval - _(this.points).first().x) / (_(this.points).last().x - _(this.points).first().x);
@@ -90,7 +94,7 @@
                     derivative = (this.getPoint(t + epsilon).x - value) / epsilon;
 
                     if (this.abs(value - xval) < epsilon) {
-                        return this.getPoint(t).y;
+                        return this.getPoint(t);
                     } else {
                         if (value < xval) {
                             tmin = t;
