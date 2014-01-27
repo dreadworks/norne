@@ -28,7 +28,8 @@
              *  @type delay Number
              */
             start: function (delay) {
-                var that;
+                var that, args;
+                
                 if (!this._id) {
                     that = this;
 
@@ -37,6 +38,12 @@
                     }, delay);
 
                 }
+
+                args = _(arguments).toArray();
+                args.shift();
+                args.unshift('start');
+
+                this.trigger.apply(this, args);
             },
 
 
@@ -46,7 +53,9 @@
             stop: function () {
                 clearInterval(this._id);
                 delete this._id;
+                this.trigger('stop');
             },
+            
 
             /**
              *  Mark the next execution. The next time
@@ -56,9 +65,38 @@
              */
             mark: function () {
                 this._flag = true;
-            },
+            }
 
-        }, function (delay) {
+        }, function (delay, autostart) {
+            var that = this;
+        
             this._flag = false;
-            this.start(delay);
+            this._delay = delay;
+
+            // if 'start' gets triggered,
+            // go into auto-loop mode
+            this.on('go', function () {
+                var args;
+
+                if (that._id === undefined) {
+                    args = _(arguments).toArray();
+                    args.unshift(that._delay);
+                    that.start.apply(that, args);
+
+                    that.mark();
+                    that.on('tick', _(that.mark).bind(that));
+                }
+            });
+
+            // upon 'stop' events stop
+            // the clocks loop completely
+            this.on('halt', function () {
+                if (that._id !== undefined) {
+                    that.stop();
+                }
+            });
+
+            if (autostart !== false) {
+                this.start(delay);
+            }
         });

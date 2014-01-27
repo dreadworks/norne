@@ -98,15 +98,6 @@
                 if (_(pos).isNumber()) {
                     this._pos = pos;
                     this.trigger('posChanged', pos, this.width());
-
-                    
-                    /*
-                    if (this.character()) {
-                        var points = this.character().lane.getPoints();
-                        var bezier = create('util.bezier', points);
-                        var y = bezier.getY(pos);
-                        this.character().setPos(this.width() / 2, y);
-                    }*/
                 }
 
                 return this._pos;
@@ -187,6 +178,31 @@
 
 
         /**
+         *  STORY
+         *  =====
+         */
+         define('core.world.story').as({
+
+            /**
+             *  Add a twist to the story.
+             *  TODO (dreadworks) docs
+             */
+            addTwist: function (opts, callback) {
+                if (!_.isObject(opts)) {
+                    exc('addTwist: Expected option object as first parameter');
+                }
+
+                if (!_.isFunction(callback)) {
+                    exc('addTwist: Expected function as second parameter');
+                }
+
+                this.story.twist(opts, callback);
+            }
+
+         });
+
+
+        /**
          *  LANES
          *  =====
          */
@@ -246,18 +262,18 @@
                 var that;
 
                 if (arguments.length === 0) {
-                    return this.charact;
+                    return this._character;
                 }
 
-                this.charact = create('data.character', opts);
+                this._character = create('data.character', opts);
 
                 this.broker.add(
                         'character',
-                        this.charact,
+                        this._character,
                         this.broker.proxy.character
                     );
 
-                return this.charact;
+                return this._character;
             },
 
 
@@ -267,7 +283,7 @@
              *  @param dist The chosen lane
              *  @type dist Number
              */
-            put: function (dist) {
+            putCharacter: function (dist) {
                 var lane;
 
                 if (!this.character()) {
@@ -282,7 +298,18 @@
                 this.character().lane = lane;
 
                 return this.character;
-            }
+            },
+
+
+            /**
+             *  Define movement.
+             *
+             *
+             *
+             */
+             characterMovement: function (on, off) {
+                this.character.setMovement(on, off);
+             }
 
          });
 
@@ -298,6 +325,7 @@
                 'util.evt',
                 'core.world.env',
                 'core.world.renderer',
+                //'core.world.story',
                 'core.world.lanes',
                 'core.world.character')
             .as(
@@ -314,6 +342,7 @@
                     this.opts = defaults;
 
                     // maintains
+                    //this.story = create('core.story', this);
                     this.lanes = create('data.lanes');
 
                     // configure

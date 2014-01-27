@@ -113,12 +113,25 @@
                     this.angle = angle || this.angle;
 
                     this.trigger('changedPos', this.x, this.y);
+                },
+
+
+                /**
+                 *  Add a movement. The provided function gets
+                 *  called with an object where 'start' and
+                 *  'stop' events can be triggered.
+                 *
+                 *  @param fn Function that triggers events.
+                 *  @type fn Function
+                 */
+                addMovement: function (fn) {
+                    fn(this._mvclock);
                 }
 
             }, function (opts) {
 
                 var x, y, width, height, sprite,
-                    animation;
+                    animation, mvclock;
 
                 if (!opts.sprite) {
                     exc('No Image provided');
@@ -138,6 +151,27 @@
 
                 this.image = opts.sprite;
 
+                //
+                // MOVEMENT
+                //
+                // TODO determine value range
+                this.acceleration = opts.acceleration || 1;
+                this._mvclock = mvclock = create('util.clock', 
+                    opts.velocity || 33,
+                    false
+                );
+
+                mvclock.on('start', function (direction) {
+                    console.log('move to', direction);
+                });
+
+                mvclock.on('stop', function () {
+                    console.log('stop movement');
+                });
+
+                mvclock.on('tick', function () {
+                    console.log('movement step');
+                });
             });
 
 
