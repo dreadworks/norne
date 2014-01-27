@@ -15,8 +15,8 @@
                     if (points === undefined) {
                         return;
                     }
-                    this.bezier = create('util.bezier', points);                     
-                } 
+                    this.bezier = create('util.bezier', points);
+                }
 
                 pt = this.bezier.getY(x);
 
@@ -56,7 +56,6 @@
             this.character.on('changedAnimation', _(this.update).bind(this));
             this.character.on('changedPos', _(this.update).bind(this));
             
-
             this.world.on('posChanged', _(this.setCharacterPosition).bind(this));
 
         });
