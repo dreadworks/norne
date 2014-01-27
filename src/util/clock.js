@@ -73,7 +73,7 @@
             this._flag = false;
             this._delay = delay;
 
-            // if 'start' gets triggered,
+            // if 'go' gets triggered,
             // go into auto-loop mode
             this.on('go', function () {
                 var args;
@@ -88,7 +88,7 @@
                 }
             });
 
-            // upon 'stop' events stop
+            // upon 'halt' events stop
             // the clocks loop completely
             this.on('halt', function () {
                 if (that._id !== undefined) {
