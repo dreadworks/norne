@@ -12,7 +12,7 @@ describe('util.bezier', function () {
         );
 
         var coord = bezier.getPoint(0.01);
-        console.info("x: " + coord.x, ", y: " + coord.y, ", ang: " + coord.angle);
+        //console.info("x: " + coord.x, ", y: " + coord.y, ", ang: " + coord.angle);
     });
 
     it('should let me calc an y-value for a given x-value', function () {
@@ -24,7 +24,7 @@ describe('util.bezier', function () {
         );
 
         var y = bezier.getY(672);
-        console.info(y);
+        //console.info(y);
     });
 
 });

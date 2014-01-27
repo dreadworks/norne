@@ -150,14 +150,14 @@ describe('data.lane', function () {
         });
 
         paling = lane.getPalingPoints(12);
-        console.info(paling);
+        //console.info(paling);
         expect(_(paling[0]).isEqual(points[1])).toBe(true);
         expect(_(paling[1]).isEqual(points[2])).toBe(true);
-/*
+
         paling = lane.getPalingPoints(10);
         expect(_(paling[0]).isEqual(points[1])).toBe(true);
         expect(_(paling[1]).isEqual(points[2])).toBe(true);
-*/
+
         paling = lane.getPalingPoints(-10);
         expect(paling).toBe(undefined);
 
