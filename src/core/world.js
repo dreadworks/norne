@@ -208,23 +208,14 @@
          define('core.world.story').as({
 
             /**
-             *  Add a twist to the story.
-             *  TODO (dreadworks) docs
+             *  Add storylines and twists to the world.
+             *  Returns a storyline object to configure.
+             *
+             *  @param name The storylines name
+             *  @type name String
              */
-            addTwist: function (opts, callback) {
-                if (!_.isObject(opts)) {
-                    exc('addTwist: Expected option object as first parameter');
-                }
-
-                if (!_.isNumber(opts.to)) {
-                    exc('addTwist: opts.to must be a numerical value');
-                }
-
-                if (!_.isFunction(callback)) {
-                    exc('addTwist: Expected function as second parameter');
-                }
-
-                this.story.twist(opts, callback);
+            addStoryline: function (name) {
+                return this.story.addStoryline(name);
             }
 
          });
