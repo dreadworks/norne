@@ -96,7 +96,6 @@
 
             updateCache: function (dist) {
                 var that, cache, lane, index;
-                ////console.info('updateCache with ', dist);
 
                 that = this;
                 if (!_.isNumber(dist)) {
@@ -215,6 +214,11 @@
             });
 
             world.on('depthChanged', function (depth) {
+                that.updateCache();
+                that.updateProxy(true);
+            });
+
+            world.on('angleChanged', function (angle) {
                 that.updateCache();
                 that.updateProxy(true);
             });

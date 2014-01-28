@@ -36,9 +36,7 @@
             /**
              *  This gets or sets the worlds depth.
              *  It describes how deep or flat the world
-             *  appears. If the depth is 100, the lane
-             *  will be scaled by the factor 10. With
-             *  depth 10, no lane gets scaled.
+             *  appears.
              *
              *  @param depth (optional) Value between 10 and 100
              *  @type depth Number
@@ -48,12 +46,35 @@
                     exc('The depth must be a value between 0 and 100');
                 }
 
-                if (depth) {
+                if (depth !== undefined) {
                     this._depth = depth;
                     this.trigger('depthChanged', depth);
                 }
 
                 return this._depth;
+            },
+
+
+            /**
+             *  The angle describes the users view of the
+             *  world. With a negative angle the lanes in
+             *  the distance are better to see. 
+             *
+             *  @param angle (optional) Value between -45 and 45
+             *  @type angle Number
+             */
+            angle: function (angle) {
+                if (angle < -this._maxangle || this._maxangle < angle) {
+                    exc('The angle must be a value between -'+ 
+                        this._maxangle +' and '+ this._maxangle);
+                }
+
+                if (angle !== undefined) {
+                    this._angle = angle;
+                    this.trigger('angleChanged', angle);
+                }
+
+                return this._angle;
             },
 
 
@@ -69,7 +90,7 @@
              *  @type p Object or Number
              */
             map: function (dist, p) {
-                var depthfactor, distfactor, x;
+                var depthfactor, distfactor, x, y, a;
 
                 x = (p.x === undefined) ? p : p.x;
 
@@ -81,10 +102,13 @@
                     return x;
                 }
 
-                return {
-                    x: x,
-                    y: this.canvas.offsetHeight - p.y
-                };
+                a = this.angle();
+
+                y = p.y;
+                y *= (a/(-this._maxangle * 100)) * dist + 1 + a/(2 * this._maxangle);
+                y = this.canvas.offsetHeight - y;
+
+                return { x: x, y: y };
             },
 
 
@@ -190,6 +214,10 @@
             addTwist: function (opts, callback) {
                 if (!_.isObject(opts)) {
                     exc('addTwist: Expected option object as first parameter');
+                }
+
+                if (!_.isNumber(opts.to)) {
+                    exc('addTwist: opts.to must be a numerical value');
                 }
 
                 if (!_.isFunction(callback)) {
@@ -298,18 +326,7 @@
                 this.character().lane = lane;
 
                 return this.character;
-            },
-
-
-            /**
-             *  Define movement.
-             *
-             *
-             *
-             */
-             characterMovement: function (on, off) {
-                this.character.setMovement(on, off);
-             }
+            }
 
          });
 
@@ -325,13 +342,19 @@
                 'util.evt',
                 'core.world.env',
                 'core.world.renderer',
-                //'core.world.story',
+                'core.world.story',
                 'core.world.lanes',
                 'core.world.character')
             .as(
                 function (opts) {
+
+                    // internal constants
+                    this._maxangle = 45;
+
+                    // default options
                     var defaults = {
                         depth: 100,
+                        angle: 0,
                         fps: 30,
                         pos: 0
                     };
@@ -342,11 +365,12 @@
                     this.opts = defaults;
 
                     // maintains
-                    //this.story = create('core.story', this);
+                    this.story = create('core.story', this);
                     this.lanes = create('data.lanes');
 
                     // configure
                     this.depth(this.opts.depth);
+                    this.angle(this.opts.angle);
                     this.pos(this.opts.pos);
                     this.renderer(this.opts.canvas);
                 }
