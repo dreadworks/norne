@@ -28,7 +28,13 @@
                         }
                     });
 
+                    // repaint the character
                     this.characterRenderer.render(this.proxy.character);
+
+                    // repaint all bodies
+                    _(this.proxy.bodies).each(function (body) {
+                        that.bodyRenderer.render(body);
+                    });
                 },
 
 
@@ -95,12 +101,17 @@
             }, function (proxy, clock, wrapper) {
 
                 this.canvas(wrapper);
+
                 this.laneRenderer = create(
                     'render.lane', this.canvas
                 );
 
                 this.characterRenderer = create(
                     'render.character', this.canvas
+                );
+
+                this.bodyRenderer = create(
+                    'render.body', this.canvas
                 );
 
                 this.clock = clock;
