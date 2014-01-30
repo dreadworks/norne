@@ -16,20 +16,22 @@
 
                 // paints the current state of the world
                 repaint: function () {
-                    var that, character;
+                    var that, proxy;
 
                     that = this;
+                    proxy = this.proxy;
+
                     this.clearCanvas();
 
-                    // repaint the lanes
                     _(this.proxy.lanes).each(function (lane) {
+                        if (lane.dist <= proxy.character.dist) {
+                            that.characterRenderer.render(proxy.character);
+                        }
+
                         if (lane.points && lane.points.length) {
                             that.laneRenderer.renderLane(lane);
                         }
                     });
-
-                    // repaint the character
-                    this.characterRenderer.render(this.proxy.character);
 
                     // repaint all bodies
                     _(this.proxy.bodies).each(function (body) {
