@@ -36,9 +36,7 @@
             /**
              *  This gets or sets the worlds depth.
              *  It describes how deep or flat the world
-             *  appears. If the depth is 100, the lane
-             *  will be scaled by the factor 10. With
-             *  depth 10, no lane gets scaled.
+             *  appears.
              *
              *  @param depth (optional) Value between 10 and 100
              *  @type depth Number
@@ -48,12 +46,35 @@
                     exc('The depth must be a value between 0 and 100');
                 }
 
-                if (depth) {
+                if (depth !== undefined) {
                     this._depth = depth;
                     this.trigger('depthChanged', depth);
                 }
 
                 return this._depth;
+            },
+
+
+            /**
+             *  The angle describes the users view of the
+             *  world. With a negative angle the lanes in
+             *  the distance are better to see. 
+             *
+             *  @param angle (optional) Value between -45 and 45
+             *  @type angle Number
+             */
+            angle: function (angle) {
+                if (angle < -this._maxangle || this._maxangle < angle) {
+                    exc('The angle must be a value between -'+ 
+                        this._maxangle +' and '+ this._maxangle);
+                }
+
+                if (angle !== undefined) {
+                    this._angle = angle;
+                    this.trigger('angleChanged', angle);
+                }
+
+                return this._angle;
             },
 
 
@@ -69,7 +90,7 @@
              *  @type p Object or Number
              */
             map: function (dist, p) {
-                var depthfactor, distfactor, x;
+                var depthfactor, distfactor, x, y, a;
 
                 x = (p.x === undefined) ? p : p.x;
 
@@ -80,11 +101,14 @@
                 if (_(p).isNumber()) {
                     return x;
                 }
-                var h = this.height();
-                return {
-                    x: x,
-                    y: this.height() - p.y
-                };
+
+                a = this.angle();
+
+                y = p.y;
+                y *= (a/(-this._maxangle * 100)) * dist + 1 + a/(2 * this._maxangle);
+                y = this.height() - y;
+
+                return { x: x, y: y };
             },
 
 
@@ -189,19 +213,14 @@
          define('core.world.story').as({
 
             /**
-             *  Add a twist to the story.
-             *  TODO (dreadworks) docs
+             *  Add storylines and twists to the world.
+             *  Returns a storyline object to configure.
+             *
+             *  @param name The storylines name
+             *  @type name String
              */
-            addTwist: function (opts, callback) {
-                if (!_.isObject(opts)) {
-                    exc('addTwist: Expected option object as first parameter');
-                }
-
-                if (!_.isFunction(callback)) {
-                    exc('addTwist: Expected function as second parameter');
-                }
-
-                this.story.twist(opts, callback);
+            addStoryline: function (name) {
+                return this.story.addStoryline(name);
             }
 
          });
@@ -307,18 +326,7 @@
                 this.character().lane = lane;
 
                 return this.character;
-            },
-
-
-            /**
-             *  Define movement.
-             *
-             *
-             *
-             */
-             characterMovement: function (on, off) {
-                this.character.setMovement(on, off);
-             }
+            }
 
          });
 
@@ -334,13 +342,19 @@
                 'util.evt',
                 'core.world.env',
                 'core.world.renderer',
-                //'core.world.story',
+                'core.world.story',
                 'core.world.lanes',
                 'core.world.character')
             .as(
                 function (opts) {
+
+                    // internal constants
+                    this._maxangle = 45;
+
+                    // default options
                     var defaults = {
                         depth: 100,
+                        angle: 0,
                         fps: 30,
                         pos: 0
                     }, that = this;
@@ -351,11 +365,12 @@
                     this.opts = defaults;
 
                     // maintains
-                    //this.story = create('core.story', this);
+                    this.story = create('core.story', this);
                     this.lanes = create('data.lanes');
 
                     // configure
                     this.depth(this.opts.depth);
+                    this.angle(this.opts.angle);
                     this.pos(this.opts.pos);
                     this.renderer(this.opts.canvas);
 

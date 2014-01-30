@@ -64,11 +64,8 @@
                 points = _(this.cache[dist]);
                 offset = this.offset(dist, range.a);
 
-                //console.log('updateProxy', range.a, range.b, offset);
-                //console.log(range.a, range.b);
                 a = this.world.map(dist, range.a);
                 b = range.b;
-                //console.log(range.a, range.b);
 
                 // retrieve indexes for slicing
                 a = points.sortedIndex({x:a}, 'x') - 1;
@@ -81,10 +78,7 @@
                 index = this.index(dist, true);
                 offset = this.offset(dist, range.a);
 
-                //console.log(a,b, this.cache[dist][a], this.cache[dist][b], offset);
-
                 // applying offset
-                ////console.log('apply offset', range, offset);
                 points = _(points).map(function (p) {
                     return { x: p.x + offset, y: p.y };
                 });
@@ -96,7 +90,6 @@
 
             updateCache: function (dist) {
                 var that, cache, lane, index;
-                ////console.info('updateCache with ', dist);
 
                 that = this;
                 if (!_.isNumber(dist)) {
@@ -172,7 +165,8 @@
 
                 // the lane got newly created
                 if (this.index(dist) === -1) {
-                    this.createEntry(dist, { 
+                    this.createEntry(dist, {
+                        dist: lane.dist,
                         color: lane.color(),
                         points: []
                     });
@@ -215,6 +209,11 @@
             });
 
             world.on('depthChanged', function (depth) {
+                that.updateCache();
+                that.updateProxy(true);
+            });
+
+            world.on('angleChanged', function (angle) {
                 that.updateCache();
                 that.updateProxy(true);
             });

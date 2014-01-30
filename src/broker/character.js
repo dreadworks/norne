@@ -13,6 +13,7 @@
                     return;
                 }
 
+                this.proxy.dist = this.character.lane.dist;
                 this.proxy.frame = this.character.getAnimation().getFrame();
 
                 x = this.character.x - this.world.pos();
