@@ -119,9 +119,32 @@
              *  @type pos Number
              */
             pos: function (pos) {
+                var lastPoint, mpos, mlp, dist;
+
                 if (_(pos).isNumber()) {
 
-                    console.log(this.character.points);
+                    // cant set to a negative value
+                    if (pos < 0) {
+                        return;
+                    }
+
+                    // the world won't move if the character
+                    // reaches the end of its lane
+                    if (this._character) {
+                        dist = this._character.lane.dist;
+                        lastPoint = _(this._character.lane.getPoints()).last();
+                        mlp = this.map(dist, lastPoint.x);
+                        mpos = this.map(dist, this.pos());
+                        
+                        if (mpos + this.width() >= mlp) {
+                            return;
+                        }
+
+                        if (this._character.x + this.width() / 2 > lastPoint.x) {
+                            return;
+                        }
+                    }
+                    
 
                     this._pos = pos;
                     this.trigger('posChanged', pos, this.width());
@@ -144,8 +167,6 @@
              *  Returns the current canvas height
              */
             height: function () {
-                //return (this._renderer) ? this._renderer.canvasHeight() : 0;
-                console.log((this._renderer) ? this._renderer.canvas.height : 0);
                 return (this._renderer) ? this._renderer.canvas.height : 0;
             },
 
@@ -297,6 +318,7 @@
                         this.broker.proxy.character
                     );
 
+
                 this._character.on('changedPos', function (x, y, dx) {
                     that.pos(x - (that.width() / 2));
                 });
@@ -324,6 +346,9 @@
 
                 lane = this.lanes.get(dist);
                 this.character().lane = lane;
+
+                this._character.move();
+                this._character.setPos(40);
 
                 return this.character;
             }

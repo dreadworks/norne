@@ -170,6 +170,7 @@
                 this.x = opts.x || 0;
                 this.y = 0;
                 this.angle = 0;
+                this.direction = 1;
 
                 this.image = opts.sprite;
 
