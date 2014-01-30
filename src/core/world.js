@@ -80,10 +80,10 @@
                 if (_(p).isNumber()) {
                     return x;
                 }
-
+                var h = this.height();
                 return {
                     x: x,
-                    y: this.canvas.offsetHeight - p.y
+                    y: this.height() - p.y
                 };
             },
 
@@ -96,10 +96,13 @@
              */
             pos: function (pos) {
                 if (_(pos).isNumber()) {
+
+                    console.log(this.character.points);
+
                     this._pos = pos;
                     this.trigger('posChanged', pos, this.width());
                 }
-
+                
                 return this._pos;
             }
 
@@ -117,7 +120,9 @@
              *  Returns the current canvas height
              */
             height: function () {
-                return (this._renderer) ? this._renderer.canvasHeight() : 0;
+                //return (this._renderer) ? this._renderer.canvasHeight() : 0;
+                console.log((this._renderer) ? this._renderer.canvas.height : 0);
+                return (this._renderer) ? this._renderer.canvas.height : 0;
             },
 
             /**
@@ -259,7 +264,7 @@
              *  TODO (luhuec) comment
              */
             character: function (opts) {
-                var that;
+                var that = this;
 
                 if (arguments.length === 0) {
                     return this._character;
@@ -272,6 +277,10 @@
                         this._character,
                         this.broker.proxy.character
                     );
+
+                this._character.on('changedPos', function (x, y, dx) {
+                    that.pos(x - (that.width() / 2));
+                });
 
                 return this._character;
             },
@@ -334,7 +343,7 @@
                         depth: 100,
                         fps: 30,
                         pos: 0
-                    };
+                    }, that = this;
 
                     _(defaults).extend(opts);
 
@@ -349,6 +358,11 @@
                     this.depth(this.opts.depth);
                     this.pos(this.opts.pos);
                     this.renderer(this.opts.canvas);
+
+                    window.addEventListener('resize', function (evt) {
+                        that.broker.broker.lanes.updateCache();
+                        that.broker.broker.lanes.updateProxy(true);
+                    });
                 }
             );
 

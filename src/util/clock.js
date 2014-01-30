@@ -33,8 +33,8 @@
                 if (!this._id) {
                     that = this;
 
-                    that._id = setInterval(function() { 
-                        that._execute(); 
+                    that._id = setInterval(function() {
+                        that._execute();
                     }, delay);
 
                 }
@@ -51,9 +51,13 @@
              *  Stop the running interval.
              */
             stop: function () {
+                var args;
                 clearInterval(this._id);
                 delete this._id;
-                this.trigger('stop');
+
+                args = _(arguments).toArray();
+                args.unshift('stop');
+                this.trigger.apply(this, args);
             },
             
 
@@ -91,8 +95,11 @@
             // upon 'halt' events stop
             // the clocks loop completely
             this.on('halt', function () {
+                var args;
+
                 if (that._id !== undefined) {
-                    that.stop();
+                    args = _(arguments).toArray();
+                    that.stop.apply(that, args);
                 }
             });
 

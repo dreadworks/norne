@@ -28,6 +28,13 @@
             getPoint: function (t) {
                 var ctrlpts, ipoints = [], point, m;
 
+                ctrlpts = [
+                    this.points[0],
+                    this.ctrl1,
+                    this.ctrl2,
+                    this.points[1]
+                ];
+
                 if (t === 0) {
                     point = _(ctrlpts).first();
                     return {
@@ -43,13 +50,6 @@
                         angle: 0
                     };  
                 }
-
-                ctrlpts = [
-                    this.points[0],
-                    this.ctrl1,
-                    this.ctrl2,
-                    this.points[1]
-                ];
 
                 while (ctrlpts.length > 1) {
 

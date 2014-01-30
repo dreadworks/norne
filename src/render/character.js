@@ -30,10 +30,11 @@
                     if (!frame) {
                         return;
                     }
-
+                    
                     this.ctx.beginPath();
                     this.ctx.translate(proxy.x, proxy.y);
                     this.ctx.rotate(-proxy.angle);
+                    this.ctx.scale(proxy.direction,1);
                     
                     this.ctx.drawImage(
                             this.image, // image to draw
@@ -49,9 +50,13 @@
                             proxy.width,    // width of shown image
                             proxy.height    // height of shown image
                         );
+                    
 
                     this.ctx.rotate(proxy.angle);
                     this.ctx.translate(-proxy.x, -proxy.y);
+                    this.ctx.scale(proxy.direction,1);
+                    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                    this.ctx.restore();
                     this.ctx.closePath();
                     
                     

@@ -21,6 +21,9 @@
                     that = this;
                     this.clearCanvas();
 
+                    this.ctx.canvas.width = window.innerWidth;
+                    this.ctx.canvas.height = window.innerHeight;
+
                     // repaint the lanes
                     _(this.proxy.lanes).each(function (lane) {
                         if (lane.points && lane.points.length) {

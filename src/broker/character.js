@@ -6,37 +6,28 @@
         .uses('util.evt')
         .as({
 
-            setCharacterPosition: function (pos, width) {
-                var x, pt, points;
-                x = pos + (width / 2);
-
-                if (this.bezier === undefined || !this.bezier.inRangeX(x)) {
-                    points = this.character.lane.getPalingPoints(x);
-                    if (points === undefined) {
-                        return;
-                    }
-                    this.bezier = create('util.bezier', points);
-                }
-
-                pt = this.bezier.getY(x);
-
-                this.character.setPos(x, pt.y, pt.angle);
-            },
-
             update: function () {
-                if (this.character === undefined) {
+                var x, y, mapped, sizefac;
+
+                if (this.character === undefined || this.character.lane === undefined) {
                     return;
                 }
 
                 this.proxy.frame = this.character.getAnimation().getFrame();
 
-                this.proxy.x = this.character.x - this.world.pos();
-                this.proxy.y = this.world.height() - this.character.y;
+                x = this.character.x - this.world.pos();
+                y = this.character.y;
+                mapped = this.world.map(this.character.lane.dist, {x: x, y: y});
+
+                this.proxy.x = mapped.x;
+                this.proxy.y = mapped.y;
 
                 this.proxy.angle = this.character.angle;
+                this.proxy.direction = this.character.direction;
 
-                this.proxy.width = 80;
-                this.proxy.height = 120;
+                sizefac = 1 - (this.character.lane.dist / 110);
+                this.proxy.width = this.proxy.frame.width * this.character.width * sizefac;
+                this.proxy.height = this.proxy.frame.height * this.character.height * sizefac;
 
                 this.trigger('update');
             }
@@ -54,8 +45,6 @@
             this.proxy.image = character.image;
 
             this.character.on('changedAnimation', _(this.update).bind(this));
-            this.character.on('changedPos', _(this.update).bind(this));
-            
-            this.world.on('posChanged', _(this.setCharacterPosition).bind(this));
+            this.world.on('posChanged', _(this.update).bind(this));
 
         });
