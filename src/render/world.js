@@ -23,7 +23,7 @@
 
                     this.clearCanvas();
 
-                    _(this.proxy.lanes).each(function (lane) {
+                    _(proxy.lanes).each(function (lane) {
                         if (lane.dist <= proxy.character.dist) {
                             that.characterRenderer.render(proxy.character);
                         }
@@ -34,7 +34,7 @@
                     });
 
                     // repaint all bodies
-                    _(this.proxy.bodies).each(function (body) {
+                    _(proxy.bodies).each(function (body) {
                         that.bodyRenderer.render(body);
                     });
                 },

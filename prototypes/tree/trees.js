@@ -9,6 +9,8 @@
 
 
     function init_world(world) {
+        console.log('init world');
+
         var bounds, behaviours, canvas,
             id, particles, renderer,
             forcefields;
@@ -17,7 +19,7 @@
         world.canvasId = id;
 
         // create canvas element and append to body
-        canvas = $('<canvas/>', {id: world.canvasId}).appendTo('body')
+        canvas = $('<canvas/>', {id: world.canvasId}).appendTo('body');
 
         bounds = Physics.aabb(
             0, 0,
@@ -42,7 +44,7 @@
 
 
         particles = [];
-        _.times(130, function () {
+        _.times(100, function () {
             particles.push(Physics.body('circle', {
                 x: _.random(
                     20,
@@ -113,14 +115,14 @@
 
         worlds = [];
 
-        _.times(20, function () {
+        _.times(5, function () {
             world = new Physics({
                 timestep: 3,
                 maxIPF: 6
             });
             init_world(world);
             worlds.push(world);
-        })
+        });
 
         paused = false;
         $cntrl = $('#cntrl');
@@ -132,7 +134,7 @@
                 Physics.util.ticker.stop();
             }
             paused = !paused;
-        })
+        });
 
 
         /*
@@ -144,7 +146,7 @@
                 if (true) {
                     world.render();
                 }
-            })
+            });
         });
 
         Physics.util.ticker.start();

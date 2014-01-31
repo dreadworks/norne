@@ -24,20 +24,24 @@ module.exports = function (grunt) {
         // core library
         'core/world',
         'core/story',
+        'core/body',
 
         // data objects (the model)
         'data/lane',
         'data/character',
+        'data/body',
 
         // broker working on the proxy
         'broker/world',
         'broker/lanes',
         'broker/character',
+        'broker/bodies',
 
         // rendering data in the proxy
         'render/world',
         'render/lane',
         'render/character',
+        'render/body',
 
         'outro'
     ];
@@ -51,17 +55,13 @@ module.exports = function (grunt) {
             test: 'text/'+ pkg.name +'.js'
         },
 
-        sources: (function () {
-            return _(sources).map(function (source) {
-                return 'src/' + source + '.js';
-            });
-        }()),
+        sources: _(sources).map(function (source) {
+            return 'src/' + source + '.js';
+        }),
 
-        tests: (function () {
-            return _(sources).map(function (source) {
-                return 'test/' + source + '.spec.js';
-            });
-        }())
+        tests: _(sources).map(function (source) {
+            return 'test/' + source + '.spec.js';
+        })
 
     };
 

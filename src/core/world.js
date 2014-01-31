@@ -1,7 +1,7 @@
 
 
     
-    (function () {
+    (function (physics) {
 
         var exc;
         exc = _(norne.exc.raise).partial('norne');
@@ -193,7 +193,9 @@
                 );
 
                 // configure
+                this.broker.add('bodies', this.bodies);
                 this.broker.add('lanes', this.lanes);
+
                 return this._renderer;
             }
 
@@ -219,6 +221,37 @@
             }
 
          });
+
+
+
+         /**
+          *  BODIES
+          *  ======
+          */
+        define('core.world.bodies').as({
+
+            /** 
+             *  Add a body to the world. 
+             *
+             *
+             */
+            addBody: function () {
+                var physworld, body;
+
+                physworld = physics({
+                    timestep: 1000/this.opts.fps,
+                    maxIPF: 6,
+                    integrator: 'verlet'
+                });
+
+                body = create('data.body', physworld);
+                this.bodies.add(body);
+
+                return body;
+            }
+
+        });
+
 
 
         /**
@@ -334,6 +367,7 @@
                 'core.world.env',
                 'core.world.renderer',
                 'core.world.story',
+                'core.world.story',
                 'core.world.lanes',
                 'core.world.character')
             .as(
@@ -358,6 +392,7 @@
                     // maintains
                     this.story = create('core.story', this);
                     this.lanes = create('data.lanes');
+                    this.bodies = create('data.bodies');
 
                     // configure
                     this.depth(this.opts.depth);
@@ -367,4 +402,4 @@
                 }
             );
 
-    }());
+    }(Physics));
