@@ -256,13 +256,21 @@
           */
         define('core.world.bodies').as({
 
+            _init_bodies: function () {
+                var that = this;
+
+                physics.renderer('norne', function (proto) {
+                    return _(proto).extend(that.broker.add('bodies'));
+                });
+            },
+
             /** 
              *  Add a body to the world. 
              *
              *
              */
             addBody: function () {
-                var physworld, body;
+                var physworld, body, clock;
 
                 physworld = physics({
                     timestep: 1000/this.opts.fps,
@@ -271,11 +279,16 @@
                 });
 
                 clock = create('util.clock', 1000/this.opts.fps, false);
+                body = create('data.body', physworld, clock);
+                physworld.add(physics.renderer('norne'));
 
-                body = create('data.body', clock, physworld);
                 this.bodies.add(body);
-
                 clock.trigger('go');
+
+                window.step = function () {
+                    physworld.step(Date.now());
+                    physworld.render();
+                };
                 return body;
             }
 
@@ -404,7 +417,7 @@
                 'core.world.env',
                 'core.world.renderer',
                 'core.world.story',
-                'core.world.story',
+                'core.world.bodies',
                 'core.world.lanes',
                 'core.world.character')
             .as(
@@ -436,6 +449,9 @@
                     this.angle(this.opts.angle);
                     this.pos(this.opts.pos);
                     this.renderer(this.opts.canvas);
+
+                    // initialize
+                    this._init_bodies();
 
                     // TODO #2
                     window.addEventListener('resize', function (evt) {

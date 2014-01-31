@@ -33,10 +33,12 @@
 
                 this.broker[name] = subbroker;
                 subbroker.on('update', this.render);
+
+                return subbroker;
             }
 
         /**
-         *  Create a new broker.
+         *  Constructor.
          *
          *  @param world A norne world
          *  @type world core.world
@@ -53,7 +55,8 @@
 
             this.proxy = {
                 lanes: [],
-                character: {}
+                character: {},
+                bodies: {}
             };
 
             this.broker = {};

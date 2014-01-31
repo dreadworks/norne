@@ -28,18 +28,13 @@
                             that.characterRenderer.render(proxy.character);
                         }
 
-                        _(proxy.bodies[lane.dist]).each(function (body) {
-                            that.bodyRenderer.render(body);
-                        });
-
                         if (lane.points && lane.points.length) {
                             that.laneRenderer.renderLane(lane);
                         }
-                    });
 
-                    // repaint all bodies
-                    _(proxy.bodies).each(function (body) {
-                        that.bodyRenderer.render(body);
+                        _(proxy.bodies.particles[lane.dist]).each(function (body) {
+                            that.bodyRenderer.render(body);
+                        });
                     });
                 },
 
@@ -116,11 +111,9 @@
                     'render.character', this.canvas
                 );
 
-                /*
                 this.bodyRenderer = create(
                     'render.body', this.canvas
                 );
-                */
 
                 this.clock = clock;
                 this.proxy = proxy;

@@ -20,9 +20,17 @@
             },
 
 
-
-            offset: function (dist, pos) {
-                return -this.world.map(dist, pos);
+            /** 
+             *  Calculates the relative offset based
+             *  on the worlds position and the dist.
+             *
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param x The position
+             *  @type x Number
+             */
+            offset: function (dist, x) {
+                return -this.world.map(dist, x);
             },
 
 
@@ -48,6 +56,15 @@
             },
 
 
+            /** 
+             *  Gets a subset of the cache for rendering
+             *  and saves that to the proxy. The offset
+             *  gets calculated and added. If the dist
+             *  argument gets omitted, all lanes are updated.
+             *
+             *  @param dist (Optional) The lanes dist
+             *  @type dist Number
+             */
             updateProxy: function (dist) {
                 var index, points, range, offset, a, b, p;
 
@@ -88,6 +105,17 @@
             },
 
 
+            /**
+             *  Recalculates the cache when outside
+             *  variables like world.depth() change.
+             *  If the dist argument gets omitted,
+             *  all lane caches are recalculated.
+             *
+             *  TODO #7
+             *
+             *  @param dist (optional) The lanes dist
+             *  @type dist Number
+             */
             updateCache: function (dist) {
                 var that, cache, lane, index;
 
@@ -150,8 +178,6 @@
              *  Point values are saved mapped. 
              *  @see world.map
              *
-             *  TODO implement ranged based caching.
-             *
              *  @param dist The lanes dist
              *  @type dist Number
              *  @param point The point that got inserted
@@ -181,6 +207,14 @@
             }
 
 
+        /**
+         *  Constructor
+         *
+         *  @param parent The parent broker
+         *  @type parent broker.world
+         *  @param lanes The lanes collection
+         *  @type lanes data.lanes
+         */
         }, function (parent, lanes) {
             var that, world;
 
