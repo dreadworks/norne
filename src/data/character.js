@@ -108,11 +108,33 @@
                 },
 
                 setPos: function (x, y, angle) {
+                    var dx = this.x;
+
                     this.x = x || this.x;
                     this.y = y || this.y;
                     this.angle = angle || this.angle;
 
-                    this.trigger('changedPos', this.x, this.y);
+                    this.trigger('changedPos', this.x, this.y, dx);
+                },
+
+                move: function () {
+                    var x = this.x, pt, points, dx, ang;
+
+                    ang = this.angle * this.direction;
+                    dx = (5 - (2 * ang)) * this.direction;
+                    x = x + dx;
+
+                    if (this.bezier === undefined || !this.bezier.inRangeX(x)) {
+                        points = this.lane.getPalingPoints(x);
+                        if (points === undefined) {
+                            return;
+                        }
+                        this.bezier = create('util.bezier', points);
+                    }
+
+                    pt = this.bezier.getY(x);
+
+                    this.setPos(pt.x, pt.y, pt.angle);
                 },
 
 
@@ -131,7 +153,7 @@
             }, function (opts) {
 
                 var x, y, width, height, sprite,
-                    animation, mvclock;
+                    animation, mvclock, that = this;
 
                 if (!opts.sprite) {
                     exc('No Image provided');
@@ -145,9 +167,10 @@
                 this.width = opts.width || 100;
                 this.height = opts.height || 100;
 
-                this.x = 0;
+                this.x = opts.x || 0;
                 this.y = 0;
                 this.angle = 0;
+                this.direction = 1;
 
                 this.image = opts.sprite;
 
@@ -161,16 +184,17 @@
                     false
                 );
 
-                mvclock.on('start', function (direction) {
-                    console.log('move to', direction);
+                mvclock.on('start', function (direction, anim) {
+                    that.direction = direction === '+' ? 1 : -1;
+                    that.setAnimation(anim);
                 });
 
-                mvclock.on('stop', function () {
-                    console.log('stop movement');
+                mvclock.on('stop', function (anim) {
+                    that.setAnimation(anim);
                 });
 
                 mvclock.on('tick', function () {
-                    console.log('movement step');
+                    that.move.call(that);
                 });
             });
 

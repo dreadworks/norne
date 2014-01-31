@@ -106,7 +106,7 @@
 
                 y = p.y;
                 y *= (a/(-this._maxangle * 100)) * dist + 1 + a/(2 * this._maxangle);
-                y = this.canvas.offsetHeight - y;
+                y = this.height() - y;
 
                 return { x: x, y: y };
             },
@@ -119,11 +119,37 @@
              *  @type pos Number
              */
             pos: function (pos) {
+                var lastPoint, mpos, mlp, dist;
+
                 if (_(pos).isNumber()) {
+
+                    // cant set to a negative value
+                    if (pos < 0) {
+                        return;
+                    }
+
+                    // the world won't move if the character
+                    // reaches the end of its lane
+                    if (this._character) {
+                        dist = this._character.lane.dist;
+                        lastPoint = _(this._character.lane.getPoints()).last();
+                        mlp = this.map(dist, lastPoint.x);
+                        mpos = this.map(dist, this.pos());
+                        
+                        if (mpos + this.width() >= mlp) {
+                            return;
+                        }
+
+                        if (this._character.x + this.width() / 2 > lastPoint.x) {
+                            return;
+                        }
+                    }
+                    
+
                     this._pos = pos;
                     this.trigger('posChanged', pos, this.width());
                 }
-
+                
                 return this._pos;
             }
 
@@ -141,7 +167,7 @@
              *  Returns the current canvas height
              */
             height: function () {
-                return (this._renderer) ? this._renderer.canvasHeight() : 0;
+                return (this._renderer) ? this._renderer.canvas.height : 0;
             },
 
             /**
@@ -311,7 +337,7 @@
              *  TODO (luhuec) comment
              */
             character: function (opts) {
-                var that;
+                var that = this;
 
                 if (arguments.length === 0) {
                     return this._character;
@@ -324,6 +350,11 @@
                         this._character,
                         this.broker.proxy.character
                     );
+
+
+                this._character.on('changedPos', function (x, y, dx) {
+                    that.pos(x - (that.width() / 2));
+                });
 
                 return this._character;
             },
@@ -348,6 +379,9 @@
 
                 lane = this.lanes.get(dist);
                 this.character().lane = lane;
+
+                this._character.move();
+                this._character.setPos(40);
 
                 return this.character;
             }
@@ -382,7 +416,7 @@
                         angle: 0,
                         fps: 30,
                         pos: 0
-                    };
+                    }, that = this;
 
                     _(defaults).extend(opts);
 
@@ -399,6 +433,11 @@
                     this.angle(this.opts.angle);
                     this.pos(this.opts.pos);
                     this.renderer(this.opts.canvas);
+
+                    window.addEventListener('resize', function (evt) {
+                        that.broker.broker.lanes.updateCache();
+                        that.broker.broker.lanes.updateProxy(true);
+                    });
                 }
             );
 

@@ -30,10 +30,11 @@
                     if (!frame) {
                         return;
                     }
-
+                    
                     this.ctx.beginPath();
                     this.ctx.translate(proxy.x, proxy.y);
                     this.ctx.rotate(-proxy.angle);
+                    this.ctx.scale(proxy.direction,1);
                     
                     this.ctx.drawImage(
                             this.image, // image to draw
@@ -44,17 +45,21 @@
                             frame.height,   // height of the clipped frame
                             
                             0 - (proxy.width / 2),        // x-position on canvas
-                            0 - proxy.height,             // y-position on canvas
+                            0 - proxy.height + 5,             // y-position on canvas
                             
                             proxy.width,    // width of shown image
                             proxy.height    // height of shown image
                         );
+                    
 
                     this.ctx.rotate(proxy.angle);
                     this.ctx.translate(-proxy.x, -proxy.y);
+                    this.ctx.scale(proxy.direction,1);
+                    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
+                    this.ctx.restore();
                     this.ctx.closePath();
                     
-                    
+                    /*
                     this.ctx.beginPath();
                     this.ctx.arc(proxy.x, proxy.y, 5, 0, 2*Math.PI);
                     this.ctx.fillStyle='Blue';
@@ -77,6 +82,7 @@
                     this.ctx.translate(-proxy.x, -proxy.y);
                     
                     this.ctx.closePath();
+                    */
                 },
 
                 setImageSource: function (image) {

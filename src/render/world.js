@@ -112,9 +112,11 @@
                     'render.character', this.canvas
                 );
 
+                /*
                 this.bodyRenderer = create(
                     'render.body', this.canvas
                 );
+                */
 
                 this.clock = clock;
                 this.proxy = proxy;

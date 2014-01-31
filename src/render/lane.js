@@ -65,8 +65,8 @@
                 // with a much darkened version of
                 // the given color
                 fillStroke: function (color) {
-                    this.ctx.strokeStyle = this.shadeColor(color, -50);
-                    this.ctx.lineWidth = 2;
+                    this.ctx.strokeStyle = this.shadeColor(color, -60);
+                    this.ctx.lineWidth = 1;
                     this.ctx.stroke();
                 },
 
@@ -113,7 +113,7 @@
                     y1 = y1.y;
 
                     lingrand = this.ctx.createLinearGradient(x1, y1, x2, y2);
-                    lingrand.addColorStop(0, this.shadeColor(color, -40));
+                    lingrand.addColorStop(0, this.shadeColor(color, -70));
                     lingrand.addColorStop(1, color);
 
                     return lingrand;
