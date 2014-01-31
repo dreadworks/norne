@@ -270,9 +270,12 @@
                     integrator: 'verlet'
                 });
 
-                body = create('data.body', physworld);
+                clock = create('util.clock', 1000/this.opts.fps, false);
+
+                body = create('data.body', clock, physworld);
                 this.bodies.add(body);
 
+                clock.trigger('go');
                 return body;
             }
 
@@ -434,6 +437,7 @@
                     this.pos(this.opts.pos);
                     this.renderer(this.opts.canvas);
 
+                    // TODO #2
                     window.addEventListener('resize', function (evt) {
                         that.broker.broker.lanes.updateCache();
                         that.broker.broker.lanes.updateProxy(true);

@@ -142,7 +142,7 @@
          */
         Physics.util.ticker.subscribe(function (time, dt) {
             _.each(worlds, function (world) {
-                    world.step(time);
+                    world.step(Date.now());
                 if (true) {
                     world.render();
                 }

@@ -28,6 +28,10 @@
                             that.characterRenderer.render(proxy.character);
                         }
 
+                        _(proxy.bodies[lane.dist]).each(function (body) {
+                            that.bodyRenderer.render(body);
+                        });
+
                         if (lane.points && lane.points.length) {
                             that.laneRenderer.renderLane(lane);
                         }
