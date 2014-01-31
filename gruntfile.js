@@ -52,7 +52,8 @@ module.exports = function (grunt) {
 
         target: {
             dev: '_dev/'+ pkg.name +'.js',
-            test: 'text/'+ pkg.name +'.js'
+            test: 'text/'+ pkg.name +'.js',
+            dist: 'dist/'+ pkg.name + '.js'
         },
 
         sources: _(sources).map(function (source) {
@@ -70,7 +71,8 @@ module.exports = function (grunt) {
 
         clean: {
             dev: [config.target.dev],
-            test: [config.target.test]
+            test: [config.target.test],
+            dist: [config.target.dist]
         },
 
         concat: {
@@ -81,6 +83,10 @@ module.exports = function (grunt) {
             test: {
                 src: config.sources,
                 dest: config.target.test
+            },
+            dist: {
+                src: config.sources,
+                dest: config.target.dist
             }
         },
 
@@ -104,6 +110,7 @@ module.exports = function (grunt) {
         jshint: {
             sources: _(config.sources).without('src/intro.js', 'src/outro.js'),
             dev: config.target.dev,
+            dist: config.target.dist,
             jshintrc: true
         },
 
@@ -113,6 +120,17 @@ module.exports = function (grunt) {
                     port: port,
                     base: 'test/assets',
                     keepalive: false
+                }
+            }
+        },
+
+        uglify: {
+            options: {
+                banner: '/*\n * norne || Lukas Hueck, Felix Hamann || GPLv2\n */\n'
+            },
+            dist: {
+                files: {
+                    'dist/norne.min.js': config.target.dist
                 }
             }
         }
@@ -125,6 +143,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
 
     grunt.registerTask('dev', [
@@ -139,6 +158,15 @@ module.exports = function (grunt) {
         'dev',
         'connect:test',
         'jasmine:dev'
+    ]);
+
+
+    grunt.registerTask('dist', [
+        'clean:dist',
+        'jshint:sources',
+        'concat:dist',
+        'jshint:dist',
+        'uglify:dist'
     ]);
 
 
