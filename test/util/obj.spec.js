@@ -1,6 +1,12 @@
 describe('norne.obj', function () {
 
-    var o = norne.obj;
+    var o, def, create;
+
+    o = norne.obj;
+    def = _(norne.obj.define).bind(norne.obj);
+    create = _(norne.obj.create).bind(norne.obj);
+    erase = _(norne.obj.erase).bind(norne.obj);
+
 
     it('is accessible', function () {
         expect(norne.obj).toBeDefined();
@@ -11,41 +17,41 @@ describe('norne.obj', function () {
         var obj;
 
         expect(norne.obj.define).toBeDefined();
-        obj = norne.obj.define('test');
+        obj = def('test');
         expect(norne.obj.objs.test).toBeDefined();
 
         expect(norne.obj.erase).toBeDefined();
-        norne.obj.erase('test');
+        erase('test');
         expect(norne.obj.objs.test).not.toBeDefined();
     });
 
 
     it('prevents overwrite attempts', function () {
-        norne.obj.define('test');
+        def('test');
 
         function catcher() {
-            return norne.obj.define('test');
+            return def('test');
         }
 
         expect(catcher).toThrow();
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
     it('returns correct values when erasing', function () {
-        norne.obj.define('test');
+        def('test');
 
-        expect(norne.obj.erase('test')).toBe(true);
-        expect(norne.obj.erase('test')).toBe(false);
+        expect(erase('test')).toBe(true);
+        expect(erase('test')).toBe(false);
     });     
 
 
     it('can create', function () {
         var obj, base, inst1;
-        expect(norne.obj.create).toBeDefined();
+        expect(create).toBeDefined();
 
         base = { x: 'x' };
-        obj = norne.obj.define('test').as(base);
+        obj = def('test').as(base);
 
         inst1 = obj.create();
 
@@ -54,7 +60,7 @@ describe('norne.obj', function () {
         inst1.x = 'something else';
         expect(inst1.x).not.toEqual(base.x);
 
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
@@ -62,17 +68,17 @@ describe('norne.obj', function () {
         var obj;
 
         expect(norne.obj.get).toBeDefined();
-        norne.obj.define('test');
+        def('test');
         obj = norne.obj.get('test');
 
         expect(obj).toBeDefined();
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
     it('creates independent instances', function () {
         var obj, inst1, inst2;
-        obj = norne.obj.define('test').as({
+        obj = def('test').as({
             x: 1
         });
 
@@ -84,14 +90,14 @@ describe('norne.obj', function () {
         expect(inst1.x).toEqual(1);
         expect(inst2.x).toEqual(2);
 
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
     it('uses the constructor function', function () {
         var obj, inst1, inst2;
 
-        obj = norne.obj.define('test').as({
+        obj = def('test').as({
             x: 0
         }, function (x) {
             this.x = x;
@@ -103,18 +109,18 @@ describe('norne.obj', function () {
         expect(inst1.x).toEqual(1);
         expect(inst2.x).toEqual(2);
 
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
     it('can be invoked only with a constructor', function () {
         var obj;
-        obj = norne.obj.define('test').as(function () {
+        obj = def('test').as(function () {
             this.x = 3;
         });
 
         expect(obj.create().x).toEqual(3);
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
@@ -122,33 +128,33 @@ describe('norne.obj', function () {
         var obj, base, inst1;
 
         base = { x: 0 };
-        obj = norne.obj.define('test').as(base, function () {
+        obj = def('test').as(base, function () {
             return this.x;
         });
 
         inst1 = obj.create();
         expect(inst1.x).toEqual(base.x);
 
-        inst1 = norne.obj.create('test');
+        inst1 = create('test');
         expect(inst1.x).toEqual(base.x);
 
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
     it('can be invoked globally', function () {
         var inst1;
 
-        norne.obj.define('test').as({
+        def('test').as({
             x: 0
         }, function (x) {
             this.x = x;
         });
 
-        inst1 = norne.obj.create('test', 3);
+        inst1 = create('test', 3);
 
         expect(inst1.x).toEqual(3);
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
@@ -156,7 +162,7 @@ describe('norne.obj', function () {
         var obj, base;
         base = { x: 0 };
 
-        obj = norne.obj.define('test').uses(
+        obj = def('test').uses(
             base
         ).create();
 
@@ -164,7 +170,7 @@ describe('norne.obj', function () {
         base.x = 2;
         expect(obj.x).toEqual(0);
 
-        norne.obj.erase('test');
+        erase('test');
     });
 
 
@@ -172,14 +178,14 @@ describe('norne.obj', function () {
         var obj, base;
 
         base = { x: 1 };
-        norne.obj.define('base').as(base);
-        norne.obj.define('test').uses('base');
+        def('base').as(base);
+        def('test').uses('base');
 
-        obj = norne.obj.create('test');
+        obj = create('test');
         expect(obj.x).toEqual(base.x);
 
-        norne.obj.erase('base');
-        norne.obj.erase('test');
+        erase('base');
+        erase('test');
     });
 
 
@@ -188,7 +194,7 @@ describe('norne.obj', function () {
 
         proto1 = { proto1: 1 };
 
-        obj = norne.obj.define('test').has(
+        obj = def('test').has(
             proto1
         );
 
@@ -202,9 +208,27 @@ describe('norne.obj', function () {
         expect(inst1.proto1).toEqual(proto1.proto1);
         expect(inst2.proto1).toEqual(proto1.proto1);
 
-        norne.obj.erase('test');
+        erase('test');
     });
 
+
+    it('lets me call super constructors', function () {
+        var parent, child;
+
+        parent = def('test').as(function (x) {
+            this.x = x;
+        }).create(5);
+
+        child = def('testchildren')
+            .uses('test')
+            .create(3);
+
+        expect(child.x).toEqual(3);
+        expect(parent.x).toEqual(5);
+
+        erase('test');
+        erase('testchildren');
+    });
 
 });
 
