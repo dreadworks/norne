@@ -206,6 +206,28 @@ describe('norne.obj', function () {
     });
 
 
+    it('calls _construct', function () {
+        var obj;
+
+        norne.obj.define('test')
+            .as({
+                _construct: function (name) {
+                    this.name = name;
+                }
+            });
+
+        norne.obj.define('something')
+            .uses('test');
+
+        obj = norne.obj.create('something');
+        expect(obj.name).toEqual('something');
+
+        norne.obj.erase('test');
+        norne.obj.erase('something');
+    });
+    
+
+
 });
 
 
