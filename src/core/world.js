@@ -3,15 +3,12 @@
     
     (function (physics) {
 
-        var exc;
-        exc = _(norne.exc.raise).partial('norne');
-
-
         /**
          *  ENVIRONMENT
          *  ===========
          */
-        define('core.world.env').as({
+        define('core.world.env')
+            .as({
 
             /**
              *  Getter and setter for the depthfactor
@@ -43,7 +40,7 @@
              */
             depth: function (depth) {
                 if (depth < 0 || 100 < depth) {
-                    exc('The depth must be a value between 0 and 100');
+                    this.raise('The depth must be a value between 0 and 100');
                 }
 
                 if (depth !== undefined) {
@@ -65,7 +62,7 @@
              */
             angle: function (angle) {
                 if (angle < -this._maxangle || this._maxangle < angle) {
-                    exc('The angle must be a value between -'+ 
+                    this.raise('The angle must be a value between -'+ 
                         this._maxangle +' and '+ this._maxangle);
                 }
 
@@ -204,7 +201,7 @@
                 }
 
                 if (!_(canvas).isElement()) {
-                    exc('renderer: no canvas provided');
+                    this.raise('renderer: no canvas provided');
                 }
 
                 that = this;
@@ -315,11 +312,11 @@
                 var lane, that;
 
                 if (dist < 0 || 100 < dist) {
-                    exc('You must provide a correct dist argument');
+                    this.raise('You must provide a correct dist argument');
                 }
 
                 if (this.lanes.has(dist)) {
-                    exc('A lane in dist '+ lane.dist +' is already defined');
+                    this.raise('A lane in dist '+ lane.dist +' is already defined');
                 }
 
                 that = this;
@@ -386,11 +383,11 @@
                 var lane;
 
                 if (!this.character()) {
-                    exc('You must provide a character first');
+                    this.raise('You must provide a character first');
                 }
 
                 if (!this.lanes.has(dist)) {
-                    exc('Theres no lane at dist ' + dist);
+                    this.raise('Theres no lane at dist ' + dist);
                 }
 
                 lane = this.lanes.get(dist);
@@ -414,6 +411,7 @@
         define('core.world')
             .uses(
                 'util.evt',
+                'util.exc',
                 'core.world.env',
                 'core.world.renderer',
                 'core.world.story',

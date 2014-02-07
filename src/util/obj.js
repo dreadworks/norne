@@ -123,11 +123,6 @@
 
             objs: {},
 
-            exc: _({}).extend(norne.exception, {
-                name: 'norne.obj'
-            }),
-
-
             /**
              *  Returns factory of the given name.
              *
