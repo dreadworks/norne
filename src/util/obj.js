@@ -197,6 +197,26 @@
                 context = this.objs[name];
 
                 return context.create.apply(context, args);
+            },
+
+
+            /**
+             *  Assemble an object. Prototypes defined with
+             *  define().as will be lost.
+             *
+             *  @params Objects or defined norne.obj instances
+             *  @types String or Object
+             */
+            mixin: function () {
+                var mixin;
+                mixin = _(arguments).toArray();
+
+                mixin = _(mixin).map(function (f) {
+                    return (_(f).isString()) ? norne.obj.create(f) : f;
+                });
+
+                mixin.unshift({});
+                return _.extend.apply(_, mixin);
             }
         });
 
@@ -205,3 +225,4 @@
     // expose define and create as global shortcuts
     define = _(norne.obj.define).bind(norne.obj);
     create = _(norne.obj.create).bind(norne.obj);
+    mixin = _(norne.obj.mixin).bind(norne.obj);

@@ -3,9 +3,10 @@ describe('norne.obj', function () {
     var o, def, create;
 
     o = norne.obj;
-    def = _(norne.obj.define).bind(norne.obj);
+    define = _(norne.obj.define).bind(norne.obj);
     create = _(norne.obj.create).bind(norne.obj);
     erase = _(norne.obj.erase).bind(norne.obj);
+    mixin = _(norne.obj.mixin).bind(norne.obj);
 
 
     it('is accessible', function () {
@@ -17,7 +18,7 @@ describe('norne.obj', function () {
         var obj;
 
         expect(norne.obj.define).toBeDefined();
-        obj = def('test');
+        obj = define('test');
         expect(norne.obj.objs.test).toBeDefined();
 
         expect(norne.obj.erase).toBeDefined();
@@ -27,10 +28,10 @@ describe('norne.obj', function () {
 
 
     it('prevents overwrite attempts', function () {
-        def('test');
+        define('test');
 
         function catcher() {
-            return def('test');
+            return define('test');
         }
 
         expect(catcher).toThrow();
@@ -39,7 +40,7 @@ describe('norne.obj', function () {
 
 
     it('returns correct values when erasing', function () {
-        def('test');
+        define('test');
 
         expect(erase('test')).toBe(true);
         expect(erase('test')).toBe(false);
@@ -51,7 +52,7 @@ describe('norne.obj', function () {
         expect(create).toBeDefined();
 
         base = { x: 'x' };
-        obj = def('test').as(base);
+        obj = define('test').as(base);
 
         inst1 = obj.create();
 
@@ -68,7 +69,7 @@ describe('norne.obj', function () {
         var obj;
 
         expect(norne.obj.get).toBeDefined();
-        def('test');
+        define('test');
         obj = norne.obj.get('test');
 
         expect(obj).toBeDefined();
@@ -78,7 +79,7 @@ describe('norne.obj', function () {
 
     it('creates independent instances', function () {
         var obj, inst1, inst2;
-        obj = def('test').as({
+        obj = define('test').as({
             x: 1
         });
 
@@ -97,7 +98,7 @@ describe('norne.obj', function () {
     it('uses the constructor function', function () {
         var obj, inst1, inst2;
 
-        obj = def('test').as({
+        obj = define('test').as({
             x: 0
         }, function (x) {
             this.x = x;
@@ -115,7 +116,7 @@ describe('norne.obj', function () {
 
     it('can be invoked only with a constructor', function () {
         var obj;
-        obj = def('test').as(function () {
+        obj = define('test').as(function () {
             this.x = 3;
         });
 
@@ -128,7 +129,7 @@ describe('norne.obj', function () {
         var obj, base, inst1;
 
         base = { x: 0 };
-        obj = def('test').as(base, function () {
+        obj = define('test').as(base, function () {
             return this.x;
         });
 
@@ -145,7 +146,7 @@ describe('norne.obj', function () {
     it('can be invoked globally', function () {
         var inst1;
 
-        def('test').as({
+        define('test').as({
             x: 0
         }, function (x) {
             this.x = x;
@@ -162,7 +163,7 @@ describe('norne.obj', function () {
         var obj, base;
         base = { x: 0 };
 
-        obj = def('test').uses(
+        obj = define('test').uses(
             base
         ).create();
 
@@ -178,8 +179,8 @@ describe('norne.obj', function () {
         var obj, base;
 
         base = { x: 1 };
-        def('base').as(base);
-        def('test').uses('base');
+        define('base').as(base);
+        define('test').uses('base');
 
         obj = create('test');
         expect(obj.x).toEqual(base.x);
@@ -194,7 +195,7 @@ describe('norne.obj', function () {
 
         proto1 = { proto1: 1 };
 
-        obj = def('test').has(
+        obj = define('test').has(
             proto1
         );
 
@@ -215,11 +216,11 @@ describe('norne.obj', function () {
     it('lets me call super constructors', function () {
         var parent, child;
 
-        parent = def('test').as(function (x) {
+        parent = define('test').as(function (x) {
             this.x = x;
         }).create(5);
 
-        child = def('testchildren')
+        child = define('testchildren')
             .uses('test')
             .create(3);
 
@@ -234,14 +235,14 @@ describe('norne.obj', function () {
     it('calls and removes _construct', function () {
         var obj;
 
-        def('test')
+        define('test')
             .as({
                 _construct: function (name) {
                     this.name = name;
                 }
             });
 
-        def('something')
+        define('something')
             .uses('test');
 
         obj = create('something');
@@ -256,8 +257,8 @@ describe('norne.obj', function () {
     it('prevents circular dependencies', function () {
         var obj;
 
-        def('parent').uses('child');
-        def('child').uses('parent');
+        define('parent').uses('child');
+        define('child').uses('parent');
 
         obj = create('child');
         expect(obj).toBeDefined();
@@ -266,6 +267,22 @@ describe('norne.obj', function () {
         erase('child');
     });
 
+
+    it('lets me mixin objects', function () {
+        var aggregate;
+
+        define('one').as({ one: 1 });
+        define('two').as({ two: 2 });
+
+        aggregate = mixin('one', 'two', { three: 3 });
+
+        expect(aggregate.one).toBeDefined();
+        expect(aggregate.two).toBeDefined();
+        expect(aggregate.three).toBeDefined();
+
+        erase('one');
+        erase('two');
+    });
 
 });
 
