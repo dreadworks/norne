@@ -274,11 +274,13 @@ describe('norne.obj', function () {
         define('one').as({ one: 1 });
         define('two').as({ two: 2 });
 
-        aggregate = mixin('one', 'two', { three: 3 });
+        aggregate = mixin('one', 'two', { three: 3 }, [{four: 4}, { five: 5}]);
 
         expect(aggregate.one).toBeDefined();
         expect(aggregate.two).toBeDefined();
         expect(aggregate.three).toBeDefined();
+        expect(aggregate.four).toBeDefined();
+        expect(aggregate.five).toBeDefined();
 
         erase('one');
         erase('two');

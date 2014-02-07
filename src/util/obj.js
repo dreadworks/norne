@@ -208,15 +208,23 @@
              *  @types String or Object
              */
             mixin: function () {
-                var mixin;
-                mixin = _(arguments).toArray();
+                var mix;
 
-                mixin = _(mixin).map(function (f) {
-                    return (_(f).isString()) ? norne.obj.create(f) : f;
+                mix = _(arguments).toArray();
+                mix = _(mix).map(function (f) {
+                    if (_(f).isString()) {
+                        f = norne.obj.create(f);
+                    }
+
+                    if (_(f).isArray()) {
+                        f = mixin.apply(null, f);
+                    }
+
+                    return f;
                 });
 
-                mixin.unshift({});
-                return _.extend.apply(_, mixin);
+                mix.unshift({});
+                return _.extend.apply(_, mix);
             }
         });
 
