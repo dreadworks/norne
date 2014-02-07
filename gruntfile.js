@@ -126,7 +126,7 @@ module.exports = function (grunt) {
 
         uglify: {
             options: {
-                banner: '/*\n * norne || Lukas Hueck, Felix Hamann || GPLv2\n */\n'
+                banner: '/*\n * norne || Lukas Hueck, Felix Hamann || MIT License (MIT)\n */\n'
             },
             dist: {
                 files: {
