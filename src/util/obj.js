@@ -69,29 +69,41 @@
              *  Returns an instance of the defined object.
              */      
             create: function () {
-                var that, args, create;
+                var that, product, args, create;
 
-                that = Object.create(this.proto);
-                args = _(arguments).toArray();
+                that = this;
                 create = norne.obj.create;
+                args = _(arguments).toArray();
+                product = Object.create(this.proto);
 
                 // copy extensions
                 _(this.extensions).each(function (e) {
                     if (_(e).isString()) {
+
+                        // create new parent object,
+                        // pass arguments through
                         e = create.apply(norne.obj, _(e).union(args));
+
+                        // if defined, call _construct
+                        if (_(e._construct).isFunction()) {
+                            e._construct(that.name);
+                            delete e._construct;
+                        }
                     }
-                    _(that).extend(e);
+
+                    _(product).extend(e);
+
                 });
 
                 // extend with base object
-                _(that).extend(this.base);
+                _(product).extend(this.base);
 
                 // call constructor function
                 if (this.constr) {
-                    this.constr.apply(that, args);
+                    this.constr.apply(product, args);
                 }
 
-                return that;
+                return product;
             }
 
         };
@@ -136,6 +148,7 @@
                 }
 
                 this.objs[name] = Object.create(obj);
+                this.objs[name].name = name;
                 return this.objs[name];
             },
 

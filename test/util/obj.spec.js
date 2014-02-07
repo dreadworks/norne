@@ -230,6 +230,28 @@ describe('norne.obj', function () {
         erase('testchildren');
     });
 
+
+    it('calls and removes _construct', function () {
+        var obj;
+
+        norne.obj.define('test')
+            .as({
+                _construct: function (name) {
+                    this.name = name;
+                }
+            });
+
+        norne.obj.define('something')
+            .uses('test');
+
+        obj = norne.obj.create('something');
+        expect(obj.name).toEqual('something');
+        expect(obj._construct).not.toBeDefined();
+
+        norne.obj.erase('test');
+        norne.obj.erase('something');
+    });
+
 });
 
 

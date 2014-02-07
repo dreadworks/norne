@@ -9,6 +9,7 @@ describe('norne.exc', function () {
 
     });
 
+
     it('should handle the arguments', function () {
 
         try {
@@ -18,6 +19,35 @@ describe('norne.exc', function () {
             expect(e.message).toEqual('message');
         }
 
+    });
+
+
+    it('should work with norne.obj.define', function () {
+        var obj, msg;
+
+        msg = 'stuff went wrong';
+
+        norne.obj.define('test')
+            .uses('util.exc')
+            .as({
+
+                fail: function () {
+                    this.raise(msg);
+                }
+
+            });
+
+        obj = norne.obj.create('test');
+        expect(obj.fail).toThrow();
+
+        try {
+            obj.raise(msg);
+        } catch (e) {
+            expect(e.name).toEqual('test');
+            expect(e.message).toEqual(msg);
+        }
+
+        norne.obj.erase('test');
     });
 
 });
