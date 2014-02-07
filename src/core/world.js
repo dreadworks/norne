@@ -167,7 +167,7 @@
              *  Returns the current canvas height
              */
             height: function () {
-                return (this._renderer) ? this._renderer.canvas.height : 0;
+                return (this._renderer) ? this._renderer.canvasHeight() : 0;
             },
 
             /**
@@ -200,7 +200,7 @@
                 var that, clock, proxy;
 
                 if (arguments.length === 0) {
-                    return this.renderer;
+                    return this._renderer;
                 }
 
                 if (!_(canvas).isElement()) {

@@ -44,7 +44,7 @@
                  *  the currently set canvas.
                  *  
                  *  Creates a canvas HTML-Element and sets
-                 *  this.canvas and this.ctx. The width and height
+                 *  this.wrapper and this.ctx. The width and height
                  *  of the canvas element are determined by the
                  *  width and height of the provided wrapper.
                  *
@@ -57,8 +57,8 @@
                     c.setAttribute('width', wrapper.offsetWidth);
                     wrapper.appendChild(c);
 
-                    this.canvas = c;
-                    this.ctx = this.canvas.getContext('2d');
+                    this.canv = c;
+                    this.ctx = this.canv.getContext('2d');
                 },
 
 
@@ -66,14 +66,14 @@
                  *  Returns the current width of the canvas.
                  */
                 canvasWidth: function () {
-                    return this.canvas.offsetWidth;
+                    return this.canv.offsetWidth;
                 },
 
                 /**
                  *  Returns the current height of the canvas.
                  */
                 canvasHeight: function () {
-                    return this.canvas.offsetHeight;
+                    return this.canv.offsetHeight;
                 },
 
 
@@ -84,8 +84,8 @@
                 clearCanvas: function () {
                     this.ctx.clearRect(
                         0, 0,
-                        this.canvas.width,
-                        this.canvas.height
+                        this.canv.width,
+                        this.canv.height
                     );
                 }
 
@@ -103,16 +103,12 @@
 
                 this.canvas(wrapper);
 
-                this.laneRenderer = create(
-                    'render.lane', this.canvas
-                );
-
                 this.characterRenderer = create(
-                    'render.character', this.canvas
+                    'render.character', this.canv
                 );
 
                 this.bodyRenderer = create(
-                    'render.body', this.canvas
+                    'render.body', this.canv
                 );
 
                 this.clock = clock;

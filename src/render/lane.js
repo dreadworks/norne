@@ -56,7 +56,6 @@
 
 
     define('render.lane.color.gradient')
-        .uses('render.lane')
         .as({
 
             /**
@@ -148,7 +147,6 @@
      *  splines from the ground points.
      */
     define('render.lane.ground.bezier')
-        .uses('render.lane')
         .as({
 
 

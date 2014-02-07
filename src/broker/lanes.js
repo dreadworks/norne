@@ -208,8 +208,18 @@
 
 
 
-            changeRenderer: function (dist, renderer) {
-                console.log('changing renderer on', dist, 'to', renderer);
+            changeRenderer: function (dist, opts) {
+                var index, module;
+
+                index = this.index(dist, true);
+                module = 'render.lane';
+
+                opts = _(opts).map(function (val, key) {
+                    return module +'.'+ key +'.'+ val;
+                });
+
+                module = create(module, this.world.renderer().canv);
+                this.proxy[index].renderer = mixin(module, opts);
             }
 
 
