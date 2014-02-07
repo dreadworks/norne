@@ -28,8 +28,8 @@
                             that.characterRenderer.render(proxy.character);
                         }
 
-                        if (lane.points && lane.points.length) {
-                            that.laneRenderer.renderLane(lane);
+                        if (lane.renderer && lane.points && lane.points.length) {
+                            lane.renderer.render(lane);
                         }
 
                         _(proxy.bodies.particles[lane.dist]).each(function (body) {

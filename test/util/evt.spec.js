@@ -1,6 +1,12 @@
-describe('norne.evt', function () {
+(function () {
 
-    var stub;
+var stub, def, erase;
+
+def = _(norne.obj.define).bind(norne.obj);
+create = _(norne.obj.create).bind(norne.obj);
+erase = _(norne.obj.erase).bind(norne.obj);
+
+describe('norne.evt', function () {
 
     beforeEach(function () {
         stub = {
@@ -100,8 +106,8 @@ describe('norne.evt', function () {
     it('handles callbacks autonomous', function () {
         var evt1, evt2;
 
-        evt1 = norne.obj.create('util.evt');
-        evt2 = norne.obj.create('util.evt');
+        evt1 = create('util.evt');
+        evt2 = create('util.evt');
 
         evt1.on('test', stub.callback);
         evt2.on('test', stub.anotherCallback);
@@ -115,8 +121,8 @@ describe('norne.evt', function () {
     it('works with norne.obj.define', function () {
         var fac1, fac2, evt1, evt2, evt3;
 
-        fac1 = norne.obj.define('evt1').uses('util.evt');
-        fac2 = norne.obj.define('evt2').uses('util.evt');
+        fac1 = def('evt1').uses('util.evt');
+        fac2 = def('evt2').uses('util.evt');
 
         evt1 = fac1.create();
         evt2 = fac1.create();
@@ -130,8 +136,8 @@ describe('norne.evt', function () {
         expect(stub.callback).toHaveBeenCalled();
         expect(stub.anotherCallback).not.toHaveBeenCalled();
 
-        norne.obj.erase('evt1');
-        norne.obj.erase('evt2');
+        erase('evt1');
+        erase('evt2');
     });
 
 
@@ -160,8 +166,60 @@ describe('norne.evt', function () {
         emitter.trigger('module.evtname', x);
         expect(stub.callback).toHaveBeenCalled();
 
-        norne.obj.erase('test');
-        norne.obj.erase('evt.module.evtname');
+        erase('test');
+        erase('evt.module.evtname');
     });
 
 });
+
+
+describe('util.evt.proxy', function () {
+
+
+    it('should be accessible', function () {
+        x = create('util.evt.proxy');
+    });
+
+
+    it('listens on all events', function () {
+        var proxy, stub;
+
+        stub = { callback: function () {} };
+        spyOn(stub, 'callback');
+
+        def('emitter').uses(
+            'util.evt'
+        ).as({
+
+            emit: function () {
+                this.trigger('one');
+                this.trigger('two', 'two');
+            }
+
+        });
+
+        def('proxy').uses(
+            'util.evt',
+            'util.evt.proxy'
+        ).as(function () {
+            this.emitter = create('emitter');
+            this.delegate(this.emitter);
+        });
+
+        proxy = create('proxy');
+
+        proxy.on('one', stub.callback);
+        proxy.on('two', stub.callback);
+
+        proxy.emitter.emit();
+        expect(stub.callback).toHaveBeenCalledWith(proxy.emitter);
+        expect(stub.callback).toHaveBeenCalledWith(proxy.emitter, 'two');
+
+        erase('emitter');
+
+    });
+
+});
+
+}());
+

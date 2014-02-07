@@ -204,6 +204,12 @@
 
                 cache.splice(index, 0, point);
                 this.updateProxy(dist);
+            },
+
+
+
+            changeRenderer: function (dist, renderer) {
+                console.log('changing renderer on', dist, 'to', renderer);
             }
 
 
@@ -240,6 +246,10 @@
             // event handler
             this.lanes.on('addPoint', function (lane, point, index) {
                 that.addPoint(lane, point, index);
+            });
+
+            this.lanes.on('rendererChanged', function (lane, renderer) {
+                that.changeRenderer(lane.dist, renderer);
             });
 
             world.on('depthChanged', function (depth) {

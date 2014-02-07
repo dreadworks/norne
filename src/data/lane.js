@@ -2,7 +2,7 @@
     (function () {
 
 
-        var exc, colorregex, pointfac, groundfac;
+        var exc, colorregex, ground;
 
         exc = _(norne.exc.raise).partial('data.lane');
         colorregex = /[0-9a-f]{6}/i;
@@ -10,25 +10,13 @@
 
         // OBJECTS
         /**
-         *  Point objects describe the height
-         *  of the ground (y) at an arbitrary
-         *  horizontal position (x).
-         */
-        pointfac = define('data.lane.point')
-            .as({}, function (x, y) {
-                this.x = x;
-                this.y = y;
-            });
-
-
-        /**
          *  Data structure to handle a list
          *  of points that describe the ground surface.
          *
          *  Encapsulates an array, that stays sorted by
          *  its property x (the horizontal position).
          */
-        groundfac = define('data.lane.ground')
+        ground = define('data.lane.ground')
             .as({
 
                 add: function (p) {
@@ -100,7 +88,7 @@
                 addPoint: function (x, y) {
                     var p, i;
 
-                    p = pointfac.create(x, y);
+                    p = {x: x, y: y};
                     i = this.ground.add(p);
 
                     this.trigger('addPoint', p, i);
@@ -156,8 +144,6 @@
                  */
                 color: function (color) {
 
-                    // TODO an event must be thrown for the broker.
-
                     if (color) {
                         if (!colorregex.test(color)) {
                             exc('Please provide a correct color value');
@@ -167,6 +153,20 @@
                     }
 
                     return this._color;
+                },
+
+
+                /**
+                 *  Describes rendering options.
+                 *
+                 */
+                renderer: function (renderer) {
+                    if (renderer) {
+                        this._renderer = renderer;
+                        this.trigger('rendererChanged', renderer);
+                    }
+
+                    return this._renderer;
                 }
 
         /**
@@ -179,7 +179,7 @@
             }
 
             this.dist = dist;
-            this.ground = groundfac.create();
+            this.ground = ground.create();
 
         });
 
@@ -191,8 +191,10 @@
          *  the lane broker or other interested parties.
          */
         define('data.lanes')
-            .uses('util.evt')
-            .as({
+            .uses(
+                'util.evt',
+                'util.evt.proxy'
+            ).as({
 
                 /** 
                  *  Returns true if a lane with the provided
@@ -224,10 +226,7 @@
                 add: function (lane) {
                     var that = this;
                     this[lane.dist] = lane;
-
-                    lane.on('addPoint', function (point, index) {
-                        that.trigger('addPoint', lane, point, index);
-                    });
+                    this.delegate(lane);
                 },
 
 

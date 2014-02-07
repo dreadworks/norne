@@ -78,14 +78,47 @@
                     args = [args];
                 }
 
+                // users of util.evt.on
                 _(this._events[evtname]).each(function (handler) {
                     handler.apply(that, args);
+                });
+
+                // users of util.evt.proxy
+                _(this._events._proxies).each(function (emitter) {
+                    args.unshift(evtname, that);
+                    emitter.trigger.apply(emitter, args);
                 });
             }
 
         }, function () {
             this._events = {};
         });
+
+
+
+        /**
+         *  Used to delegate all events
+         *  fired by an emitter to all listeners
+         *  of the the implementing object.
+         *
+         *  Implementers must use 'util.evt'.
+         */
+        define('util.evt.proxy')
+            .as({
+
+                /** 
+                 *  Delegate all events from the emitter.
+                 *
+                 *  @param emitter The object whose events get delegated.
+                 *  @type emitter util.evt
+                 */
+                delegate: function (emitter) {
+                    var pool = emitter._events._proxies;
+                    pool = pool || (emitter._events._proxies = []);
+                    pool.push(this);
+                }
+
+            });
 
 
         /**
