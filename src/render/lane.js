@@ -54,14 +54,30 @@
         });
 
 
+    /**
+     *  Paints the ground with a solid color.
+     */
+    define('render.lane.color.solid')
+        .as({
 
+            /**
+             *  @see render.lane.fill
+             */
+            fill: function (points, color) {
+                this.ctx.fillStyle = color;
+                this.ctx.fill();
+            }
+
+        });
+
+
+    /**
+     *  Paints the ground with a gradient.
+     */
     define('render.lane.color.gradient')
         .as({
 
             /**
-             *  Fills the lane with a gradient
-             *  with the provided color.
-             *
              *  @see render.lane.fill
              */
             fill: function (points, color) {
@@ -141,6 +157,37 @@
 
 
 
+
+    /**
+     *  Renders the lanes ground
+     *  as a simple path from point
+     *  to point.
+     */
+     define('render.lane.ground.simple')
+         .as({
+
+            /**
+             *  @see render.lane.draw
+             */
+             draw: function (points) {
+                var that = this;
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(points[0].x, points[0].y);
+
+                _(points).each(function (p) {
+                    that.ctx.lineTo(p.x, p.y);
+                });
+
+                this.ctx.lineTo(_(points).last().x, this.canvas.height+10);
+                this.ctx.lineTo(_(points).first().x, this.canvas.height+10);
+
+                this.ctx.closePath();
+             }
+
+         });
+
+
     /** 
      *  Renders the lanes ground
      *  roundly by interpolating
@@ -151,7 +198,7 @@
 
 
             /**
-             *  @see render.lane.paintLane
+             *  @see render.lane.draw
              */
             draw: function (points) {
                 var i = 1, xc, yc;
