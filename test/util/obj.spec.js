@@ -234,23 +234,38 @@ describe('norne.obj', function () {
     it('calls and removes _construct', function () {
         var obj;
 
-        norne.obj.define('test')
+        def('test')
             .as({
                 _construct: function (name) {
                     this.name = name;
                 }
             });
 
-        norne.obj.define('something')
+        def('something')
             .uses('test');
 
-        obj = norne.obj.create('something');
+        obj = create('something');
         expect(obj.name).toEqual('something');
         expect(obj._construct).not.toBeDefined();
 
-        norne.obj.erase('test');
-        norne.obj.erase('something');
+        erase('test');
+        erase('something');
     });
+
+
+    it('prevents circular dependencies', function () {
+        var obj;
+
+        def('parent').uses('child');
+        def('child').uses('parent');
+
+        obj = create('child');
+        expect(obj).toBeDefined();
+
+        erase('parent');
+        erase('child');
+    });
+
 
 });
 

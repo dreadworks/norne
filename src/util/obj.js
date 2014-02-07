@@ -72,23 +72,30 @@
                 var that, product, args, create;
 
                 that = this;
-                create = norne.obj.create;
                 args = _(arguments).toArray();
                 product = Object.create(this.proto);
 
                 // copy extensions
                 _(this.extensions).each(function (e) {
-                    if (_(e).isString()) {
+                    var factory, extensions;
+
+                    if ((factory = norne.obj.get(e))) {
+                        
+                        // prevent circular dependencies
+                        extensions = factory.extensions;
+                        factory.extensions = _(extensions).without(that.name);
 
                         // create new parent object,
                         // pass arguments through
-                        e = create.apply(norne.obj, _(e).union(args));
+                        e = factory.create.apply(factory, args);
 
                         // if defined, call _construct
                         if (_(e._construct).isFunction()) {
                             e._construct(that.name);
                             delete e._construct;
                         }
+
+                        factory.extensions = extensions;
                     }
 
                     _(product).extend(e);
