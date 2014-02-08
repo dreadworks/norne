@@ -20,6 +20,7 @@ module.exports = function (grunt) {
         'util/xhr',
         'util/clock',
         'util/bezier',
+        'util/color',
 
         // core library
         'core/world',
