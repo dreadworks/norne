@@ -14,13 +14,13 @@ describe('util.color', function () {
     it('should accept hex values', function () {
         var color, hex;
 
-        hex = '#0099ff';
+        hex = '#1199ff';
         color = create('util.color', hex);
         expect(color.hex()).toEqual(_(hex).rest(1).join(''));
 
-        hex = '#ff9900';
+        hex = '#ff9911';
         color = create('util.color');
-        color.hex(hex);
+        color.set(hex);
         expect(color.hex()).toEqual(_(hex).rest(1).join(''));
 
         hex = '0099ff';
@@ -29,7 +29,7 @@ describe('util.color', function () {
 
         hex = 'ff9900';
         color = create('util.color');
-        color.hex(hex);
+        color.set(hex);
         expect(color.hex()).toEqual(hex);
     });
 
@@ -62,6 +62,7 @@ describe('util.color', function () {
 
         color.rgb(r, g, b);
         expect(color.rgb()).toEqual(rgb);
+
     });
 
 
@@ -101,7 +102,7 @@ describe('util.color', function () {
         color.lightness(h);
         expect(color.lightness()).toEqual(h);
 
-        expect(color.hsl()).toEqual('hsl('+ h +','+ s +'%,'+ l +'%)');
+        expect(color.hsl()).toEqual('hsl('+ s +','+ l +'%,'+ h +'%)');
 
         color.hsl(h, s, l);
         expect(color.hsl()).toEqual(hsl);
@@ -112,7 +113,7 @@ describe('util.color', function () {
         var color;
 
         color = create('util.color', 'hsl(361, 20%, 10%)');
-        expect(color.hsl()).toEqual('hsl(1, 20%, 10%');
+        expect(color.hsl()).toEqual('hsl(1,20%,10%)');
     });
 
 
@@ -127,14 +128,74 @@ describe('util.color', function () {
     });
 
 
+    it('converts from rgb to hsl', function () {
+        var color, rgb, hsl;
+
+        rgb = 'rgb(146,78,191)';
+        hsl = 'hsl(276,47%,53%)';
+
+        color = create('util.color').set(rgb);
+        expect(color.hsl()).toEqual(hsl);
+    });
 
 
+    it('converts from hsl to rgb', function () {
+        var color, rgb, hsl;
+
+        hsl = 'hsl(42,27%,55%)';
+        rgb = 'rgb(171,153,109)';
+
+        color = create('util.color').set(hsl);
+        expect(color.rgb()).toEqual(rgb);
+    });
 
 
+    it('lets me darken the color', function () {
+        var color, hsl;
+
+        hsl = 'hsl(240,100%,50%)';
+        color = create('util.color').set(hsl);
+
+        color.darken(20);
+        expect(color.lightness()).toEqual(30);
+
+        color.darken(100);
+        expect(color.lightness()).toEqual(0);
+    });
 
 
+    it('lets me lighten the color', function () {
+        var color, hsl;
+
+        hsl = 'hsl(240,100%,50%)';
+        color = create('util.color').set(hsl);
+
+        color.lighten(1);
+        expect(color.lightness()).toEqual(51);
+
+        color.lighten(100);
+        expect(color.lightness()).toEqual(100);
+    });
 
 
+    it('lets me clone', function () {
+        var red, green;
 
+        red = create('util.color').set('#ff0000');
+
+        green = red.clone();
+        green.red(0).green(255);
+
+        expect(red.hex()).toEqual('ff0000');
+        expect(green.hex()).toEqual('00ff00');
+    });
+
+
+    it('has a string representation', function () {
+        var color;
+
+        color = create('util.color').set('#efefef');
+        expect(color.toString()).toEqual('efefef');
+    });
 
 });
