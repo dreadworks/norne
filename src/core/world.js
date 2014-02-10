@@ -101,8 +101,9 @@
 
                 a = this.angle();
 
-                y = p.y;
+                y = p.y;                
                 y *= (a/(-this._maxangle * 100)) * dist + 1 + a/(2 * this._maxangle);
+                y = depthfactor + distfactor * (y - depthfactor);
                 y = this.height() - y;
 
                 return { x: x, y: y };
