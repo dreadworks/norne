@@ -467,19 +467,34 @@
             },
 
 
-
             // UTILITY FUNCTIONS
+            /**
+             *  Returns a clone of this
+             *  color object instance.
+             */
             clone: function () {
                 var clone = create('util.color');
                 clone.c = _({}).extend(this.c);
                 return clone;
             },
 
+            /**
+             *  Returns the colors hex code
+             *  as its String representation.
+             */
             toString: function () {
                 return this.hex();
             },
 
 
+            /**
+             *  Darken the color. If the
+             *  lightness value would fall under
+             *  zero, it remains zero.
+             *
+             *  @param amount Percentage
+             *  @type amount Number
+             */
             darken: function (amount) {
                 var lightness;
                 this._hslmode();
@@ -488,6 +503,15 @@
                 this.c.l = (lightness < 0) ? 0 : lightness;
             },
 
+
+            /**
+             *  Lighten the color. If the
+             *  lightness value would go over
+             *  100, it stays 100.
+             *
+             *  @param amount Percentage
+             *  @type amount Number
+             */
             lighten: function (amount) {
                 var lightness;
                 this._hslmode();
