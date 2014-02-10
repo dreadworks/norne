@@ -25,7 +25,7 @@ module.exports = function (grunt) {
         // core library
         'core/world',
         'core/story',
-        'core/body',
+        'core/persist',
 
         // data objects (the model)
         'data/lane',
@@ -121,6 +121,14 @@ module.exports = function (grunt) {
                     port: port,
                     base: 'test/assets',
                     keepalive: false
+                }
+            },
+
+            demo: {
+                options: {
+                    port: port+1,
+                    base: './',
+                    keepalive: true
                 }
             }
         },

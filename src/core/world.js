@@ -148,7 +148,21 @@
                 }
                 
                 return this._pos;
-            }
+            },
+
+
+
+            /** 
+             *  Import data from remote or local
+             *  json object.
+             *
+             *  @param data String to resource or object
+             *  @type data String or Object
+             */
+             import: function (data) {
+                var state = create('persist.import', data);
+                return state;
+             }
 
         });
 
