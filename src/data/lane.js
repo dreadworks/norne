@@ -89,6 +89,22 @@
 
 
             /**
+             *  Adds a set of points to the lane.
+             *
+             *  @param points Point objects
+             *  @type points Array
+             */
+            addPoints: function (points) {
+                var that = this;
+                _(points).each(function (p) {
+                    that.trigger('addPoint', 
+                        p, that.ground.add(p)
+                    );
+                });
+            },
+
+
+            /**
              *  Get points of the ground, where
              *  the first point is the next point left
              *  from position x and the last point the

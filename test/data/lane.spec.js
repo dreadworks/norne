@@ -66,6 +66,23 @@ describe('data.lane', function () {
     });
 
 
+    it('lets me add a set of points', function () {
+        var lane, points, range;
+
+        lane = norne.obj.create('data.lane', 0);
+        points = [{x: -30, y: 0}, {x: 40, y: 0}, {x: 100, y: 0}];
+
+        lane.addPoints(points);
+
+        range = lane.getPoints();
+        _(points).each(function (p, i) {
+            expect(range[i].x).toEqual(p.x);
+            expect(range[i].y).toEqual(p.y);
+        });
+    });
+
+
+
     it('handles unsorted insertion', function () {
         var lane, points, range;
 
