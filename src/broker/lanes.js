@@ -148,11 +148,9 @@
              *
              *  @param dist The lanes dist
              *  @type dist Number
-             *  @param laneproxy The lanes proxy equivalent
-             *  @type laneproxy Object
              *
              */
-            createEntry: function (dist, laneproxy) {
+            createEntry: function (dist) {
                 var index;
 
                 // create a cache entry
@@ -164,7 +162,9 @@
 
                 // create proxy entry
                 index = this.index(dist, true);
-                this.proxy.splice(index, 0, laneproxy);
+                this.proxy.splice(index, 0, {
+                    dist: dist
+                });
             },
 
 
@@ -182,27 +182,36 @@
              *  @type dist Number
              *  @param point The point that got inserted
              *  @type point Object
-             *  @param index The position of the point
-             *  @type index Number
+             *  @param pos The position of the point
+             *  @type pos Number
              */
-            addPoint: function (lane, point, index) {
-                var dist, cache, range;
+            addPoint: function (lane, point, pos) {
+                var dist, cache, range, index, proxy;
+
                 dist = lane.dist;
+                index = this.index(dist);
 
                 // the lane got newly created
-                if (this.index(dist) === -1) {
-                    this.createEntry(dist, {
-                        dist: lane.dist,
-                        color: lane.color(),
-                        points: []
-                    });
+                if (index === -1) {
+                    this.createEntry(dist);
+                }
+
+                index = this.index(dist, true);
+                proxy = this.proxy[index];
+
+                if (proxy.color === undefined) {
+                    proxy.color = lane.color();
+                }
+
+                if (proxy.points === undefined) {
+                    proxy.points = [];
                 }
 
                 // mapping and insertion
                 cache = this.cache[dist];
                 point = this.world.map(dist, point);
 
-                cache.splice(index, 0, point);
+                cache.splice(pos, 0, point);
                 this.updateProxy(dist);
             },
 
@@ -210,6 +219,10 @@
 
             changeRenderer: function (dist, opts) {
                 var index, module;
+
+                if (this.index(dist) === -1) {
+                    this.createEntry(dist);
+                }
 
                 index = this.index(dist, true);
                 module = 'render.lane';
