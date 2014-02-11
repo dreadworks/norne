@@ -160,7 +160,7 @@
              *  @type data String or Object
              */
              import: function (data) {
-                var state = create('persist.import', data);
+                var state = create('persist.import', data, this);
                 return state;
              }
 

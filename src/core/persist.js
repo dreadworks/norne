@@ -10,7 +10,19 @@
 
 
             lanes: function (lanes) {
-                
+                var that = this;
+
+                _(lanes).each(function (opts) {
+                    var lane = that.world.createLane(opts.dist);
+
+                    lane.color(opts.color);
+                    lane.renderer(opts.renderer);
+                    lane.addPoints(opts.points);
+
+                    that.trigger('laneLoaded', lane);
+                });
+
+                that.trigger('lanesLoaded', lanes);
             },
 
 
@@ -20,13 +32,15 @@
 
          }, function (file, world) {
             var that, xhr;
+            this.world = world;
 
             that = this;
             xhr = norne.xhr();
-            
+
             xhr.on('success', function (res) {
                 that.trigger('fileLoaded');                
                 that.import(JSON.parse(res.data));
+                that.trigger('importDone');
             });
 
             xhr.get(file);
