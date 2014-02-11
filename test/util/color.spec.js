@@ -23,11 +23,11 @@ describe('util.color', function () {
         color.set(hex);
         expect(color.hex()).toEqual(_(hex).rest(1).join(''));
 
-        hex = '0099ff';
+        hex = '0099FF';
         color = create('util.color', hex);
         expect(color.hex()).toEqual(hex);
 
-        hex = 'ff9900';
+        hex = 'FF9900';
         color = create('util.color');
         color.set(hex);
         expect(color.hex()).toEqual(hex);
