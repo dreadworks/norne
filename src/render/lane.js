@@ -29,22 +29,36 @@
              *  @param points An array of points to display.
              *  @type points Array
              */
-             draw: function (points) {
+            draw: function (points) {
                 this.raise('You must overwrite render.lane.draw');
-             },
+            },
 
 
-             /**
-              * Fill the drawn lane.
-              *
-              * @param points An array of canvas coordinates.
-              * @type points Array
-              * @param color The color as a hex-code string.
-              * @type color String
-              */
-             fill: function (points, color) {
+            /**
+             *  Fill the drawn lane.
+             *
+             *  @param points An array of canvas coordinates.
+             *  @type points Array
+             *  @param color The color as saved in the proxy.
+             *  @type color Object
+             */
+            fill: function (points, color) {
                 this.raise('You must overwrite render.lane.fill');
-             }
+            },
+
+
+            /**
+             *  Set the lanes color.
+             *
+             *  @param proxy The lanes proxy part.
+             *  @type proxy Object
+             *  @param color The lanes color.
+             *  @type color util.color
+             */
+            setColor: function (proxy, color) {
+                this.raise('You must overwrite render.lane.setColor');
+            }
+
 
         }, function (canvas) {
 
@@ -66,6 +80,14 @@
             fill: function (points, color) {
                 this.ctx.fillStyle = color;
                 this.ctx.fill();
+            },
+
+
+            /**
+             *  @see render.lane.setColor
+             */
+            setColor: function (proxy, color) {
+                proxy.color = color.toString();
             }
 
         });
@@ -89,42 +111,21 @@
                 this.ctx.fill();
 
                 // stroke
-                this.ctx.strokeStyle = this.shadeColor(color, -60);
+                this.ctx.strokeStyle = color.stroke;
                 this.ctx.lineWidth = 1;
                 this.ctx.stroke();
             },
-            
 
-            /* 
-             * shades a color given by percentage
-             * shadeColor(..., -40) will darken the color
-             * by 40%
-             *
-             * TODO #8
+
+            /**
+             *  @see render.lane.setColor
              */
-            shadeColor: function (color, perc) {
-                var r, g, b, num;
-
-                num = parseInt(color, 16);
-
-                r = parseInt((num >> 16) * (100 + perc) / 100);
-                g = parseInt(((num >> 8) & 0x00FF) * (100 + perc) / 100);
-                b = parseInt((num & 0x0000FF) * (100 + perc) / 100);
-
-                if (r > 255) { r = 255; }
-                else if (r < 0) { r = 0; }
-
-                if (g > 255) { g = 255; }
-                else if (g < 0) { g = 0; }
-
-                if (b > 255) { b = 255; }
-                else if (b < 0) { b = 0; }
-
-                r = r.toString(16).length === 1 ? '0' + r.toString(16) : r.toString(16);
-                g = g.toString(16).length === 1 ? '0' + g.toString(16) : g.toString(16);
-                b = b.toString(16).length === 1 ? '0' + b.toString(16) : b.toString(16);
-
-                return r + g + b;
+            setColor: function (proxy, color) {
+                proxy.color = {
+                    light: color.toString(),
+                    dark: color.clone().darken(10).toString(),
+                    stroke: color.clone().darken(10).toString()
+                };
             },
             
 
@@ -147,8 +148,8 @@
                 y1 = y1.y;
 
                 lingrand = this.ctx.createLinearGradient(x1, y1, x2, y2);
-                lingrand.addColorStop(0, this.shadeColor(color, -70));
-                lingrand.addColorStop(1, color);
+                lingrand.addColorStop(0, color.dark);
+                lingrand.addColorStop(1, color.light);
 
                 return lingrand;
             }

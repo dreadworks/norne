@@ -154,11 +154,8 @@
             color: function (color) {
 
                 if (color) {
-                    if (!/[0-9a-f]{6}/i.test(color)) {
-                        this.raise('Please provide a correct color value');
-                    }
-                    this._color = color;
-                    this.trigger('changedColor');
+                    this._color = create('util.color', color);
+                    this.trigger('colorChanged', this._color);
                 }
 
                 return this._color;

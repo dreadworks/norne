@@ -199,10 +199,6 @@
                 index = this.index(dist, true);
                 proxy = this.proxy[index];
 
-                if (proxy.color === undefined) {
-                    proxy.color = lane.color();
-                }
-
                 if (proxy.points === undefined) {
                     proxy.points = [];
                 }
@@ -216,15 +212,23 @@
             },
 
 
-
+            /**
+             *  Change the lanes renderer.
+             *
+             *  @param dist The lanes dist
+             *  @type dist Number
+             *  @param opts Rendering options
+             *  @type opts Object
+             */
             changeRenderer: function (dist, opts) {
-                var index, module;
+                var index, module, proxy;
 
                 if (this.index(dist) === -1) {
                     this.createEntry(dist);
                 }
 
                 index = this.index(dist, true);
+                proxy = this.proxy[index];
                 module = 'render.lane';
 
                 opts = _(opts).map(function (val, key) {
@@ -232,7 +236,22 @@
                 });
 
                 module = create(module, this.world.renderer().canv);
-                this.proxy[index].renderer = mixin(module, opts);
+                proxy.renderer = mixin(module, opts);
+            },
+
+
+            changeColor: function (lane, color) {
+                var index, proxy, dist;
+
+                dist = lane.dist;
+                if (this.index(dist) === -1) {
+                    this.createEntry(dist);
+                }
+
+                index = this.index(dist, true);
+                proxy = this.proxy[index];
+
+                proxy.renderer.setColor(proxy, color);
             }
 
 
@@ -273,6 +292,10 @@
 
             this.lanes.on('rendererChanged', function (lane, renderer) {
                 that.changeRenderer(lane.dist, renderer);
+            });
+
+            this.lanes.on('colorChanged', function (lane, color) {
+                that.changeColor(lane, color);
             });
 
             world.on('depthChanged', function (depth) {
