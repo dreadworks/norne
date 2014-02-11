@@ -203,4 +203,19 @@ describe('util.color', function () {
         expect(color.toString()).toEqual('hsl(0,0%,0%)');
     });
 
+
+    it('is chainable', function () {
+        var color;
+
+        color = create('util.color');
+
+        color = color
+                    .hex('ff0000')
+                    .rgb(255,0,0).red(255).green(255)
+                    .hsl(0,100,100).hue(0).saturation(100).lightness(100)
+                    .darken(50).lighten(50);
+
+        expect(color).toBeDefined();
+    });
+
 });

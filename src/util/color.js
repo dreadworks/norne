@@ -502,6 +502,8 @@
 
                 lightness = this.c.l - amount;
                 this.c.l = (lightness < 0) ? 0 : lightness;
+
+                return this;
             },
 
 
@@ -519,6 +521,8 @@
 
                 lightness = this.c.l + amount;
                 this.c.l = (lightness > 100) ? 100 : lightness;
+
+                return this;
             }
 
 
