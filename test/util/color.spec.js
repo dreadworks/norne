@@ -25,12 +25,12 @@ describe('util.color', function () {
 
         hex = '0099FF';
         color = create('util.color', hex);
-        expect(color.hex()).toEqual(hex);
+        expect(color.hex()).toEqual(hex.toLowerCase());
 
         hex = 'FF9900';
         color = create('util.color');
         color.set(hex);
-        expect(color.hex()).toEqual(hex);
+        expect(color.hex()).toEqual(hex.toLowerCase());
     });
 
 
@@ -195,7 +195,12 @@ describe('util.color', function () {
         var color;
 
         color = create('util.color').set('#efefef');
-        expect(color.toString()).toEqual('efefef');
+        expect(color.toString()).toEqual('rgb(239,239,239)');
+
+        color.saturation(0);
+        color.lightness(0);
+
+        expect(color.toString()).toEqual('hsl(0,0%,0%)');
     });
 
 });

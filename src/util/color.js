@@ -479,11 +479,12 @@
             },
 
             /**
-             *  Returns the colors hex code
-             *  as its String representation.
+             *  Returns the colors rgb or hsl
+             *  value, based on the currently
+             *  color system.
              */
             toString: function () {
-                return this.hex();
+                return (this.c.sys === 'rgb') ? this.rgb() : this.hsl();
             },
 
 
