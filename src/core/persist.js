@@ -15,8 +15,8 @@
                 _(lanes).each(function (opts) {
                     var lane = that.world.createLane(opts.dist);
 
-                    lane.color(opts.color);
                     lane.renderer(opts.renderer);
+                    lane.color(opts.color);                    
                     lane.addPoints(opts.points);
 
                     that.trigger('laneLoaded', lane);
@@ -28,6 +28,10 @@
 
             import: function (data) {
                 this.lanes(data.lanes);
+            },
+
+            start: function () {
+                this.xhr.get(this.file);
             }
 
          }, function (file, world) {
@@ -43,7 +47,8 @@
                 that.trigger('importDone');
             });
 
-            xhr.get(file);
+            this.file = file;
+            this.xhr = xhr;
          });
 
 
