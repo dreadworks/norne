@@ -12,12 +12,8 @@
              *  @param lane Lane as saved in the proxy
              *  @type lane Object
              */
-            render: function (lane) {
-                var color = lane.color,
-                    points = lane.points;
-
-                this.draw(points);
-                this.fill(points, color);                
+            render: function (proxy) {
+                this.draw(proxy);
             },
 
 
@@ -26,10 +22,10 @@
              *  values already have the correct canvas
              *  coordinates.
              *
-             *  @param points An array of points to display.
+             *  @param points An array of points to display
              *  @type points Array
              */
-            draw: function (points) {
+            draw: function (proxy) {
                 this.raise('You must overwrite render.lane.draw');
             },
 
@@ -37,12 +33,10 @@
             /**
              *  Fill the drawn lane.
              *
-             *  @param points An array of canvas coordinates.
-             *  @type points Array
-             *  @param color The color as saved in the proxy.
-             *  @type color Object
+             *  @param proxy The lanes proxy
+             *  @type proxy Object
              */
-            fill: function (points, color) {
+            fill: function (proxy) {
                 this.raise('You must overwrite render.lane.fill');
             },
 
@@ -50,9 +44,9 @@
             /**
              *  Set the lanes color.
              *
-             *  @param proxy The lanes proxy part.
+             *  @param proxy The lanes proxy
              *  @type proxy Object
-             *  @param color The lanes color.
+             *  @param color The lanes color
              *  @type color util.color
              */
             setColor: function (proxy, color) {
@@ -77,8 +71,8 @@
             /**
              *  @see render.lane.fill
              */
-            fill: function (points, color) {
-                this.ctx.fillStyle = color;
+            fill: function (proxy) {
+                this.ctx.fillStyle = proxy.color;
                 this.ctx.fill();
             },
 
@@ -102,8 +96,11 @@
             /**
              *  @see render.lane.fill
              */
-            fill: function (points, color) {
-                var lingrand;
+            fill: function (proxy) {
+                var lingrand, points, color;
+
+                points = proxy.points;
+                color = proxy.color;
 
                 // fill
                 lingrand = this.linearGradient(points, color);
@@ -170,8 +167,11 @@
             /**
              *  @see render.lane.draw
              */
-             draw: function (points) {
-                var that = this;
+             draw: function (proxy) {
+                var points, that;
+
+                that = this;
+                points = proxy.points;
 
                 this.ctx.beginPath();
                 this.ctx.moveTo(points[0].x, points[0].y);
@@ -184,6 +184,7 @@
                 this.ctx.lineTo(_(points).first().x, this.canvas.height+10);
 
                 this.ctx.closePath();
+                this.fill(proxy);
              }
 
          });
@@ -201,8 +202,10 @@
             /**
              *  @see render.lane.draw
              */
-            draw: function (points) {
-                var i = 1, xc, yc;
+            draw: function (proxy) {
+                var points, i, xc, yc;
+
+                points = proxy.points;
 
                 if (!points) {
                     return;
@@ -230,6 +233,8 @@
                 this.ctx.lineTo(points[i].x, this.canvas.height+10);
                 this.ctx.lineTo(points[0].x, this.canvas.height+10);
                 this.ctx.closePath();
+
+                this.fill(proxy);
             }
 
         });
