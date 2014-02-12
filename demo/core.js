@@ -24,6 +24,10 @@
 
                     this.ctx.fillStyle = '000000';
                     this.ctx.fill();
+
+                    this.ctx.font = '20px sans-serif';
+                    this.ctx.textBaseline = 'bottom';
+                    this.ctx.fillText(i, p.x-5, p.y-10);
                 }
             },
 
@@ -31,8 +35,10 @@
             /**
              *  @see render.lane.draw
              */
-            draw: function (points) {
-                var i = 1, xc, yc;
+            draw: function (proxy) {
+                var points, i, xc, yc;
+
+                points = proxy.points;
 
                 if (!points) {
                     return;
@@ -61,8 +67,7 @@
                 this.ctx.lineTo(points[0].x, this.canvas.height+10);
                 this.ctx.closePath();
 
-                this.fill(points, 'rgba(0,0,0,0.5)');
-
+                this.fill(proxy);
                 this.drawPoints(points);
             }
 

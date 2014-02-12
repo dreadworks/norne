@@ -4,7 +4,7 @@
         "dist": 0,
         "color": "#7DAD13",
         "renderer": {
-            "ground": "bezier",
+            "ground": "bezier-debug",
             "color": "gradient"
         },
         "points": [
@@ -18,10 +18,10 @@
     }, {
 
         "dist": 20,
-        "color": "7CA12B",
+        "color": "7DAD13",
         "renderer": {
-            "ground": "bezier",
-            "color": "solid"
+            "ground": "bezier-debug",
+            "color": "gradient"
         },
         "points": [
             { "x": 400, "y": 180 },
@@ -36,10 +36,10 @@
     }, {
 
         "dist": 40,
-        "color": "A1A12B",
+        "color": "7DAD13",
         "renderer": {
-            "ground": "bezier",
-            "color": "solid"
+            "ground": "bezier-debug",
+            "color": "gradient"
         },
         "points": [
             { "x": -200, "y": 400 },
