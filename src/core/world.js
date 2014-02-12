@@ -281,6 +281,10 @@
              *
              */
             addBody: function () {
+
+                
+
+                /*
                 var physworld, body, clock;
 
                 physworld = physics({
@@ -301,6 +305,8 @@
                     physworld.render();
                 };
                 return body;
+
+                */
             }
 
         });
