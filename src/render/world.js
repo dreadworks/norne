@@ -24,8 +24,10 @@
                         lane.renderer.render(lane);
                     }
 
-                    _(proxy.bodies.particles[lane.dist]).each(function (body) {
-                        that.bodyRenderer.render(body);
+                    _(lane.bodies).each(function (body) {
+                        if (body.renderer && body.particles) {
+                            body.renderer.render(body);
+                        }
                     });
                 });
             },
@@ -97,10 +99,6 @@
 
             this.characterRenderer = create(
                 'render.character', this.canv
-            );
-
-            this.bodyRenderer = create(
-                'render.body', this.canv
             );
 
             this.clock = clock;

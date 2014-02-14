@@ -233,6 +233,7 @@
                 var that = this;
                 this[lane.dist] = lane;
                 this.delegate(lane);
+                this.trigger('laneAdded', lane);
             },
 
 

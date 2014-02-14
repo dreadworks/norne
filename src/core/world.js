@@ -190,19 +190,12 @@
 
 
             /**
-             *  Set or get the renderer. The name must be
-             *  a defined renderer, for example "render.canvas".
-             *  The renderers constructor gets passed the proxy
-             *  that describes all elements that get rendered,
-             *  the clock that triggers a "tick" event everytime
-             *  something in the proxy changes and the canvas - an
-             *  HTML-Element where the world should be drawn.
+             *  Set or get the renderer. If set, the internal
+             *  rendering scheduler and broker gets created.
              *
              *  If no arguments are provided, the currently set
              *  renderer gets returned.
              *
-             *  @param name The renderers name
-             *  @type name String
              *  @param canvas The element where the world gets drawn to
              *  @type canvas Element
              *
@@ -222,16 +215,15 @@
                 clock = create('util.clock',  1000/this.opts.fps);
                 this.broker = create('broker.world',  this, canvas, clock);
                 this.canvas = canvas;
-                proxy = this.broker.proxy;
 
                 // create
                 this._renderer = create(
-                    'render.world', proxy, clock, canvas
+                    'render.world', this.broker.proxy, clock, canvas
                 );
 
                 // configure
-                this.broker.add('bodies', this.bodies);
                 this.broker.add('lanes', this.lanes);
+                this.broker.add('bodies', this.bodies);
 
                 return this._renderer;
             }
@@ -267,6 +259,18 @@
           */
         define('core.world.bodies').as({
 
+
+            createBody: function (lane) {
+                if (lane === undefined) {
+                    this.raise('createBody: You must provide a lane');
+                }
+
+                var body = create('data.body', lane);
+                this.bodies.add(body);
+                return body;
+            }
+
+            /*
             _init_bodies: function () {
                 var that = this;
 
@@ -274,12 +278,13 @@
                     return _(proto).extend(that.broker.add('bodies'));
                 });
             },
+            */
 
             /** 
              *  Add a body to the world. 
              *
              *
-             */
+             *
             addBody: function () {
 
                 
@@ -305,9 +310,8 @@
                     physworld.render();
                 };
                 return body;
-
-                */
             }
+            */
 
         });
 
@@ -467,9 +471,6 @@
                     this.angle(this.opts.angle);
                     this.pos(this.opts.pos);
                     this.renderer(this.opts.canvas);
-
-                    // initialize
-                    this._init_bodies();
 
                     // TODO #2
                     window.addEventListener('resize', function (evt) {

@@ -9,6 +9,46 @@
          .as({
 
 
+            body: function (lane, opts) {
+                var body = this.world.createBody(lane);
+
+                    _(opts.forces).each(function (force) {
+                        body.addForce(force);
+                    });
+
+                    body.particles(opts.particles);
+                    this.trigger('bodyLoaded', body);
+            },
+
+
+            bodies: function (lane, bodies) {
+                var that = this;
+
+                _(bodies).each(function (opts) {
+                    that.body(lane, opts);
+                });
+
+                this.trigger('bodiesLoaded', bodies);
+            },
+
+
+            /**
+             *  Imports and configures a lane.
+             *
+             *  Properties of the lane object:
+             *    dist: Number
+             *    color: String
+             *    renderer: Object
+             *      ground: String
+             *      color: String
+             *    points: Array
+             *      points[i]: Object
+             *        x: Number
+             *        y: Number
+             *
+             *  @param lanes Lane configuration
+             *  @type lane Object
+             */
             lanes: function (lanes) {
                 var that = this;
 
@@ -18,8 +58,9 @@
                     lane.renderer(opts.renderer);
                     lane.color(opts.color);                    
                     lane.addPoints(opts.points);
-
                     that.trigger('laneLoaded', lane);
+
+                    that.bodies(lane, opts.bodies);
                 });
 
                 that.trigger('lanesLoaded', lanes);

@@ -4,7 +4,7 @@
  *  @author Lukas Hueck, Felix Hamann
  *  http://github.com/dreadworks/norne
  *
- *  Licensed under GPLv2
+ *  Licensed under MIT
  */
 (function () {
     

@@ -285,7 +285,6 @@
                 world.pos() + world.width()
             );
 
-            // event handler
             this.lanes.on('addPoint', function (lane, point, index) {
                 that.addPoint(lane, point, index);
             });
