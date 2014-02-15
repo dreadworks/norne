@@ -26,6 +26,7 @@ module.exports = function (grunt) {
         'core/world',
         'core/story',
         'core/persist',
+        'core/physics',
 
         // data objects (the model)
         'data/lane',

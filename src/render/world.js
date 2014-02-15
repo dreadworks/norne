@@ -25,6 +25,7 @@
                     }
 
                     _(lane.bodies).each(function (body) {
+                        console.log('FOO', body);
                         if (body.renderer && body.particles) {
                             body.renderer.render(body);
                         }

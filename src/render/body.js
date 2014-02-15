@@ -6,8 +6,16 @@
                 var that = this;
                 console.log('render.body.render', proxy);
                 this.draw(proxy);
+
+                // TODO new architecture instead of mixin?
+                if (this.drawLane && proxy.lane) {
+                    this.drawLane(proxy);
+                }
             }
 
+        }, function (canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
         });
 
 
@@ -39,7 +47,7 @@
                     that.ctx.beginPath();
 
                     that.ctx.arc(
-                        particle.x, particle.y, particle.r*2, 
+                        particle.x, particle.y, particle.r, 
                         0, that.pi2, false
                     );
 

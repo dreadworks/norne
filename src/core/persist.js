@@ -17,6 +17,7 @@
                     });
 
                     body.particles(opts.particles);
+                    body.renderer(opts.renderer);
                     this.trigger('bodyLoaded', body);
             },
 

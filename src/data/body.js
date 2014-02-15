@@ -1,5 +1,4 @@
 
-
     define('data.body')
         .uses('util.evt')
         .as({
@@ -9,13 +8,22 @@
                 this.trigger('forceAdded', opts);
             },
 
-            particles: function (n) {
-                if (n === undefined) {
+            particles: function (opts) {
+                if (opts === undefined) {
                     return this._particles;
                 }
 
-                this._particles = n;
-                this.trigger('particlesChanged', n);
+                this._particles = opts;
+                this.trigger('particlesChanged', opts);
+            },
+
+            renderer: function (opts) {
+                if (opts === undefined) {
+                    return this._renderer;
+                }
+
+                this._renderer = opts;
+                this.trigger('rendererChanged', opts);
             }
 
         }, (function (lane) {

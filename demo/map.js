@@ -2,27 +2,47 @@
     "lanes": [{
 
         "dist": 0,
-        "color": "#7DAD13",
+        "color": "#cccccc",
         "renderer": {
             "ground": "bezier-debug",
             "color": "gradient"
         },
+
         "points": [
             { "x": -200, "y": 200 },
             { "x": 160, "y": 230 },
             { "x": 800, "y": 80 },
             { "x": 1300, "y": 160 },
             { "x": 1800, "y": 0}
-        ]
+        ],
+
+        "bodies": [{
+            "color": "0099ff",
+            "forces": [
+                { "type": "field", "x": 160, "y": 100 }
+            ],
+            "particles": {
+                "x": 160, "y": 100, "r": 5,
+                "type": "circle",
+                "amount": 20,
+                "scatter": 20
+            },
+            "renderer": {
+                "color": "solid",
+                "shape": "round",
+                "lane": "debug"
+            }
+        }]
 
     }, {
 
         "dist": 20,
-        "color": "7DAD13",
+        "color": "dddddd",
         "renderer": {
             "ground": "bezier-debug",
             "color": "gradient"
         },
+
         "points": [
             { "x": 400, "y": 180 },
             { "x": 800, "y": 200 },
@@ -33,14 +53,16 @@
             { "x": 5000, "y": 60 },
             { "x": 6000, "y": 100 }
         ]
+
     }, {
 
         "dist": 40,
-        "color": "7DAD13",
+        "color": "eeeeee",
         "renderer": {
             "ground": "bezier-debug",
             "color": "gradient"
         },
+
         "points": [
             { "x": -200, "y": 400 },
             { "x": 500, "y": 500 },

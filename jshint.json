@@ -13,12 +13,7 @@
     "browser" : true,
     "globals" : {
         "_": true,
-        "math": true,
         "norne": true,
-
-        "define": true,
-        "create": true,
-
         "console": true
     }
 }

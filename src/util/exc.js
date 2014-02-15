@@ -27,6 +27,7 @@
              *  @type msg String
              */
              raise: function (msg) {
+                console.error(this.raise._name, msg);
                 throw create('util.exc.exception', this.raise._name, msg);
              }
         });

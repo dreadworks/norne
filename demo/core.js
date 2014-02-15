@@ -2,6 +2,27 @@
 	'use strict';
 
 
+    norne.obj.define('render.body.lane.debug')
+        .as({
+
+            drawLane: function(proxy) {
+                var that = this;
+
+                this.ctx.beginPath();
+                this.ctx.moveTo(proxy.lane[0].x, proxy.lane[0].y);
+
+                _(proxy.lane).each(function (v) {
+                    that.ctx.lineTo(v.x, v.y);
+                });
+
+
+                this.ctx.strokeStyle = 'rgb(255,0,0)';
+                this.ctx.stroke();
+            }
+
+        });
+
+
     /** 
      *  Renders the lanes ground
      *  roundly by interpolating
@@ -19,7 +40,7 @@
 
                     this.ctx.beginPath();
 
-                    this.ctx.arc(p.x, p.y, 5, 0, Math.PI*2, false);
+                    this.ctx.arc(p.x, p.y, 2, 0, Math.PI*2, false);
                     this.ctx.closePath();
 
                     this.ctx.fillStyle = '000000';
@@ -27,7 +48,7 @@
 
                     this.ctx.font = '20px sans-serif';
                     this.ctx.textBaseline = 'bottom';
-                    this.ctx.fillText(i, p.x-5, p.y-10);
+                    this.ctx.fillText(i, p.x-6, p.y-10);
                 }
             },
 
@@ -124,5 +145,18 @@
 			throw exc;
 		}
 	});
+
+    window.phys = function (steps, delta) {
+        var i, id;
+
+        i = 0;
+        id = setInterval(function () {
+            i += 1;
+            step();
+            if (i > steps) {
+                clearInterval(id);
+            }
+        }, delta);
+    };
 
 }(jQuery));
