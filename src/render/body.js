@@ -8,8 +8,8 @@
                 this.draw(proxy);
 
                 // TODO new architecture instead of mixin?
-                if (this.drawLane && proxy.lane) {
-                    this.drawLane(proxy);
+                if (this.drawLane && proxy.lanes.length) {
+                    this.drawLanes(proxy);
                 }
             }
 

@@ -5,19 +5,26 @@
     norne.obj.define('render.body.lane.debug')
         .as({
 
-            drawLane: function(proxy) {
+            drawLane: function(lane) {
                 var that = this;
 
                 this.ctx.beginPath();
-                this.ctx.moveTo(proxy.lane[0].x, proxy.lane[0].y);
+                this.ctx.moveTo(lane[0].x, lane[0].y);
 
-                _(proxy.lane).each(function (v) {
+                _(lane).each(function (v) {
                     that.ctx.lineTo(v.x, v.y);
                 });
 
 
                 this.ctx.strokeStyle = 'rgb(255,0,0)';
                 this.ctx.stroke();
+            },
+
+
+            drawLanes: function (proxy) {
+                _(proxy.lanes).each(
+                    _(this.drawLane).bind(this)
+                );
             }
 
         });
@@ -133,6 +140,7 @@
 					console.log('import done');
 					world.broker.render();
 					//world.pos(3500);
+                    window.step();
 				});
 
 				imp.start();

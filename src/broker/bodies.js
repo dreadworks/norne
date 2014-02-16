@@ -10,9 +10,9 @@
 
                 _(bodies).each(function (body, i) {
 
-                    // lane
+                    // lane polygons
                     if (body.geometry.vertices && proxy.lane === undefined) {
-                        proxy.lane = _(body.geometry.vertices).map(function (v) {
+                        proxy.lanes[i] = _(body.geometry.vertices).map(function (v) {
                             return {
                                 x: v.get(0),
                                 y: v.get(1)
@@ -66,7 +66,8 @@
                 physics = create('physics.world').world;
 
                 proxy[body.id] = {
-                    physics: physics
+                    physics: physics,
+                    lanes: []
                 };
 
                 proxy = proxy[body.id];
@@ -76,10 +77,9 @@
                     'physics.renderer', renderproxy, body
                 ).renderer);
 
-
                 physics.add(create(
                     'physics.body.lane.bezier', body.lane
-                ).body);
+                ).bodies);
 
                 // TODO remove
                 window.step = function () {
