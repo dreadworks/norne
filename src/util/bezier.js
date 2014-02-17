@@ -116,7 +116,49 @@
                     value = this.getPoint(t).x;
                 }
                 return t;
-            }        
+            },
+
+
+
+            /**
+             *  Creates a sequence of x,y values
+             *  between the two points. The threshold
+             *  describes the minimum y-distance between
+             *  two points.
+             *
+             *  @param threshold 
+             *  @type threshold Number
+             */
+             sequence: function (threshold) {
+                var stepsize, t, l, curr, seq;
+
+                l = -1;
+                seq = [];
+
+                stepsize = 1 / (this.points[0].x - this.points[1].x);
+                t = (stepsize < 0) ? 1 : 0;
+
+                t += stepsize;
+                while (0 < t && t < 1) {
+                    curr = this.getPoint(t);
+
+                    if (!seq[l]) {
+                        seq.push(curr);
+                        l += 1;
+                    }
+
+                    // evaluates to NaN for l == -1
+                    if (Math.abs(seq[l].y - curr.y) > threshold) {
+                        seq.push(curr);
+                        l += 1;
+                    }
+
+                    t += stepsize;
+                }
+
+                console.log('sequence', seq[0].x, seq[seq.length-1].x);
+                return seq;
+             }  
 
         }, function (points) {
 
