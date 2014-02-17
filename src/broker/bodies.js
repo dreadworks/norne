@@ -3,30 +3,68 @@
     define('broker.bodies.renderer')
         .as({
 
+            updateLaneProxy: function (body, i, x, y, geometry) {
+
+                this.proxy.lanes[i] = _(geometry.vertices).map(function (v) {
+                    return {
+                        x: v.get(0) + x,
+                        y: v.get(1) + y
+                    };
+                });
+
+            },
+
+
+            updateParticleProxy: function (body, i, x, y, geometry) {
+
+                this.proxy.particles[i] = {
+                    x: x, y: y,
+                    r: geometry.radius
+                };
+
+            },
+
+
             render: function (bodies, meta) {
-                console.log('broker.bodies.renderer', {x: bodies});
+                //console.log('broker.bodies.renderer', {x: bodies});
 
-                var proxy = this.proxy;
+                var proxy, that;
 
+                that = this;
+                proxy = this.proxy;
+
+                this._world.publish({
+                    topic: 'beforeRender',
+                    renderer: this,
+                    bodies: bodies,
+                    meta: meta
+                });
+                
                 _(bodies).each(function (body, i) {
+                    var geometry, x, y, bb, hh, hw, bbpos, pos;
 
-                    // lane polygons
-                    if (body.geometry.vertices && proxy.lane === undefined) {
-                        proxy.lanes[i] = _(body.geometry.vertices).map(function (v) {
-                            return {
-                                x: v.get(0),
-                                y: v.get(1)
-                            };
-                        });
+                    geometry = body.geometry;
+                    bb = geometry.aabb();
+
+                    hw = bb.halfWidth;
+                    hh = bb.halfHeight;
+                    bbpos = bb.pos;
+                    
+                    pos = body.state.pos;
+
+                    // hw/4, hh/4 ??
+                    //x = Math.abs(bb.pos.x) + pos.get(0) - hw/2;
+                    //y = Math.abs(bb.pos.y) + pos.get(1) - hh/2;
+
+                    x = pos.get(0);
+                    y = pos.get(1);
+
+                    if (geometry.name === 'convex-polygon') {
+                        that.updateLaneProxy(body, i, x, y, geometry);
                     }
 
-                    // particles
-                    if (body.geometry.radius) {
-                        proxy.particles[i] = {
-                            x: body.state.pos.get(0),
-                            y: body.state.pos.get(1),
-                            r: body.geometry.radius
-                        };
+                    if (geometry.name === 'circle') {
+                        that.updateParticleProxy(body, i, x, y, geometry);
                     }
                 });
 
@@ -78,7 +116,7 @@
                 ).renderer);
 
                 physics.add(create(
-                    'physics.body.lane.bezier', body.lane
+                    'physics.body.lane.bezier', body.lane, this.world
                 ).bodies);
 
                 // TODO remove
@@ -95,10 +133,12 @@
                 proxy = this.proxy(body);
                 particles = [];
 
-                _(opts.amount).times(function () {
+                _(opts.amount).times(function (i) {
                     particles.push(create(
                         'physics.body.particle.circle',
-                        opts.x, opts.y, opts.r
+                        opts.x + (i%60)*2, 
+                        opts.y - (i%10)*2,
+                        opts.r
                     ).body);
                 });
 

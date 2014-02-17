@@ -11,12 +11,22 @@
                 this.ctx.beginPath();
                 this.ctx.moveTo(lane[0].x, lane[0].y);
 
+                this.ctx.font = '12px sans-serif';
+                this.ctx.textBaseline = 'bottom';
+                this.ctx.fillStyle = 'rgb(255,0,0)';
+                this.ctx.strokeStyle = 'rgb(255,0,0)';
+
                 _(lane).each(function (v) {
                     that.ctx.lineTo(v.x, v.y);
+
+                    that.ctx.fillText(
+                        Math.round(v.x)+', '+Math.round(v.y), 
+                        v.x, v.y+20
+                    );
                 });
 
+                this.ctx.lineTo(lane[0].x, lane[0].y);
 
-                this.ctx.strokeStyle = 'rgb(255,0,0)';
                 this.ctx.stroke();
             },
 

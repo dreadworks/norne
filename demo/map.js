@@ -22,9 +22,9 @@
                 { "type": "field", "x": 160, "y": 100 }
             ],
             "particles": {
-                "x": 160, "y": 100, "r": 5,
+                "x": 160, "y": 100, "r": 3,
                 "type": "circle",
-                "amount": 20,
+                "amount": 700,
                 "scatter": 20
             },
             "renderer": {

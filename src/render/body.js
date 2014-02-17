@@ -4,7 +4,7 @@
 
             render: function (proxy) {
                 var that = this;
-                console.log('render.body.render', proxy);
+                //console.log('render.body.render', proxy);
                 this.draw(proxy);
 
                 // TODO new architecture instead of mixin?
