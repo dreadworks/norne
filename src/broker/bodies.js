@@ -52,7 +52,7 @@
                     
                     pos = body.state.pos;
 
-                    // hw/4, hh/4 ??
+                    // mhh, pos.get(x) worked better after all...
                     //x = Math.abs(bb.pos.x) + pos.get(0) - hw/2;
                     //y = Math.abs(bb.pos.y) + pos.get(1) - hh/2;
 
@@ -116,7 +116,7 @@
                 ).renderer);
 
                 physics.add(create(
-                    'physics.body.lane.bezier', body.lane, this.world
+                    'physics.body.lane.simple', body.lane, this.world
                 ).bodies);
 
                 // TODO remove
@@ -136,7 +136,7 @@
                 _(opts.amount).times(function (i) {
                     particles.push(create(
                         'physics.body.particle.circle',
-                        opts.x + (i%60)*2, 
+                        opts.x + i*2, 
                         opts.y - (i%10)*2,
                         opts.r
                     ).body);
@@ -157,8 +157,14 @@
                     return module +'.'+ key +'.'+ val;
                 });
 
+                console.log(opts);
                 module = create(module, this.world.renderer().canv);
                 proxy[body.id].renderer = mixin(module, opts);
+            },
+
+
+            changeColor: function (body, color) {
+                this.proxy(body)[body.id].color = color.toString();
             }
 
 
@@ -190,5 +196,9 @@
             bodies.on('rendererChanged', function (body, opts) {
                 console.log('broker.bodies noted rendererChanged', opts);
                 that.changeRenderer(body, opts);
+            });
+
+            bodies.on('colorChanged', function (body, color) {
+                that.changeColor(body, color);
             });
         });

@@ -18,6 +18,7 @@
 
                     body.particles(opts.particles);
                     body.renderer(opts.renderer);
+                    body.color(opts.color);
                     this.trigger('bodyLoaded', body);
             },
 

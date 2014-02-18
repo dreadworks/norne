@@ -157,44 +157,99 @@
             this.world = world;
         });
 
-    define('physics.body.lane.bezier')
+    define('physics.body.lane.simple')
         .uses('physics.body.lane')
         .as(function (lane) {
             var vertices, that;
 
             this.bodies = [];
-
-            /*
-            this.bodies.push(physics.body('convex-polygon', {
-                x: 200, y: 200, fixed: true,
-                vertices: [
-                    { x: 200, y: 200 }, { x: 100, y: 200 },
-                    { x: 150, y: 100 }//, { x: 200, y: 100 }
-                ]
-            }));
-
-            this.bodies.push(physics.body('convex-polygon', {
-                x: 100, y: 300, fixed: true,
-                vertices: [
-                    { x: 200, y: 200 }, { x: 100, y: 200 },
-                    { x: 150, y: 100 }//, { x: 200, y: 100 }
-                ]
-            }));
-
-            this.bodies.push(physics.body('convex-polygon', {
-                x: 300, y: 300, fixed: true,
-                vertices: [
-                    { x: 200, y: 200 }, { x: 100, y: 200 },
-                    { x: 150, y: 100 }//, { x: 200, y: 100 }
-                ]
-            }));
-            */
             
             that = this;
             vertices = this.createVertices();
-            console.log('physics.body.lane.bezier vertices', vertices);
 
             _(vertices).each(function (v) {
+                var polygon, pos, bb, hh, hw;
+
+                polygon = physics.body('convex-polygon', {
+                    angle: 0,
+                    vertices: v,
+                    fixed: true
+                });
+
+                bb = polygon.geometry.aabb();
+                pos = polygon.state.pos;
+
+                hh = bb.halfHeight;
+                hw = bb.halfWidth;
+
+                pos.set(
+                    v[v.length-1].x + hw - Math.abs(bb.pos.x),
+                    that.world.height() - bb.pos.y - hh
+                );
+
+                that.bodies.push(polygon);
+            });
+            
+        });
+
+
+    define('physics.body.lane.bezier')
+        .uses('physics.body.lane')
+        .as(function (lane) {
+            var vertices, polygons, that;
+
+            this.bodies = [];
+            
+            that = this;
+            vertices = this.createVertices();
+
+            vertices = _(vertices).map(function (polygon) {
+                var bezier, i, a, b;
+
+                i = 1;
+                while (i<polygon.length) {
+
+                    a = polygon[i-1];
+                    b = polygon[i];
+
+                    if (a.x === b.x) {
+                        i += 1;
+                        continue;
+                    }
+
+                    bezier = create('util.bezier', [a, b]);
+                    bezier = bezier.sequence(5);
+
+                    // replace the two points with
+                    // the new bezier sequence
+                    bezier.unshift(i, 0);
+                    Array.prototype.splice.apply(polygon, bezier);
+
+                    // skip sequence
+                    i += bezier.length - 1;
+                }
+
+                return polygon;
+            });
+            console.log(vertices);
+            
+            polygons = [];
+            (function (that) {
+                var i = 1;
+                _(vertices).each(function (polygon) {
+                    while (i < polygon.length) {
+                        console.log('vertices.slice', i-1, i);
+                        polygons.push(that.createPolygon(
+                            polygon.slice(i-1, i+1)
+                        ));
+                        
+                        i += 1;
+                    }
+                });
+            }(this));
+
+
+            _(polygons).each(function (v) {
                 var polygon, pos, bb, hh, hw;
 
                 polygon = physics.body('convex-polygon', {
@@ -236,7 +291,7 @@
     define('physics.body.particle.circle')
         .as(function (x, y, r) {
             this.body = physics.body('circle', {
-                x:x, y:y, mass: 0.1, radius: r,
+                x:x, y:y, mass: 0.01, radius: r,
                 restitution: 0
             });
         });
@@ -282,7 +337,8 @@
 
         this.world.add([
             //physics.behaviour('norne'),
-            physics.behaviour('constant-acceleration', { acc: { y: 0.00009, x:0 }}),
+            physics.behaviour('newtonian'),
+            //physics.behaviour('constant-acceleration', { acc: { y: 0.00009, x:0 }}),
             physics.behaviour('body-impulse-response'),
             physics.behaviour('sweep-prune'),
             physics.behaviour('body-collision-detection', { checkAll: false }) 

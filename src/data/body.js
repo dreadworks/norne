@@ -24,6 +24,15 @@
 
                 this._renderer = opts;
                 this.trigger('rendererChanged', opts);
+            },
+
+            color: function (color) {
+                if (color === undefined) {
+                    return this._color;
+                }
+
+                this._color = create('util.color', color);
+                this.trigger('colorChanged', color);
             }
 
         }, (function (lane) {

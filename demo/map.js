@@ -4,7 +4,7 @@
         "dist": 0,
         "color": "#cccccc",
         "renderer": {
-            "ground": "bezier-debug",
+            "ground": "simple",
             "color": "gradient"
         },
 
@@ -22,15 +22,14 @@
                 { "type": "field", "x": 160, "y": 100 }
             ],
             "particles": {
-                "x": 160, "y": 100, "r": 3,
+                "x": 0, "y": 100, "r": 2,
                 "type": "circle",
-                "amount": 700,
+                "amount": 500,
                 "scatter": 20
             },
             "renderer": {
                 "color": "solid",
-                "shape": "round",
-                "lane": "debug"
+                "shape": "round"
             }
         }]
 
