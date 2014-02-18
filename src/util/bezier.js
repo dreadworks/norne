@@ -156,7 +156,6 @@
                     t += stepsize;
                 }
 
-                console.log('sequence', seq[0].x, seq[seq.length-1].x);
                 return seq;
              }  
 
