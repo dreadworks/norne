@@ -19,10 +19,10 @@
                 _(lane).each(function (v) {
                     that.ctx.lineTo(v.x, v.y);
 
-                //    that.ctx.fillText(
-                //        Math.round(v.x)+', '+Math.round(v.y), 
-                //        v.x, v.y+20
-                //    );
+                    that.ctx.fillText(
+                        Math.round(v.x)+', '+Math.round(v.y), 
+                        v.x, v.y+20
+                    );
                 });
 
                 this.ctx.lineTo(lane[0].x, lane[0].y);

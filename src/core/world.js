@@ -105,7 +105,7 @@
                 y *= (a/(-this._maxangle * 100)) * dist + 1 + a/(2 * this._maxangle);
                 y = this.height() - y;
 
-                return { x: x, y: y };
+                return _({}).extend(p, { x: x, y: y });
             },
 
 

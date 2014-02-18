@@ -3,44 +3,33 @@
     define('broker.bodies.renderer')
         .as({
 
-            updateLaneProxy: function (body, i, x, y, geometry) {
+            updateLaneProxy: function (i, x, y, geometry, dist) {
+                var that = this;
 
                 this.proxy.lanes[i] = _(geometry.vertices).map(function (v) {
-                    return {
-                        x: v.get(0) + x,
+                    return that.world.map(that.proxy.dist, {
+                        x: -that.world.pos() + v.get(0) + x,
                         y: v.get(1) + y
-                    };
+                    });
                 });
 
             },
 
 
-            updateParticleProxy: function (body, i, x, y, geometry) {
+            updateParticleProxy: function (i, x, y, geometry, dist) {
 
-                this.proxy.particles[i] = {
-                    x: x, y: y,
+                this.proxy.particles[i] = this.world.map(this.proxy.dist, {
+                    x: -this.world.pos() + x, y: y,
                     r: geometry.radius
-                };
+                });
 
             },
 
 
-            render: function (bodies, meta) {
-                //console.log('broker.bodies.renderer', {x: bodies});
+            updateProxy: function () {
+                var that = this;
 
-                var proxy, that;
-
-                that = this;
-                proxy = this.proxy;
-
-                this._world.publish({
-                    topic: 'beforeRender',
-                    renderer: this,
-                    bodies: bodies,
-                    meta: meta
-                });
-                
-                _(bodies).each(function (body, i) {
+                _(this.bodies).each(function (body, i) {
                     var geometry, x, y, bb, hh, hw, bbpos, pos;
 
                     geometry = body.geometry;
@@ -60,20 +49,39 @@
                     y = pos.get(1);
 
                     if (geometry.name === 'convex-polygon') {
-                        that.updateLaneProxy(body, i, x, y, geometry);
+                        that.updateLaneProxy(i, x, y, geometry);
                     }
 
                     if (geometry.name === 'circle') {
-                        that.updateParticleProxy(body, i, x, y, geometry);
+                        that.updateParticleProxy(i, x, y, geometry);
                     }
                 });
 
                 this.parent.trigger('update');
+            },
+
+
+            render: function (bodies, meta) {
+                //console.log('broker.bodies.renderer', {x: bodies});
+
+                var proxy, that;
+                that = this;
+
+                this._world.publish({
+                    topic: 'beforeRender',
+                    renderer: this,
+                    bodies: bodies,
+                    meta: meta
+                });
+
+                this.bodies = bodies;
+                this.updateProxy();
             }
 
         }, function (proxy, parent) {
             this.proxy = proxy;
             this.parent = parent;
+            this.world = parent.world;
 
             this.proxy.particles = [];
         });
@@ -95,6 +103,15 @@
                 return proxy;
             },
 
+            remapProxy: function () {
+                _(this._proxy).each(function (lane) {
+                    if (lane.bodies) {
+                        _(lane.bodies).each(function (body) {
+                            body.renderproxy.updateProxy();
+                        });
+                    }
+                });
+            },
 
             createEntry: function (body) {
                 var index, physics, renderproxy, proxy;
@@ -105,15 +122,21 @@
 
                 proxy[body.id] = {
                     physics: physics,
-                    lanes: []
+                    lanes: [],
+                    dist: body.lane.dist
                 };
 
                 proxy = proxy[body.id];
                 renderproxy = create('broker.bodies.renderer', proxy, this);
 
-                physics.add(create(
+                proxy.renderproxy = renderproxy;
+                proxy.rendercontext = create(
                     'physics.renderer', renderproxy, body
-                ).renderer);
+                ).renderer;
+
+                physics.add(proxy.rendercontext);
+                proxy.renderproxy.updateProxy = _(proxy.renderproxy.updateProxy)
+                    .bind(proxy.rendercontext);
 
                 physics.add(create(
                     'physics.body.lane.simple', body.lane, this.world
@@ -136,7 +159,7 @@
                 _(opts.amount).times(function (i) {
                     particles.push(create(
                         'physics.body.particle.circle',
-                        opts.x + i*2, 
+                        opts.x + i*4, 
                         opts.y - (i%10)*2,
                         opts.r
                     ).body);
@@ -157,7 +180,6 @@
                     return module +'.'+ key +'.'+ val;
                 });
 
-                console.log(opts);
                 module = create(module, this.world.renderer().canv);
                 proxy[body.id].renderer = mixin(module, opts);
             },
@@ -185,7 +207,6 @@
             });
 
             bodies.on('particlesChanged', function (body, opts) {
-                console.log('broker.bodies noted particlesChanged', opts);
                 that.changeParticles(body, opts);
             });
 
@@ -194,11 +215,15 @@
             });
 
             bodies.on('rendererChanged', function (body, opts) {
-                console.log('broker.bodies noted rendererChanged', opts);
                 that.changeRenderer(body, opts);
             });
 
             bodies.on('colorChanged', function (body, color) {
                 that.changeColor(body, color);
+            });
+
+
+            parent.world.on('posChanged', function (pos) {
+                that.remapProxy();
             });
         });

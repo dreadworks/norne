@@ -108,11 +108,11 @@
                     points.shift();
                 }
 
-                min = _(polygon).max(function (p) { 
+                min = _(polygon).min(function (p) { 
                     return p.y; 
                 }).y;
 
-                min = (min > this.world.height()) ? min:this.world.height();
+                min = (min > 0) ? 0:min;
 
                 current = _(polygon).first();
                 if (current.y !== min) {
@@ -139,10 +139,12 @@
                 polygons = [];
                 points = this.lane.getPoints().slice();
 
+                /*
                 points = _(points).map(function (p) {
                     p.y = that.world.height() - p.y;
                     return p;
                 });
+                */
 
                 while (points.length > 1) {
                     polygon = this.createPolygon(points);
@@ -184,7 +186,7 @@
 
                 pos.set(
                     v[v.length-1].x + hw - Math.abs(bb.pos.x),
-                    that.world.height() - bb.pos.y - hh
+                    -bb.pos.y + hh
                 );
 
                 that.bodies.push(polygon);
@@ -242,7 +244,7 @@
                         polygons.push(that.createPolygon(
                             polygon.slice(i-1, i+1)
                         ));
-                        
+
                         i += 1;
                     }
                 });
@@ -337,8 +339,8 @@
 
         this.world.add([
             //physics.behaviour('norne'),
-            physics.behaviour('newtonian'),
-            //physics.behaviour('constant-acceleration', { acc: { y: 0.00009, x:0 }}),
+            //physics.behaviour('newtonian'),
+            physics.behaviour('constant-acceleration', { acc: { y: -0.00009, x:0 }}),
             physics.behaviour('body-impulse-response'),
             physics.behaviour('sweep-prune'),
             physics.behaviour('body-collision-detection', { checkAll: false }) 

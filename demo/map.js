@@ -14,31 +14,14 @@
             { "x": 800, "y": 80 },
             { "x": 1300, "y": 160 },
             { "x": 1800, "y": 0}
-        ],
-
-        "bodies": [{
-            "color": "0099ff",
-            "forces": [
-                { "type": "field", "x": 160, "y": 100 }
-            ],
-            "particles": {
-                "x": 0, "y": 100, "r": 2,
-                "type": "circle",
-                "amount": 500,
-                "scatter": 20
-            },
-            "renderer": {
-                "color": "solid",
-                "shape": "round"
-            }
-        }]
+        ]
 
     }, {
 
         "dist": 20,
         "color": "dddddd",
         "renderer": {
-            "ground": "bezier-debug",
+            "ground": "simple",
             "color": "gradient"
         },
 
@@ -51,7 +34,24 @@
             { "x": 4000, "y": 100 },
             { "x": 5000, "y": 60 },
             { "x": 6000, "y": 100 }
-        ]
+        ],
+
+        "bodies": [{
+            "color": "0099ff",
+            "forces": [
+                { "type": "field", "x": 160, "y": 100 }
+            ],
+            "particles": {
+                "x": 200, "y": 400, "r": 3,
+                "type": "circle",
+                "amount": 200,
+                "scatter": 20
+            },
+            "renderer": {
+                "color": "solid",
+                "shape": "round"
+            }
+        }]
 
     }, {
 

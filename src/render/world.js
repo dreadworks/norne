@@ -16,12 +16,9 @@
                 this.clearCanvas();
 
                 _(proxy.lanes).each(function (lane) {
+
                     if (lane.dist <= proxy.character.dist) {
                         that.characterRenderer.render(proxy.character);
-                    }
-
-                    if (lane.renderer && lane.points && lane.points.length) {
-                        lane.renderer.render(lane);
                     }
 
                     _(lane.bodies).each(function (body) {
@@ -29,6 +26,11 @@
                             body.renderer.render(body);
                         }
                     });
+
+                    if (lane.renderer && lane.points && lane.points.length) {
+                        lane.renderer.render(lane);
+                    }
+                    
                 });
             },
 
