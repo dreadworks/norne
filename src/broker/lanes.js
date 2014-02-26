@@ -237,6 +237,7 @@
 
                 module = create(module, this.world.renderer().canv);
                 proxy.renderer = mixin(module, opts);
+                this.trigger('update');
             },
 
 
