@@ -21,7 +21,6 @@
              *  @type name String
              */
             add: function (name) {
-                console.log('broker.world.add: adding', name);
                 var args, subbroker;
 
                 args = _(arguments).toArray();
