@@ -1,11 +1,13 @@
 
-   (function (physics) {
-
+    (function (physics) {
 
     //
-    // BEHAVIOURS
+    //  BEHAVIOURS
     //
-    physics.behavior('norne', function(parent){
+    /**
+     *  Initially, this was the newtonian behaviour.
+     */
+    physics.behavior('forcefield', function(parent) {
 
         var defaults = {
             strength: 1
@@ -24,15 +26,16 @@
                 this.tolerance = options.tolerance || 100 * this.strength;
             },
             
+
             /**
-             * Apply acceleration between all bodies
+             * Apply acceleration to particles towards forcefields.
              */
-            behave: function( data ){
+            behave: function(data) {
                 var bodies, body, reference, j, g, scratch, pos, normsq;
 
                 bodies = data.bodies;
                 scratch = physics.scratchpad();
-                reference = bodies.forcefield;
+                reference = bodies.forcefields;
                 pos = scratch.vector();
 
                 if (reference === undefined) {
@@ -68,6 +71,9 @@
     //
     // BODIES
     //
+    /**
+     *  Base class for all PhysicsJS lane bodies.
+     */
     define('physics.body.lane')
         .as({
 
@@ -159,6 +165,13 @@
             this.world = world;
         });
 
+
+    /**
+     *  The definition of the lanes simple ground
+     *  as a PhysicsJS body to repell particles.
+     *
+     *  TODO #14
+     */
     define('physics.body.lane.simple')
         .uses('physics.body.lane')
         .as(function (lane) {
@@ -195,6 +208,13 @@
         });
 
 
+    /**
+     *  The definition of the lanes bezier ground
+     *  as a PhysicsJS body to repell particles.
+     *
+     *  TODO #12
+     *  TODO #14
+     */
     define('physics.body.lane.bezier')
         .uses('physics.body.lane')
         .as(function (lane) {
@@ -277,6 +297,9 @@
         });
 
 
+    /**
+     *  Base class for force fields.
+     */
     define('physics.body.force.field')
         .as(function (x, y) {
 
@@ -289,24 +312,31 @@
         });
 
 
-
+    /**
+     *  Particle base class for round circles.
+     */
     define('physics.body.particle.circle')
         .as(function (x, y, r) {
+
             this.body = physics.body('circle', {
                 x:x, y:y, mass: 0.01, radius: r,
                 restitution: 0
             });
+
         });
 
 
 
-
-
-
-
     //
-    // RENDERER
+    //  RENDERER
     //
+    /**
+     *  A new renderer must be created for
+     *  every body that gets appended.
+     *  The 'renderer' that gets used by
+     *  the PhysicsJS world is just used to
+     *  (re)fill the proxy object.
+     */
     define('physics.renderer')
         .as(function (renderer, body) {
             var id;
@@ -321,13 +351,13 @@
 
 
 
-
-
+    //
+    //  WORLD
+    //
     /**
-     *
-     *
-     *
-     *
+     *  Entity that serves as the physical
+     *  world for the particles defined in
+     *  the corresponding data.body.
      */
     define('physics.world').as(function (opts) {
 
@@ -337,10 +367,12 @@
             integrator: 'verlet'
         });
 
+        console.log('Foo', this.world);
+
         this.world.add([
             //physics.behaviour('norne'),
-            //physics.behaviour('newtonian'),
-            physics.behaviour('constant-acceleration', { acc: { y: -0.00009, x:0 }}),
+            physics.behaviour('newtonian'),
+            //physics.behaviour('constant-acceleration', { acc: { y: -0.00009, x:0 }}),
             physics.behaviour('body-impulse-response'),
             physics.behaviour('sweep-prune'),
             physics.behaviour('body-collision-detection', { checkAll: false }) 
